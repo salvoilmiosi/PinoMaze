@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{904188A8-C82E-49EF-BC54-4DA46DCD904A}</ProjectGuid>
+    <RootNamespace>PinoMaze_game</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>include;..\PinoMaze_maze\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\Debug\PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>include;..\PinoMaze_maze\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\x64\Debug\PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;..\PinoMaze_maze\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>..\Release\PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>include;..\PinoMaze_maze\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>..\x64\Release\PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\box.cpp" />
+    <ClCompile Include="src\cubemap.cpp" />
+    <ClCompile Include="src\framebuffer.cpp" />
+    <ClCompile Include="src\game.cpp" />
+    <ClCompile Include="src\game_logic.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\material.cpp" />
+    <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\particle_system.cpp" />
+    <ClCompile Include="src\renderer_bridge.cpp" />
+    <ClCompile Include="src\renderer_hole.cpp" />
+    <ClCompile Include="src\renderer_hud.cpp" />
+    <ClCompile Include="src\renderer_particle.cpp" />
+    <ClCompile Include="src\renderer_skybox.cpp" />
+    <ClCompile Include="src\renderer_teleport.cpp" />
+    <ClCompile Include="src\renderer_world.cpp" />
+    <ClCompile Include="src\res_loader.cpp" />
+    <ClCompile Include="src\shader_hole.cpp" />
+    <ClCompile Include="src\shader_hud.cpp" />
+    <ClCompile Include="src\shader_particle.cpp" />
+    <ClCompile Include="src\shader_program.cpp" />
+    <ClCompile Include="src\shader_shadow.cpp" />
+    <ClCompile Include="src\shader_skybox.cpp" />
+    <ClCompile Include="src\shader_teleport.cpp" />
+    <ClCompile Include="src\shader_world.cpp" />
+    <ClCompile Include="src\sphere.cpp" />
+    <ClCompile Include="src\texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\box.h" />
+    <ClInclude Include="include\cubemap.h" />
+    <ClInclude Include="include\framebuffer.h" />
+    <ClInclude Include="include\game.h" />
+    <ClInclude Include="include\game_logic.h" />
+    <ClInclude Include="include\globals.h" />
+    <ClInclude Include="include\material.h" />
+    <ClInclude Include="include\model.h" />
+    <ClInclude Include="include\particle_system.h" />
+    <ClInclude Include="include\renderer_bridge.h" />
+    <ClInclude Include="include\renderer_hole.h" />
+    <ClInclude Include="include\renderer_hud.h" />
+    <ClInclude Include="include\renderer_particle.h" />
+    <ClInclude Include="include\renderer_skybox.h" />
+    <ClInclude Include="include\renderer_teleport.h" />
+    <ClInclude Include="include\renderer_world.h" />
+    <ClInclude Include="include\res_loader.h" />
+    <ClInclude Include="include\shader_hole.h" />
+    <ClInclude Include="include\shader_hud.h" />
+    <ClInclude Include="include\shader_particle.h" />
+    <ClInclude Include="include\shader_program.h" />
+    <ClInclude Include="include\shader_shadow.h" />
+    <ClInclude Include="include\shader_skybox.h" />
+    <ClInclude Include="include\shader_teleport.h" />
+    <ClInclude Include="include\shader_world.h" />
+    <ClInclude Include="include\sphere.h" />
+    <ClInclude Include="include\texture.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PinoMaze_game.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\c_skybox_back.png" />
+    <Image Include="resources\c_skybox_bottom.png" />
+    <Image Include="resources\c_skybox_front.png" />
+    <Image Include="resources\c_skybox_left.png" />
+    <Image Include="resources\c_skybox_right.png" />
+    <Image Include="resources\c_skybox_top.png" />
+    <Image Include="resources\t_arrow.png" />
+    <Image Include="resources\t_bricks.png" />
+    <Image Include="resources\t_bricks_n.png" />
+    <Image Include="resources\t_cobble.png" />
+    <Image Include="resources\t_cobble_n.png" />
+    <Image Include="resources\t_floor.png" />
+    <Image Include="resources\t_floor_n.png" />
+    <Image Include="resources\t_marble.png" />
+    <Image Include="resources\t_marble_n.png" />
+    <Image Include="resources\t_particle.png" />
+    <Image Include="resources\t_plaster.png" />
+    <Image Include="resources\t_plaster_n.png" />
+    <Image Include="resources\t_rust.png" />
+    <Image Include="resources\t_rust_n.png" />
+    <Image Include="resources\t_teleport.png" />
+    <Image Include="resources\t_text.png" />
+    <Image Include="resources\t_tiles.png" />
+    <Image Include="resources\t_tiles_n.png" />
+    <Image Include="resources\t_water_dudv.png" />
+    <Image Include="resources\t_water_n.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\s_hole_f.glsl" />
+    <None Include="shaders\s_hole_v.glsl" />
+    <None Include="shaders\s_hud_f.glsl" />
+    <None Include="shaders\s_hud_v.glsl" />
+    <None Include="shaders\s_particle_f.glsl" />
+    <None Include="shaders\s_particle_v.glsl" />
+    <None Include="shaders\s_shadow_f.glsl" />
+    <None Include="shaders\s_shadow_v.glsl" />
+    <None Include="shaders\s_skybox_f.glsl" />
+    <None Include="shaders\s_skybox_v.glsl" />
+    <None Include="shaders\s_teleport_f.glsl" />
+    <None Include="shaders\s_teleport_v.glsl" />
+    <None Include="shaders\s_world_f.glsl" />
+    <None Include="shaders\s_world_v.glsl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
