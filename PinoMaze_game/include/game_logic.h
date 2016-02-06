@@ -3,38 +3,49 @@
 
 #include <memory>
 #include <glm/glm.hpp>
+#include <sound.h>
 
 #include "maze.h"
 #include "a_star.h"
 
 class gameLogic {
 private:
-    maze *m;
-	unique_ptr<a_star> pathfinder;
+    maze *m = nullptr;
+	unique_ptr<a_star> pathfinder = nullptr;
     list<const node *> path;
     list<const node *>::iterator stepIndex;
 
-private:
-    int tx, ty;
-    int startTx, startTy;
-    int angleFacing;
-    int lastMoveAngle;
-	bool lockToMarble;
-    int moving;
-	int restartDelay;
+	sound SND_TELEPORT;
+	sound SND_HOLE;
+	sound SND_WIN;
 
-	bool teleported;
-	bool won;
+private:
+	int tx = 0;
+	int ty = 0;
+	int startTx = 0;
+	int startTy = 0;
+	int angleFacing = 0;
+	int lastMoveAngle = -1;
+	bool lockToMarble = false;
+	int moving = 0;
+	int restartDelay = 0;
+
+	bool teleported = false;
+	bool won = false;
 
     glm::mat4 marbleRotation;
 
-    float rotationY;
-	float cameraY;
+	float rotationY = 0.f;
+	float cameraY = 0.f;
 
-    float x, y, z;
-    float startX, startZ;
-	float fallSpeed;
+	float x = 0.f;
+	float y = 0.f;
+	float z = 0.f;
+	float startX = 0.f;
+	float startZ = 0.f;
+	float fallSpeed = 0.f;
 
+private:
     void rollMarble(float ox, float oy, float oz);
     void teleportTo(int _x, int _y);
     bool offsetMove(int angleOffset);

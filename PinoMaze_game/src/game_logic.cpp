@@ -1,20 +1,16 @@
 #include "game_logic.h"
 
 #include <Windows.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "res_loader.h"
 #include "globals.h"
 
 gameLogic::gameLogic() {
-    moving = 0;
-	restartDelay = 0;
-    lastMoveAngle = -1;
-	lockToMarble = false;
-    pathfinder = nullptr;
-	teleported = false;
-	won = true;
-
-	fallSpeed = 0.f;
+	SND_TELEPORT.loadChunk(loadWaveFromResource(IDW_TELEPORT));
+	SND_HOLE.loadChunk(loadWaveFromResource(IDW_HOLE));
+	SND_WIN.loadChunk(loadWaveFromResource(IDW_WIN));
 }
 
 void gameLogic::setMaze(maze *_m) {
@@ -347,6 +343,7 @@ bool gameLogic::useItem() {
 			case ITEM_TELEPORT:
 				if (item->teleport.warpX >= 0 && item->teleport.warpY >= 0) {
 					teleportTo(item->teleport.warpX, item->teleport.warpY);
+					SND_TELEPORT.play();
 					return true;
 				}
 				break;
@@ -365,7 +362,10 @@ void gameLogic::endMove() {
 			restartDelay = fallingDelay;
 			break;
 		case STATE_END:
-			won = true;
+			if (!won) {
+				won = true;
+				SND_WIN.play();
+			}
 			break;
 		}
 	}
@@ -431,6 +431,7 @@ void gameLogic::tick() {
 		}
 		if (restartDelay == 0) {
 			teleportToStart(false);
+			SND_HOLE.play();
 		}
 	} else {
 		if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W]) {

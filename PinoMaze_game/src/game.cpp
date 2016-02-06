@@ -3,6 +3,7 @@
 #include "res_loader.h"
 #include "globals.h"
 
+#include <SDL2/SDL_mixer.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 game::~game() {
@@ -58,6 +59,7 @@ void game::tick() {
 	m_view = logic.viewMatrix();
 	m_marble = logic.marbleMatrix();
 
+	world.tick(this);
 	hole.tick(this);
 	particle.tick(this);
 	logic.resetTeleported();

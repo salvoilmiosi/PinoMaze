@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -75,6 +76,7 @@ bool init() {
 
 void clean() {
     SDL_DestroyWindow(window);
+	Mix_Quit();
 	IMG_Quit();
     SDL_Quit();
 }
@@ -92,15 +94,15 @@ void render() {
 void mainLoop() {
 	SDL_Event event;
 
+	char fpsCounter[128];
+	memset(fpsCounter, 0, 128);
+
 	int lastTime = SDL_GetTicks();
 	float unprocessed = 0;
 	float msPerTick = 1000.f / tickrate;
 	int frames = 0;
 	int ticks = 0;
 	int secondsTimer = SDL_GetTicks();
-
-	char fpsCounter[128];
-	memset(fpsCounter, 0, 128);
 
     while(true) {
         int now = SDL_GetTicks();
@@ -146,12 +148,18 @@ void mainLoop() {
 }
 
 int main (int argc, char **argv) {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
 		MessageBox(nullptr, "Could not init SDL2", "Error", MB_ICONERROR);
 		return -1;
 	}
-	if (!IMG_Init(IMG_INIT_PNG) != 0) {
+
+	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
 		MessageBox(nullptr, "Could not init png libraries", "Error", MB_ICONERROR);
+		return -2;
+	}
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
+		MessageBox(nullptr, "Could not init audio libraries", "Error", MB_ICONERROR);
 		return -2;
 	}
 
@@ -162,15 +170,19 @@ int main (int argc, char **argv) {
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	if (window == nullptr) {
-		MessageBox(nullptr, "Coult not create window", "Error", MB_ICONERROR);
+		MessageBox(nullptr, "Could not create window", "Error", MB_ICONERROR);
 		return -3;
 	}
 
     SDL_GLContext context = SDL_GL_CreateContext(window);
+	if (context == nullptr) {
+		MessageBox(nullptr, "Could not create context", "Error", MB_ICONERROR);
+		return -4;
+	}
 
 	if (!init()) {
 		MessageBox(nullptr, "Could not init game", "Error", MB_ICONERROR);
-		return -4;
+		return -5;
 	}
 
 	mainLoop();

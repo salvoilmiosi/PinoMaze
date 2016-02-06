@@ -1,6 +1,7 @@
 #include "res_loader.h"
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 
 #include <string>
 #include <fstream>
@@ -54,4 +55,19 @@ SDL_Surface *loadImageFromResources(int RES_ID) {
 	unsigned char* res_data = (unsigned char*)LockResource(hgRes);
 
 	return IMG_LoadTyped_RW(SDL_RWFromConstMem(res_data, res_size), 1, "PNG");
+}
+
+Mix_Chunk *loadWaveFromResource(int RES_ID) {
+	HMODULE hModule = GetModuleHandle(nullptr);
+
+	HRSRC hRes = FindResource(hModule, MAKEINTRESOURCE(RES_ID), "WAVE");
+	if (!hRes) {
+		return nullptr;
+	}
+	unsigned int res_size = SizeofResource(hModule, hRes);
+
+	HGLOBAL hgRes = LoadResource(hModule, hRes);
+	unsigned char* res_data = (unsigned char*)LockResource(hgRes);
+
+	return Mix_LoadWAV_RW(SDL_RWFromConstMem(res_data, res_size), 1);
 }

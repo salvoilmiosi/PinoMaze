@@ -29,6 +29,8 @@ private:
     int width;
     int height;
 
+	int teleportTimer = 0;
+
     worldShader shader;
     shadowShader shadows;
     framebuffer shadowBuffer;
@@ -44,6 +46,8 @@ public:
 public:
     bool init();
     virtual void clean();
+
+	void tick(class game *g);
 
     void render(class game *g);
 	void renderRefraction();

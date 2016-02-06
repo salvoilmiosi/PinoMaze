@@ -89,7 +89,7 @@ endOfLoop:
 	numAlive = iD - particles;
 }
 
-void particleSystem::addParticles(int num) {
+void particleSystem::addParticles(int num, float force) {
 	particle p;
 
 	while (num > 0) {
@@ -102,6 +102,7 @@ void particleSystem::addParticles(int num) {
 
 		p.velocity = glm::vec3(posX, posY, posZ);
 		p.position += glm::normalize(p.velocity) * marbleRadius;
+		p.velocity *= force;
 		p.velocity += velocity * 0.3f;
 
 		float r = rand() / (float)RAND_MAX;
@@ -111,7 +112,7 @@ void particleSystem::addParticles(int num) {
 		p.color = glm::vec3(r, g, b);
 		p.uv = glm::vec2((rand() % 2) * 0.5f, (rand() % 2) * 0.5f);
 
-		p.life = rand() % 60 + 30;
+		p.life = rand() % 60 + 40;
 
 		p.particleSize = rand() / (float)RAND_MAX * 0.06f;
 
@@ -124,7 +125,7 @@ void particleSystem::addParticles(int num) {
 
 void particleSystem::tick() {
 	if (enabled) {
-		addParticles(rand() % 15 + 10);
+		addParticles(rand() % 15 + 5);
 	}
 	
 	for (size_t i = 0; i < numAlive; ++i) {
@@ -136,6 +137,7 @@ void particleSystem::tick() {
 
 		p.position += p.velocity;
 		p.velocity *= 0.985f;
+		p.velocity.y -= 0.00005f;
 		p.particleSize *= 0.98f;
 	}
 

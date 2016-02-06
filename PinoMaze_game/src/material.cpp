@@ -25,6 +25,13 @@ void material::cleanTexture() {
 	normals = nullptr;
 }
 
+static const /* would be constexpr in c++14 */ glm::vec3 colorToVec3(const int color) {
+	const int r = (color & 0x00ff0000) >> (8 * 2);
+	const int g = (color & 0x0000ff00) >> (8 * 1);
+	const int b = (color & 0x000000ff) >> (8 * 0);
+	return glm::vec3(r / 255.f, g / 255.f, b / 255.f);
+}
+
 void material::loadMaterials() {
 	static texture TEX_MARBLE_TEXTURE(loadImageFromResources(IDT_MARBLE_TEXTURE));
 	static texture TEX_MARBLE_NORMALS(loadImageFromResources(IDT_MARBLE_NORMALS));
@@ -42,12 +49,12 @@ void material::loadMaterials() {
 	static texture TEX_RUST_TEXTURE(loadImageFromResources(IDT_RUST_TEXTURE));
 	static texture TEX_RUST_NORMALS(loadImageFromResources(IDT_RUST_NORMALS));
 
-	MAT_FLOOR.specular = glm::vec3(0.15f, 0.15f, 0.15f);
+	MAT_FLOOR.specular = colorToVec3(0x262626);
 	MAT_FLOOR.tex = &TEX_FLOOR_TEXTURE;
 	MAT_FLOOR.normals = &TEX_FLOOR_NORMALS;
 
-	MAT_FLOOR_REFRACTED.diffuse = glm::vec3(0.6f, 0.6f, 0.7f);
-	MAT_FLOOR_REFRACTED.specular = glm::vec3(0.f, 0.f, 0.f);
+	MAT_FLOOR_REFRACTED.diffuse = colorToVec3(0x9999b2);
+	MAT_FLOOR_REFRACTED.specular = colorToVec3(0x000000);
 	MAT_FLOOR_REFRACTED.tex = &TEX_FLOOR_TEXTURE;
 
 	MAT_BRICKS.tex = &TEX_BRICKS_TEXTURE;
@@ -56,30 +63,31 @@ void material::loadMaterials() {
 	MAT_COBBLE.tex = &TEX_COBBLE_TEXTURE;
 	MAT_COBBLE.normals = &TEX_COBBLE_NORMALS;
 
-	MAT_TILES.diffuse = glm::vec3(1.f, 1.f, 0.75f);
-	MAT_TILES.specular = glm::vec3(0.4f, 0.4f, 0.4f);
+	MAT_TILES.diffuse = colorToVec3(0xffffbf);
+	MAT_TILES.specular = colorToVec3(0x666666);
 	MAT_TILES.tex = &TEX_TILES_TEXTURE;
 	MAT_TILES.normals = &TEX_TILES_NORMALS;
 
-	MAT_PLASTER.ambient = glm::vec3(0.8f, 0.8f, 0.8f);
-	MAT_PLASTER.specular = glm::vec3(0.2f, 0.2f, 0.2f);
+	MAT_PLASTER.ambient = colorToVec3(0xffffff);
+	MAT_PLASTER.diffuse = colorToVec3(0xaea4a9);
+	MAT_PLASTER.specular = colorToVec3(0x333333);
 	MAT_PLASTER.tex = &TEX_PLASTER_TEXTURE;
 	MAT_PLASTER.normals = &TEX_PLASTER_NORMALS;
 
-	MAT_MARBLE.ambient = glm::vec3(0.7f, 0.7f, 0.7f);
-	MAT_MARBLE.specular = glm::vec3(0.6f, 0.6f, 0.6f);
+	MAT_MARBLE.ambient = colorToVec3(0xb2b2b2);
+	MAT_MARBLE.specular = colorToVec3(0x999999);
 	MAT_MARBLE.tex = &TEX_MARBLE_TEXTURE;
 	MAT_MARBLE.normals = &TEX_MARBLE_NORMALS;
 
-	MAT_MARBLE_REFRACTED.diffuse = glm::vec3(0.6f, 0.6f, 0.7f);
-	MAT_MARBLE_REFRACTED.specular = glm::vec3(0.f, 0.f, 0.f);
+	MAT_MARBLE_REFRACTED.diffuse = colorToVec3(0x9999b2);
+	MAT_MARBLE_REFRACTED.specular = colorToVec3(0x000000);
 	MAT_MARBLE_REFRACTED.tex = &TEX_MARBLE_TEXTURE;
 
-	MAT_START.diffuse = glm::vec3(1.f, 0.f, 0.f);
+	MAT_START.diffuse = colorToVec3(0xff0000);
 	MAT_START.tex = &TEX_PLASTER_TEXTURE;
 	MAT_START.normals = &TEX_PLASTER_NORMALS;
 
-	MAT_END.diffuse = glm::vec3(1.f, 0.f, 1.f);
+	MAT_END.diffuse = colorToVec3(0xff00ff);
 	MAT_END.tex = &TEX_PLASTER_TEXTURE;
 	MAT_END.normals = &TEX_PLASTER_NORMALS;
 

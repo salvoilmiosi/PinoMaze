@@ -186,6 +186,9 @@
     <ClInclude Include="include\shader_particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PinoMaze_game.rc">
@@ -315,5 +318,16 @@
     <None Include="shaders\s_world_v.glsl">
       <Filter>Shader Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="resources\w_teleport.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="resources\w_hole.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="resources\w_win.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

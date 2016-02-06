@@ -51,7 +51,7 @@ public:
 		velocity = vel;
 	}
 
-	void addParticles(int num);
+	void addParticles(int num, float force = 1.f);
 
 	void tick();
 	void render();

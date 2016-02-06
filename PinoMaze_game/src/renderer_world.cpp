@@ -80,15 +80,8 @@ void worldRenderer::clean() {
 }
 
 void worldRenderer::renderShadowmap(game *g) {
-	static int renderCount = 0;
-
 	float marbleX = g->marbleMatrix()[3][0];
 	float marbleZ = g->marbleMatrix()[3][2];
-
-	if (g->hasTeleported())
-		renderCount = 0;
-
-    if (renderCount++ % shadowRenderFrequency != 0) return;
 
     static const glm::mat4 lightProjection = glm::ortho(-shadowArea, shadowArea, -shadowArea, shadowArea, -shadowArea, shadowArea);
 	static const float texelSize = shadowArea * 2.f / shadowMap.width();
@@ -107,13 +100,25 @@ void worldRenderer::renderShadowmap(game *g) {
 
 		wallBox.render();
 		pillarBox.render();
-		marble.render();
 		bridge.render();
+
+		if (teleportTimer % 18 < 9) {
+			marble.render();
+		}
 
 		shadows.unbindProgram();
 	}
 
     shadowBuffer.unbindFramebuffer();
+}
+
+void worldRenderer::tick(game *g) {
+	if (teleportTimer > 0) {
+		--teleportTimer;
+	}
+	if (g->hasTeleported()) {
+		teleportTimer = 72;
+	}
 }
 
 void worldRenderer::render(game *g) {
@@ -150,8 +155,10 @@ void worldRenderer::render(game *g) {
 		shader.setMaterial(material::MAT_ARROW);
 		arrowBox.render();
 
-		shader.setMaterial(material::MAT_MARBLE);
-		marble.render();
+		if (teleportTimer % 18 < 9) {
+			shader.setMaterial(material::MAT_MARBLE);
+			marble.render();
+		}
 
 		shader.unbindProgram();
 	}

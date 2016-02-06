@@ -90,10 +90,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>include;..\PinoMaze_maze\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OutDir)PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -106,7 +107,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OutDir)PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -124,7 +125,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(OutDir)PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -142,7 +143,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(OutDir)PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)PinoMaze_maze.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -201,6 +202,7 @@
     <ClInclude Include="include\shader_skybox.h" />
     <ClInclude Include="include\shader_teleport.h" />
     <ClInclude Include="include\shader_world.h" />
+    <ClInclude Include="include\sound.h" />
     <ClInclude Include="include\sphere.h" />
     <ClInclude Include="include\texture.h" />
     <ClInclude Include="resource.h" />
@@ -251,6 +253,11 @@
     <None Include="shaders\s_teleport_v.glsl" />
     <None Include="shaders\s_world_f.glsl" />
     <None Include="shaders\s_world_v.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="resources\w_hole.wav" />
+    <Media Include="resources\w_teleport.wav" />
+    <Media Include="resources\w_win.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

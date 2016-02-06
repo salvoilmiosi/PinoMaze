@@ -41,7 +41,8 @@ void particleRenderer::tick(game *g) {
 	static int enableTimer = 0;
 
 	if (g->hasTeleported()) {
-		system.addParticles(600);
+		system.setVelocity(glm::vec3(0.f));
+		system.addParticles(600, 1.5f);
 		enableTimer = 20;
 	}
 
