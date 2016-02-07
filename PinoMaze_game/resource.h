@@ -47,18 +47,20 @@
 #define IDB_PNG2                        142
 #define IDT_PARTICLE_TEXTURE            142
 #define IDR_TEXTFILE2                   144
+#define IDM_MYSTERY                     144
 #define IDR_WAVE1                       146
 #define IDW_TELEPORT                    146
 #define IDR_WAVE2                       147
 #define IDW_HOLE                        147
 #define IDR_WAVE3                       150
 #define IDW_WIN                         150
+#define IDR_OGG1                        152
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        151
+#define _APS_NEXT_RESOURCE_VALUE        153
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101

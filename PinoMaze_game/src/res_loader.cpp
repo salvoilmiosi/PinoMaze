@@ -1,8 +1,5 @@
 #include "res_loader.h"
 
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-
 #include <Windows.h>
 #include <fstream>
 
@@ -13,7 +10,7 @@ std::string loadStringFromFile(const char *filename) {
 	string str;
 
 	ifs.seekg(0, ios::end);
-	str.reserve((int)ifs.tellg());
+	str.reserve((size_t)ifs.tellg());
 	ifs.seekg(0, ios::beg);
 
 	str.assign((istreambuf_iterator<char>(ifs)),
@@ -30,10 +27,10 @@ static SDL_RWops *loadResourceRW(int RES_ID, const char *RES_TYPE) {
 		fprintf(stderr, "Could not load resource %d %s", RES_ID, RES_TYPE);
 		return nullptr;
 	}
-	unsigned int res_size = SizeofResource(hModule, hRes);
+	int res_size = SizeofResource(hModule, hRes);
 
 	HGLOBAL hgRes = LoadResource(hModule, hRes);
-	unsigned char* res_data = (unsigned char*)LockResource(hgRes);
+	char *res_data = (char*) LockResource(hgRes);
 
 	return SDL_RWFromConstMem(res_data, res_size);
 }
@@ -63,15 +60,38 @@ std::string loadStringFromResource(int RES_ID) {
 SDL_Surface *loadImageFromResources(int RES_ID) {
 	SDL_RWops *data = loadResourceRW(RES_ID, "PNG");
 
-	if (data)
-		return IMG_LoadTyped_RW(data, 1, "PNG");
+	if (data) {
+		SDL_Surface *surf = IMG_LoadTyped_RW(data, 1, "PNG");
+		if (!surf) {
+			fprintf(stderr, "Could not load image %d: %s\n", RES_ID, IMG_GetError());
+		}
+		return surf;
+	}
 	return nullptr;
 }
 
 Mix_Chunk *loadWaveFromResource(int RES_ID) {
 	SDL_RWops *data = loadResourceRW(RES_ID, "WAVE");
 
-	if (data) 
-		return Mix_LoadWAV_RW(data, 1);
+	if (data) {
+		Mix_Chunk *chunk = Mix_LoadWAV_RW(data, 1);
+		if (!chunk) {
+			fprintf(stderr, "Could not load audio %d: %s\n", RES_ID, Mix_GetError());
+		}
+		return chunk;
+	}
+	return nullptr;
+}
+
+Mix_Music *loadMusicFromResource(int RES_ID) {
+	SDL_RWops *data = loadResourceRW(RES_ID, "OGG");
+
+	if (data) {
+		Mix_Music *mus = Mix_LoadMUSType_RW(data, MUS_OGG, 1);
+		if (!mus) {
+			fprintf(stderr, "Could not load music %d: %s\n", RES_ID, Mix_GetError());
+		}
+		return mus;
+	}
 	return nullptr;
 }

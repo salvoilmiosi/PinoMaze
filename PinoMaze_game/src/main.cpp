@@ -38,12 +38,17 @@ int main (int argc, char **argv) {
 		return -1;
 	}
 
-	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+	if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
 		MessageBox(nullptr, "Could not init png libraries", "Error", MB_ICONERROR);
 		return -2;
 	}
 
-	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
+	if ((Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG) != MIX_INIT_OGG) {
+		MessageBox(nullptr, "Could not init ogg libraries", "Error", MB_ICONERROR);
+		return -2;
+	}
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
 		MessageBox(nullptr, "Could not init audio libraries", "Error", MB_ICONERROR);
 		return -2;
 	}

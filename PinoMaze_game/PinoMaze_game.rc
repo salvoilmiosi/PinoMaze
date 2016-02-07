@@ -148,6 +148,14 @@ IDW_HOLE                WAVE                    "resources\\w_hole.wav"
 
 IDW_WIN                 WAVE                    "resources\\w_win.wav"
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// OGG
+//
+
+IDM_MYSTERY             OGG                     "resources\\m_mystery.ogg"
+
 #endif    // Italian (Italy) resources
 /////////////////////////////////////////////////////////////////////////////
 

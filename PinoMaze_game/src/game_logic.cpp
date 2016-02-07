@@ -11,8 +11,17 @@ gameLogic::gameLogic(maze *m) : m(m) {
 	SND_TELEPORT.loadChunk(loadWaveFromResource(IDW_TELEPORT));
 	SND_HOLE.loadChunk(loadWaveFromResource(IDW_HOLE));
 	SND_WIN.loadChunk(loadWaveFromResource(IDW_WIN));
+	MUS_MUSIC.loadMusic(loadMusicFromResource(IDM_MYSTERY));
+
+	MUS_MUSIC.volume(0.3f);
+
+	MUS_MUSIC.fadeIn(1000);
 
 	teleportToStart(true);
+}
+
+gameLogic::~gameLogic() {
+	MUS_MUSIC.stop();
 }
 
 void gameLogic::teleportTo(int _x, int _y) {
@@ -362,6 +371,7 @@ void gameLogic::endMove() {
 			if (!won) {
 				won = true;
 				SND_WIN.play();
+				MUS_MUSIC.fadeOut(3000);
 			}
 			break;
 		}
@@ -474,6 +484,7 @@ void gameLogic::tick() {
 			pathfinder = nullptr;
 			teleportToStart(true);
 			pressed_r = true;
+			MUS_MUSIC.fadeIn(1000);
 		}
 	} else {
 		pressed_r = false;

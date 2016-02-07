@@ -315,6 +315,9 @@
     <None Include="shaders\s_world_v.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="resources\m_mystery.ogg">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Media Include="resources\w_teleport.wav">

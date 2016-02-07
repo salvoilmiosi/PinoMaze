@@ -18,6 +18,7 @@ private:
 	sound SND_TELEPORT;
 	sound SND_HOLE;
 	sound SND_WIN;
+	music MUS_MUSIC;
 
 private:
 	int tx = 0;
@@ -63,6 +64,7 @@ private:
 
 public:
     gameLogic(maze *m);
+	virtual ~gameLogic();
 
 public:
     void tick();

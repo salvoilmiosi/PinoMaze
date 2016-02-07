@@ -238,6 +238,7 @@
     <Image Include="resources\t_water_n.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\m_mystery.ogg" />
     <None Include="shaders\s_hole_f.glsl" />
     <None Include="shaders\s_hole_v.glsl" />
     <None Include="shaders\s_hud_f.glsl" />
