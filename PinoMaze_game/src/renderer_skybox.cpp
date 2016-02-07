@@ -98,7 +98,7 @@ bool skyboxRenderer::init() {
 
     glBindVertexArray(0);
 
-    return true;
+    return glGetError() == GL_NO_ERROR;
 }
 
 void skyboxRenderer::clean() {

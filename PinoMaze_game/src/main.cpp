@@ -13,17 +13,7 @@
 
 #include "game.h"
 
-namespace {
-	SDL_Window *window;
-
-	unique_ptr<game> mainGame = nullptr;
-	unique_ptr<maze> mainMaze = nullptr;
-}
-
-static unique_ptr<maze> openMazeFile() {
-    char filename[MAX_PATH];
-    memset(filename, 0, sizeof(filename));
-
+bool getOpenMazeFile(char *filename) {
 	OPENFILENAME ofn;
 	ZeroMemory(&ofn, sizeof(ofn));
 
@@ -38,60 +28,92 @@ static unique_ptr<maze> openMazeFile() {
 	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags |= OFN_NOCHANGEDIR;
 
-    if (GetOpenFileName(&ofn)) {
-        unique_ptr<maze> m = openMaze(filename);
-        if (m == nullptr) {
-            MessageBox(nullptr, "Cannot open this file", "Error", MB_ICONERROR);
-        } else {
-            return m;
-        }
-    }
-    return nullptr;
+	return (bool) GetOpenFileName(&ofn);
 }
 
-bool init() {
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+int main (int argc, char **argv) {
+	// Init SDL2 libraries
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+		MessageBox(nullptr, "Could not init SDL2", "Error", MB_ICONERROR);
+		return -1;
+	}
 
-    glewExperimental = true;
+	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+		MessageBox(nullptr, "Could not init png libraries", "Error", MB_ICONERROR);
+		return -2;
+	}
+
+	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
+		MessageBox(nullptr, "Could not init audio libraries", "Error", MB_ICONERROR);
+		return -2;
+	}
+
+	unique_ptr<maze> mainMaze = nullptr;
+
+	if (argc > 1) {
+		// Use command line arguments for opening a maze
+		mainMaze = openMaze(argv[1]);
+	} else {
+		// Or open the dialog
+		char filename[MAX_PATH];
+		memset(filename, 0, sizeof(filename));
+
+		if (!getOpenMazeFile(filename)) {
+			return 0;
+		}
+
+		mainMaze = openMaze(filename);
+	}
+
+	if (mainMaze == nullptr) {
+		MessageBox(nullptr, "Cannot open this file", "PinoMaze", MB_ICONEXCLAMATION);
+		return 0;
+	}
+
+	// Create a window with SDL2
+    SDL_Window *window = SDL_CreateWindow("PinoMaze Game",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+
+	if (window == nullptr) {
+		MessageBox(nullptr, "Could not create window", "Error", MB_ICONERROR);
+		return -3;
+	}
+
+	SDL_ShowCursor(0);
+
+	// Create OpenGL context and Init glew
+    SDL_GLContext context = SDL_GL_CreateContext(window);
+	if (context == nullptr) {
+		MessageBox(nullptr, "Could not create OpenGL context", "Error", MB_ICONERROR);
+		return -4;
+	}
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
+	glewExperimental = true;
 	GLenum error = glewInit();
 	if (error != GLEW_OK) {
 		return false;
 	}
 
-	mainGame.reset(new game);
+	// Create and init the game object
+	unique_ptr<game> mainGame = make_unique<game>(mainMaze.get());
 
-    mainGame->setMaze(mainMaze.get());
+	if (!mainGame->init()) {
+		MessageBox(nullptr, "Could not init game", "Error", MB_ICONERROR);
+		return -5;
+	}
 
-    if (!mainGame->init()) return false;
+	// Setup OpenGL options
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+	SDL_GL_SetSwapInterval(1);
 
-    SDL_GL_SetSwapInterval(1);
-
-    return true;
-}
-
-void clean() {
-    SDL_DestroyWindow(window);
-	Mix_Quit();
-	IMG_Quit();
-    SDL_Quit();
-}
-
-void tick() {
-    mainGame->tick();
-}
-
-void render() {
-    mainGame->render();
-
-    SDL_GL_SwapWindow(window);
-}
-
-void mainLoop() {
+	// Main game loop
 	SDL_Event event;
 
 	char fpsCounter[128];
@@ -104,95 +126,64 @@ void mainLoop() {
 	int ticks = 0;
 	int secondsTimer = SDL_GetTicks();
 
-    while(true) {
-        int now = SDL_GetTicks();
-        unprocessed += (now - lastTime) / msPerTick;
-        lastTime = now;
-        bool shouldRender = false;
-        while (unprocessed >= 1) {
-            tick();
+	bool quit = false;
+	while (!quit) {
+		int now = SDL_GetTicks();
+		unprocessed += (now - lastTime) / msPerTick;
+		lastTime = now;
+		bool shouldRender = false;
+		while (unprocessed >= 1) {
+			mainGame->tick();
 
-            ++ticks;
-            --unprocessed;
-            shouldRender = true;
-        }
+			++ticks;
+			--unprocessed;
+			shouldRender = true;
+		}
 
-        //SDL_Delay(2);
+		//SDL_Delay(2);
 
-        if (shouldRender) {
-            render();
-            ++frames;
-        }
+		if (shouldRender) {
+			mainGame->render();
 
-        while(SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_QUIT:
-                return;
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE)
-                    return;
-				// fall through
-			default:
-				mainGame->handleEvent(event);
-            }
-        }
+			SDL_GL_SwapWindow(window);
 
-        if (SDL_GetTicks() - secondsTimer > 1000) {
-            secondsTimer += 1000;
-            snprintf(fpsCounter, 128, "Frames: %d\nTicks: %d", frames, ticks);
+			++frames;
+		}
+
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+			case SDL_QUIT:
+				quit = true;
+				break;
+			case SDL_KEYDOWN:
+				if (event.key.keysym.sym == SDLK_ESCAPE) {
+					quit = true;
+				} else {
+					mainGame->handleEvent(event);
+				}
+				break;
+			}
+		}
+
+		if (SDL_GetTicks() - secondsTimer > 1000) {
+			secondsTimer += 1000;
+			snprintf(fpsCounter, 128, "Frames: %d\nTicks: %d", frames, ticks);
 			mainGame->setStatus(fpsCounter);
-            frames = 0;
-            ticks = 0;
-        }
-    }
-}
-
-int main (int argc, char **argv) {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-		MessageBox(nullptr, "Could not init SDL2", "Error", MB_ICONERROR);
-		return -1;
+			frames = 0;
+			ticks = 0;
+		}
 	}
 
-	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-		MessageBox(nullptr, "Could not init png libraries", "Error", MB_ICONERROR);
-		return -2;
-	}
-
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
-		MessageBox(nullptr, "Could not init audio libraries", "Error", MB_ICONERROR);
-		return -2;
-	}
-
-	mainMaze = openMazeFile();
-    if (mainMaze == nullptr) return 0;
-
-    window = SDL_CreateWindow("PinoMaze Game",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
-	if (window == nullptr) {
-		MessageBox(nullptr, "Could not create window", "Error", MB_ICONERROR);
-		return -3;
-	}
-
-	SDL_ShowCursor(0);
-
-    SDL_GLContext context = SDL_GL_CreateContext(window);
-	if (context == nullptr) {
-		MessageBox(nullptr, "Could not create context", "Error", MB_ICONERROR);
-		return -4;
-	}
-
-	if (!init()) {
-		MessageBox(nullptr, "Could not init game", "Error", MB_ICONERROR);
-		return -5;
-	}
-
-	mainLoop();
-
+	// Clean up everything
 	mainGame.release();
+	mainMaze.release();
 
-    clean();
-    SDL_GL_DeleteContext(context);
+	SDL_GL_DeleteContext(context);
+	SDL_DestroyWindow(window);
+
+	Mix_Quit();
+	IMG_Quit();
+	SDL_Quit();
 
     return 0;
 }

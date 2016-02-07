@@ -392,6 +392,8 @@ void gameLogic::teleportToStart(bool resetWon) {
 }
 
 void gameLogic::tick() {
+	teleported = false;
+
 	if (moving > 0) {
 		float endX = (tx + 0.5f) * tileSize;
 		float endZ = (ty + 0.5f) * tileSize;

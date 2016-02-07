@@ -3,21 +3,17 @@
 #include "res_loader.h"
 #include "globals.h"
 
-#include <SDL2/SDL_mixer.h>
 #include <glm/gtc/matrix_transform.hpp>
+
+game::game(maze *m) : m(m) {
+	world.setMaze(m);
+	hole.setMaze(m);
+	teleport.setMaze(m);
+	logic.setMaze(m);
+}
 
 game::~game() {
     clean();
-}
-
-void game::setMaze(maze *_m) {
-    m = _m;
-
-    world.setMaze(m);
-    hole.setMaze(m);
-	teleport.setMaze(m);
-
-    logic.setMaze(m);
 }
 
 bool game::init() {
@@ -30,11 +26,11 @@ bool game::init() {
 	if (!particle.init()) return false;
 	if (!hud.init()) return false;
 
-    m_proj = glm::perspective(glm::radians(90.f), (float)windowWidth / (float)windowHeight, 0.1f, skyboxSize * sqrtf(2.f) * 1.2f);
+    m_proj = glm::perspective(glm::radians(90.f), (float)windowWidth / (float)windowHeight, 0.1f, skyboxSize * sqrtf(2.f) + 2.f);
 
-    sun.ambient = glm::vec3(0.5f, 0.5f, 0.5f);
-    sun.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-    sun.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	sun.ambient = colorToVec3(0x808080);
+	sun.diffuse = colorToVec3(0xffffff);
+	sun.specular = colorToVec3(0xffffff);
 	sun.direction = glm::vec3(0.43555f, 0.5f, -0.25391f);
 
     return true;
@@ -56,13 +52,13 @@ void game::handleEvent(SDL_Event &e) {
 
 void game::tick() {
     logic.tick();
+
 	m_view = logic.viewMatrix();
 	m_marble = logic.marbleMatrix();
 
 	world.tick(this);
 	hole.tick(this);
 	particle.tick(this);
-	logic.resetTeleported();
 }
 
 void game::render() {

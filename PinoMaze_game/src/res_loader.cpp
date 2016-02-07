@@ -3,11 +3,10 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 
+#include <Windows.h>
 #include <fstream>
 
 using namespace std;
-
-#include <Windows.h>
 
 std::string loadStringFromFile(const char *filename) {
 	ifstream ifs(filename);
@@ -28,9 +27,7 @@ static SDL_RWops *loadResourceRW(int RES_ID, const char *RES_TYPE) {
 
 	HRSRC hRes = FindResource(hModule, MAKEINTRESOURCE(RES_ID), RES_TYPE);
 	if (!hRes) {
-		char errstr[128];
-		sprintf_s(errstr, "Could not load resource %d %s", RES_ID, RES_TYPE);
-		MessageBox(nullptr, errstr, "Error", MB_ICONERROR);
+		fprintf(stderr, "Could not load resource %d %s", RES_ID, RES_TYPE);
 		return nullptr;
 	}
 	unsigned int res_size = SizeofResource(hModule, hRes);
@@ -48,7 +45,7 @@ std::string loadStringFromResource(int RES_ID) {
 		return "";
 
 	size_t datasize = (size_t)SDL_RWsize(data);
-	if (datasize < 0)
+	if (datasize <= 0)
 		return "";
 
 	char *buf = new char[datasize + 1];

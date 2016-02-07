@@ -5,6 +5,8 @@
 
 #include <glm/glm.hpp>
 
+const glm::vec3 colorToVec3(const int color);
+
 class material {
 public:
 	static material MAT_FLOOR;

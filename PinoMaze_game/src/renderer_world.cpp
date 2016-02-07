@@ -63,7 +63,7 @@ bool worldRenderer::init() {
 	if (!endBox.init()) return false;
 	if (!arrowBox.init()) return false;
 
-    return true;
+    return glGetError() == GL_NO_ERROR;
 }
 
 void worldRenderer::clean() {

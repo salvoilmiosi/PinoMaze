@@ -44,10 +44,8 @@ private:
     maze *m = nullptr;
 
 public:
+	game(maze *m);
     virtual ~game();
-
-public:
-    void setMaze(maze *m);
 
 public:
     bool init();

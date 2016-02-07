@@ -77,7 +77,7 @@ bool bridgeRenderer::init() {
     wallVAO = vertexArray;
     wallMatrixVBO = matrixBuffer;
 
-    return true;
+    return glGetError() == GL_NO_ERROR;
 }
 
 void bridgeRenderer::clean() {

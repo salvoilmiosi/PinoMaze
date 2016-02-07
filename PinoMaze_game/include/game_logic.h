@@ -78,10 +78,6 @@ public:
 		return won;
 	}
 
-	void resetTeleported() {
-		teleported = false;
-	}
-
     glm::mat4 viewMatrix();
     glm::mat4 marbleMatrix();
 };

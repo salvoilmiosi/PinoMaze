@@ -25,7 +25,7 @@ void material::cleanTexture() {
 	normals = nullptr;
 }
 
-static const glm::vec3 colorToVec3(const int color) {
+const glm::vec3 colorToVec3(const int color) {
 	const int r = (color & 0x00ff0000) >> (8 * 2);
 	const int g = (color & 0x0000ff00) >> (8 * 1);
 	const int b = (color & 0x000000ff) >> (8 * 0);
