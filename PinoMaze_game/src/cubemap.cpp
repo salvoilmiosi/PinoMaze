@@ -2,8 +2,7 @@
 
 cubemap::~cubemap() {
 	for (int i = 0; i<6; ++i) {
-		delete surfaces[i];
-		surfaces[i] = nullptr;
+		SDL_FreeSurface(surfaces[i]);
 	}
 }
 

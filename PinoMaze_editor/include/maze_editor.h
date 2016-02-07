@@ -3,30 +3,32 @@
 
 #include <SDL2/SDL.h>
 
+#include <memory>
+#include <array>
+
 #include "maze.h"
 
 #include "tool_base.h"
 
+using namespace std;
+
 class mazeEditor {
 private:
-    static const Uint8 TOOLBOX_TIMER = 200;
-
-    static const Uint8 TOOL_COUNT = 8;
+    static const int TOOLBOX_TIMER = 200;
 
 private:
     maze *m;
 
-    Uint8 currentTool;
-    mazeEditorTool *tools[TOOL_COUNT];
+    size_t currentTool;
+    array<unique_ptr<mazeEditorTool>, 8> tools;
 
     SDL_Rect clip_rect;
 
     bool showToolbox;
-    Uint8 toolboxTimer;
+    int toolboxTimer;
 
 public:
     mazeEditor();
-    virtual ~mazeEditor();
 
 public:
     void setMaze(maze *m);

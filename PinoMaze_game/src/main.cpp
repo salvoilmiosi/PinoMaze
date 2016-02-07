@@ -28,7 +28,7 @@ bool getOpenMazeFile(char *filename) {
 	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags |= OFN_NOCHANGEDIR;
 
-	return GetOpenFileName(&ofn);
+	return GetOpenFileName(&ofn) != 0;
 }
 
 int main (int argc, char **argv) {
