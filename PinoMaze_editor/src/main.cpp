@@ -53,7 +53,9 @@ static void resetMaze() {
 	offsety = (windowHeight - mainMaze->height() * mainMaze->tileSize) / 2;
 }
 
-static void setMaze(unique_ptr<maze> m) {
+static void setMaze(unique_ptr<maze> &&m) {
+	if (!m) return;
+
 	mainMaze = move(m);
 	resetMaze();
 }
@@ -282,10 +284,16 @@ int main (int argc, char **argv) {
 
     loadResources(renderer);
 
-	editor.reset(new mazeEditor);
-	mainGrid.reset(new a_star);
+	editor = make_unique<mazeEditor>();
+	mainGrid = make_unique<a_star>();
 
-	setMaze(unique_ptr<maze>(new maze(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE)));
+	if (argc > 1) {
+		setMaze(openMaze(argv[1]));
+	}
+
+	if (!mainMaze) {
+		setMaze(make_unique<maze>(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE));
+	}
 
     setStatus("Welcome to PinoMaze level editor");
 
