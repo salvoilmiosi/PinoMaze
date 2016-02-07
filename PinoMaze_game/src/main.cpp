@@ -80,7 +80,7 @@ int main (int argc, char **argv) {
 		return -3;
 	}
 
-	SDL_ShowCursor(0);
+	SDL_ShowCursor((SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) == 0);
 
 	// Create OpenGL context and Init glew
     SDL_GLContext context = SDL_GL_CreateContext(window);
@@ -111,6 +111,7 @@ int main (int argc, char **argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
+	// Enable vsync
 	SDL_GL_SetSwapInterval(1);
 
 	// Main game loop

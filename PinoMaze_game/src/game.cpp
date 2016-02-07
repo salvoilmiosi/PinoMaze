@@ -19,9 +19,6 @@ bool game::init() {
 
     m_proj = glm::perspective(glm::radians(90.f), (float)windowWidth / (float)windowHeight, 0.1f, skyboxSize * sqrtf(2.f) + 2.f);
 
-	sun.ambient = colorToVec3(0x808080);
-	sun.diffuse = colorToVec3(0xffffff);
-	sun.specular = colorToVec3(0xffffff);
 	sun.direction = glm::vec3(0.43555f, 0.5f, -0.25391f);
 
     return true;
@@ -87,12 +84,12 @@ void game::loadMaterials() {
 	auto TEX_RUST_TEXTURE = LOAD_TEXTURE(IDT_RUST_TEXTURE);
 	auto TEX_RUST_NORMALS = LOAD_TEXTURE(IDT_RUST_NORMALS);
 
-	MAT_FLOOR.specular = colorToVec3(0x262626);
+	MAT_FLOOR.specular = 0x262626;
 	MAT_FLOOR.tex = TEX_FLOOR_TEXTURE;
 	MAT_FLOOR.normals = TEX_FLOOR_NORMALS;
 
-	MAT_FLOOR_REFRACTED.diffuse = colorToVec3(0x9999b2);
-	MAT_FLOOR_REFRACTED.specular = colorToVec3(0x000000);
+	MAT_FLOOR_REFRACTED.diffuse = 0x9999b2;
+	MAT_FLOOR_REFRACTED.specular = 0x000000;
 	MAT_FLOOR_REFRACTED.tex = TEX_FLOOR_TEXTURE;
 
 	MAT_BRICKS.tex = TEX_BRICKS_TEXTURE;
@@ -101,31 +98,31 @@ void game::loadMaterials() {
 	MAT_COBBLE.tex = TEX_COBBLE_TEXTURE;
 	MAT_COBBLE.normals = TEX_COBBLE_NORMALS;
 
-	MAT_TILES.diffuse = colorToVec3(0xffffbf);
-	MAT_TILES.specular = colorToVec3(0x666666);
+	MAT_TILES.diffuse = 0xffffbf;
+	MAT_TILES.specular = 0x666666;
 	MAT_TILES.tex = TEX_TILES_TEXTURE;
 	MAT_TILES.normals = TEX_TILES_NORMALS;
 
-	MAT_PLASTER.ambient = colorToVec3(0xffffff);
-	MAT_PLASTER.diffuse = colorToVec3(0xaea4a9);
-	MAT_PLASTER.specular = colorToVec3(0x333333);
+	MAT_PLASTER.ambient = 0xffffff;
+	MAT_PLASTER.diffuse = 0xaea4a9;
+	MAT_PLASTER.specular = 0x333333;
 	MAT_PLASTER.tex = TEX_PLASTER_TEXTURE;
 	MAT_PLASTER.normals = TEX_PLASTER_NORMALS;
 
-	MAT_MARBLE.ambient = colorToVec3(0xb2b2b2);
-	MAT_MARBLE.specular = colorToVec3(0x999999);
+	MAT_MARBLE.ambient = 0xb2b2b2;
+	MAT_MARBLE.specular = 0x999999;
 	MAT_MARBLE.tex = TEX_MARBLE_TEXTURE;
 	MAT_MARBLE.normals = TEX_MARBLE_NORMALS;
 
-	MAT_MARBLE_REFRACTED.diffuse = colorToVec3(0x9999b2);
-	MAT_MARBLE_REFRACTED.specular = colorToVec3(0x000000);
+	MAT_MARBLE_REFRACTED.diffuse = 0x9999b2;
+	MAT_MARBLE_REFRACTED.specular = 0x000000;
 	MAT_MARBLE_REFRACTED.tex = TEX_MARBLE_TEXTURE;
 
-	MAT_START.diffuse = colorToVec3(0xff0000);
+	MAT_START.diffuse = 0xff0000;
 	MAT_START.tex = TEX_PLASTER_TEXTURE;
 	MAT_START.normals = TEX_PLASTER_NORMALS;
 
-	MAT_END.diffuse = colorToVec3(0xff00ff);
+	MAT_END.diffuse = 0xff00ff;
 	MAT_END.tex = TEX_PLASTER_TEXTURE;
 	MAT_END.normals = TEX_PLASTER_NORMALS;
 

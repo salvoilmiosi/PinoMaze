@@ -23,13 +23,6 @@ static const glm::mat4 biasMatrix(
 	0.0f, 0.0f, 0.5f, 0.0f,
 	0.5f, 0.5f, 0.5f, 1.0f);
 
-inline const glm::vec3 colorToVec3(const int color) {
-	const int r = (color & 0x00ff0000) >> (8 * 2);
-	const int g = (color & 0x0000ff00) >> (8 * 1);
-	const int b = (color & 0x000000ff) >> (8 * 0);
-	return glm::vec3(r / 255.f, g / 255.f, b / 255.f);
-}
-
 class game {
 private:
     skyboxRenderer skybox;
