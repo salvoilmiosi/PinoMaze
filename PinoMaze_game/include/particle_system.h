@@ -37,7 +37,6 @@ public:
 
 public:
 	bool init();
-	virtual void clean();
 
 	void setEnabled(bool b) {
 		enabled = b;

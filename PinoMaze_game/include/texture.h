@@ -17,8 +17,11 @@ protected:
 	int h = 0;
 
 public:
-	texture() : texture(nullptr) {}
-	texture(SDL_Surface *surf);
+	texture() {}
+
+	texture(SDL_Surface *surf) {
+		loadSurface(surf);
+	}
 
     virtual ~texture();
 
@@ -31,11 +34,11 @@ public:
     }
 
     bool loadSurface(SDL_Surface *surface);
+	bool loadSurfaceFromResource(const int RES_ID);
+
     bool createEmpty(int width, int height, bool isDepth = false);
 
     SDL_Surface *getSurface();
-
-    virtual void clean();
 
     void setFilter(GLenum filter);
     void setWrapParam(GLenum wrapParam);

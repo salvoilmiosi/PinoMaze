@@ -26,18 +26,15 @@ private:
     maze *m = nullptr;
 
 public:
+	bridgeRenderer(maze *m);
 	virtual ~bridgeRenderer();
 
 public:
-    void setMaze(maze *m);
-
-public:
     bool init();
-    virtual void clean();
 
     void render();
 
-    void renderShader(worldShader &shader);
+    void renderShader(class game *g, worldShader &shader);
 
 private:
 	void drawArc(float z1, float z2, float w, float h, float texSize, bool ext);

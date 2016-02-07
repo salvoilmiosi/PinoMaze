@@ -8,16 +8,12 @@
 using namespace std;
 
 model::~model() {
-    clean();
-}
-
-void model::clean() {
-    glDeleteBuffers(1, &vertexBuffer);
-    glDeleteBuffers(1, &indexBuffer);
-    glDeleteBuffers(1, &normalBuffer);
-    glDeleteBuffers(1, &tangentBuffer);
-    glDeleteBuffers(1, &matrixBuffer);
-    glDeleteVertexArrays(1, &vertexArray);
+	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &indexBuffer);
+	glDeleteBuffers(1, &normalBuffer);
+	glDeleteBuffers(1, &tangentBuffer);
+	glDeleteBuffers(1, &matrixBuffer);
+	glDeleteVertexArrays(1, &vertexArray);
 }
 
 void model::bindModel() {

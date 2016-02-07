@@ -5,16 +5,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-teleportRenderer::teleportRenderer() {
+teleportRenderer::teleportRenderer(maze *m) : m(m) {
 	setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);
-}
-
-teleportRenderer::~teleportRenderer() {
-	clean();
-}
-
-void teleportRenderer::setMaze(maze *_m) {
-	m = _m;
 
 	glm::mat4 identity, matrix;
 
@@ -33,6 +25,10 @@ void teleportRenderer::setMaze(maze *_m) {
 			matrices.push_back(matrix);
 		}
 	}
+}
+
+teleportRenderer::~teleportRenderer() {
+	glDeleteBuffers(1, &uvBuffer);
 }
 
 bool teleportRenderer::init() {
@@ -69,13 +65,6 @@ bool teleportRenderer::init() {
 	return glGetError() == GL_NO_ERROR;
 }
 
-void teleportRenderer::clean() {
-	glDeleteBuffers(1, &uvBuffer);
-
-	box::clean();
-	shader.clean();
-}
-
 void teleportRenderer::render(game *g) {
 	if (shader.bindProgram()) {
 		shader.setProjectionMatrix(g->projectionMatrix());
@@ -84,7 +73,7 @@ void teleportRenderer::render(game *g) {
 
 		shader.setLight(g->viewLight());
 
-		shader.setMaterial(material::MAT_RUST);
+		shader.setMaterial(g->MAT_RUST);
 		TEX_TELEPORT_TEXTURE.bindTexture(3);
 		box::render();
 

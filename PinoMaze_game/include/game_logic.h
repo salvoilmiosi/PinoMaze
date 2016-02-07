@@ -62,11 +62,9 @@ private:
     void calculateHeight();
 
 public:
-    gameLogic();
+    gameLogic(maze *m);
 
 public:
-    void setMaze(maze *m);
-
     void tick();
 	void handleEvent(SDL_Event &e);
 

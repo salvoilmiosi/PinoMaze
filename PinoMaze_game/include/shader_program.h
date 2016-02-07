@@ -27,7 +27,6 @@ protected:
 
 public:
     virtual bool init() = 0;
-    virtual void clean();
 
     bool bindProgram();
     virtual void unbindProgram();

@@ -37,20 +37,15 @@ private:
 	texture shadowMap;
 
 public:
-    worldRenderer();
-    virtual ~worldRenderer();
-
-public:
-    void setMaze(maze *m);
+    worldRenderer(maze *m);
 
 public:
     bool init();
-    virtual void clean();
 
 	void tick(class game *g);
 
     void render(class game *g);
-	void renderRefraction();
+	void renderRefraction(class game *g);
 
 private:
     void renderShadowmap(class game *g);

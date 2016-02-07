@@ -15,7 +15,9 @@ particleSystem::particleSystem() {
 }
 
 particleSystem::~particleSystem() {
-	clean();
+	glDeleteVertexArrays(1, &vertexArray);
+	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &particleBuffer);
 }
 
 bool particleSystem::init() {
@@ -58,12 +60,6 @@ bool particleSystem::init() {
 	glBindVertexArray(0);
 
 	return glGetError() == GL_NO_ERROR;
-}
-
-void particleSystem::clean() {
-	glDeleteVertexArrays(1, &vertexArray);
-	glDeleteBuffers(1, &vertexBuffer);
-	glDeleteBuffers(1, &particleBuffer);
 }
 
 void particleSystem::removeDeadParticles() {

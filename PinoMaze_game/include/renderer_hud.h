@@ -41,7 +41,6 @@ public:
 
 public:
     bool init();
-    virtual void clean();
 
 	void setStatus(const char *str);
     void render();

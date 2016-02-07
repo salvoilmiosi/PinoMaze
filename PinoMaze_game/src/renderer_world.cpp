@@ -6,7 +6,7 @@
 #include "game.h"
 #include "globals.h"
 
-worldRenderer::worldRenderer() {
+worldRenderer::worldRenderer(maze *m) : m(m), bridge(m) {
 	pillarBox.setSize(pillarSize, pillarHeight, pillarSize, tileSize / 2.5f);
     groundBox.setSize(tileSize, blockHeight * 2.f, tileSize, tileSize);
     wallBox.setSize(tileSize - wallThickness, wallHeight, wallThickness, tileSize / 1.5f);
@@ -14,23 +14,14 @@ worldRenderer::worldRenderer() {
     endBox.setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);
     arrowBox.setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);
     marble.setSize(marbleRadius, 16, 16);
-}
 
-worldRenderer::~worldRenderer() {
-    clean();
-}
+	width = m->width();
+	height = m->height();
 
-void worldRenderer::setMaze(maze *_m) {
-    m = _m;
-
-    width = m->width();
-    height = m->height();
-
-    initPillars();
-    initGround();
-    initWalls();
-    initItems();
-    bridge.setMaze(m);
+	initPillars();
+	initGround();
+	initWalls();
+	initItems();
 }
 
 bool worldRenderer::init() {
@@ -64,19 +55,6 @@ bool worldRenderer::init() {
 	if (!arrowBox.init()) return false;
 
     return glGetError() == GL_NO_ERROR;
-}
-
-void worldRenderer::clean() {
-    shader.clean();
-    shadows.clean();
-
-    pillarBox.clean();
-    groundBox.clean();
-    wallBox.clean();
-    bridge.clean();
-
-    shadowBuffer.clean();
-    shadowMap.clean();
 }
 
 void worldRenderer::renderShadowmap(game *g) {
@@ -135,28 +113,28 @@ void worldRenderer::render(game *g) {
 
 		shadowMap.bindTexture(2);
 
-		shader.setMaterial(material::MAT_FLOOR);
+		shader.setMaterial(g->MAT_FLOOR);
 		groundBox.render();
 
-		shader.setMaterial(material::MAT_COBBLE);
+		shader.setMaterial(g->MAT_COBBLE);
 		pillarBox.render();
 
-		shader.setMaterial(material::MAT_BRICKS);
+		shader.setMaterial(g->MAT_BRICKS);
 		wallBox.render();
 
-		bridge.renderShader(shader);
+		bridge.renderShader(g, shader);
 
-		shader.setMaterial(material::MAT_START);
+		shader.setMaterial(g->MAT_START);
 		startBox.render();
 
-		shader.setMaterial(material::MAT_END);
+		shader.setMaterial(g->MAT_END);
 		endBox.render();
 
-		shader.setMaterial(material::MAT_ARROW);
+		shader.setMaterial(g->MAT_ARROW);
 		arrowBox.render();
 
 		if (teleportTimer % 18 < 9) {
-			shader.setMaterial(material::MAT_MARBLE);
+			shader.setMaterial(g->MAT_MARBLE);
 			marble.render();
 		}
 
@@ -164,17 +142,17 @@ void worldRenderer::render(game *g) {
 	}
 }
 
-void worldRenderer::renderRefraction() {
+void worldRenderer::renderRefraction(game *g) {
 	if (shader.bindProgram()) {
 		glEnable(GL_CLIP_DISTANCE0);
 		glDisable(GL_CULL_FACE);
 
 		shader.setRefractionHeight(-blockHeight);
 
-		shader.setMaterial(material::MAT_FLOOR_REFRACTED);
+		shader.setMaterial(g->MAT_FLOOR_REFRACTED);
 		groundBox.render();
 
-		shader.setMaterial(material::MAT_MARBLE_REFRACTED);
+		shader.setMaterial(g->MAT_MARBLE_REFRACTED);
 		marble.render();
 
 		shader.setRefractionHeight(999.f);

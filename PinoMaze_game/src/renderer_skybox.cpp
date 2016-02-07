@@ -5,7 +5,8 @@
 #include "globals.h"
 
 skyboxRenderer::~skyboxRenderer() {
-    clean();
+	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &indexBuffer);
 }
 
 bool skyboxRenderer::init() {
@@ -99,13 +100,6 @@ bool skyboxRenderer::init() {
     glBindVertexArray(0);
 
     return glGetError() == GL_NO_ERROR;
-}
-
-void skyboxRenderer::clean() {
-    glDeleteBuffers(1, &vertexBuffer);
-    glDeleteBuffers(1, &indexBuffer);
-	CUB_SKYBOX.clean();
-    shader.clean();
 }
 
 void skyboxRenderer::render(game *g) {

@@ -1,7 +1,10 @@
 #include "cubemap.h"
 
 cubemap::~cubemap() {
-    clean();
+	for (int i = 0; i<6; ++i) {
+		delete surfaces[i];
+		surfaces[i] = nullptr;
+	}
 }
 
 bool cubemap::loadSurfaces(SDL_Surface **surfaces) {
@@ -33,13 +36,6 @@ SDL_Surface *cubemap::getSurface(unsigned int i) {
 void cubemap::bindTexture(int sampler) {
     glActiveTexture(GL_TEXTURE0 + sampler);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
-}
-
-void cubemap::clean() {
-    for (int i=0; i<6; ++i) {
-        delete surfaces[i];
-        surfaces[i] = nullptr;
-    }
 }
 
 void cubemap::setFilter(GLenum f) {

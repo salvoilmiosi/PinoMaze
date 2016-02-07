@@ -3,10 +3,6 @@
 #include "res_loader.h"
 #include "game.h"
 
-particleRenderer::~particleRenderer() {
-	clean();
-}
-
 bool particleRenderer::init() {
 	if (!shader.init()) return false;
 
@@ -23,12 +19,6 @@ bool particleRenderer::init() {
 	}
 
 	return glGetError() == GL_NO_ERROR;
-}
-
-void particleRenderer::clean() {
-	shader.clean();
-
-	system.clean();
 }
 
 void particleRenderer::tick(game *g) {

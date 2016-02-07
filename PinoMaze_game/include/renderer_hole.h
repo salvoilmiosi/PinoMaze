@@ -33,17 +33,15 @@ private:
 	framebuffer refractionFBO;
 
 public:
+	holeRenderer(maze *m);
     virtual ~holeRenderer();
 
 public:
-    void setMaze(maze *m);
-
 	void bindFramebuffer() {
 		return refractionFBO.bindFramebuffer();
 	}
 
     bool init();
-    virtual void clean();
 
 	void tick(class game *g);
     void render(class game *g);

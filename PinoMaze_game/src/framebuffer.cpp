@@ -2,17 +2,13 @@
 #include "globals.h"
 
 framebuffer::~framebuffer() {
-    clean();
+	glDeleteFramebuffers(1, &fboID);
 }
 
 bool framebuffer::init() {
     glGenFramebuffers(1, &fboID);
 
     return glGetError() == GL_NO_ERROR;
-}
-
-void framebuffer::clean() {
-    glDeleteFramebuffers(1, &fboID);
 }
 
 void framebuffer::bindFramebuffer() {

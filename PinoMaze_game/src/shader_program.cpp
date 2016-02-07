@@ -12,7 +12,9 @@ shaderProgram::shaderProgram(const char *name) : programName(name) {
 }
 
 shaderProgram::~shaderProgram() {
-	clean();
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+	glDeleteProgram(programID);
 }
 
 bool shaderProgram::loadProgramFromSource(const char *vertexSource, const char *fragmentSource) {
@@ -70,12 +72,6 @@ bool shaderProgram::loadProgramFromResource(int VERTEX_ID, int FRAGMENT_ID) {
 	if (fragmentSource.empty()) return false;
 
 	return loadProgramFromSource(vertexSource.c_str(), fragmentSource.c_str());
-}
-
-void shaderProgram::clean() {
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	glDeleteProgram(programID);
 }
 
 bool shaderProgram::bindProgram() {

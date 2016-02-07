@@ -1,11 +1,12 @@
 #include "texture.h"
 
-texture::texture(SDL_Surface * surf) {
-	loadSurface(surf);
-}
+#include "res_loader.h"
 
 texture::~texture() {
-    clean();
+	glDeleteTextures(1, &texID);
+	if (surface != nullptr)
+		SDL_FreeSurface(surface);
+	surface = nullptr;
 }
 
 bool texture::loadSurface(SDL_Surface *_surface) {
@@ -30,6 +31,10 @@ bool texture::loadSurface(SDL_Surface *_surface) {
     return glGetError() == GL_NO_ERROR;
 }
 
+bool texture::loadSurfaceFromResource(const int RES_ID) {
+	return loadSurface(loadImageFromResources(RES_ID));
+}
+
 bool texture::createEmpty(int width, int height, bool isDepth) {
     w = width;
     h = height;
@@ -51,13 +56,6 @@ bool texture::createEmpty(int width, int height, bool isDepth) {
 
 SDL_Surface *texture::getSurface() {
     return surface;
-}
-
-void texture::clean() {
-    glDeleteTextures(1, &texID);
-    if (surface != nullptr)
-        SDL_FreeSurface(surface);
-    surface = nullptr;
 }
 
 void texture::setFilter(GLenum f) {

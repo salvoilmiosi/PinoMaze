@@ -5,40 +5,40 @@
 #include <cmath>
 #include <cstdio>
 
-#include "texture.h"
-#include "res_loader.h"
-#include "globals.h"
+#include "game.h"
 
-bridgeRenderer::~bridgeRenderer() {
-	clean();
+bridgeRenderer::bridgeRenderer(maze *m) : m(m) {
+	glm::mat4 identity, matrix;
+	bool wallUp, wallDown;
+
+	for (pair<const int, mazeItem> &it : m->items) {
+		if (it.second.type == ITEM_BRIDGE) {
+			int x = it.second.item.x;
+			int y = it.second.item.y;
+
+			matrix = glm::translate(identity, glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
+			wallUp = !m->hwalls[y][x];
+			wallDown = !m->hwalls[y + 1][x];
+
+			tile *tileDown = m->getTile(x, y + 1);
+			mazeItem *item;
+			if (tileDown && (item = m->findItem(tileDown)) && item->type == ITEM_BRIDGE) {
+				wallDown = false;
+			}
+
+			addMatrix(matrix);
+			if (wallUp) wallMatrices.push_back(glm::translate(matrix, glm::vec3(0.f, 0.f, -tileSize * 0.5f)));
+			if (wallDown) wallMatrices.push_back(glm::translate(matrix, glm::vec3(0.f, 0.f, tileSize * 0.5f)));
+		}
+	}
 }
 
-void bridgeRenderer::setMaze(maze *_m) {
-    m = _m;
+bridgeRenderer::~bridgeRenderer() {
+	glDeleteVertexArrays(1, &arcVAO);
+	glDeleteVertexArrays(1, &wallVAO);
 
-    glm::mat4 identity, matrix;
-    bool wallUp, wallDown;
-
-    for (pair<const int, mazeItem> &it : m->items) {
-        if (it.second.type == ITEM_BRIDGE) {
-            int x = it.second.item.x;
-            int y = it.second.item.y;
-
-            matrix = glm::translate(identity, glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
-            wallUp = ! m->hwalls[y][x];
-            wallDown = ! m->hwalls[y+1][x];
-
-            tile *tileDown = m->getTile(x, y+1);
-            mazeItem *item;
-            if (tileDown && (item = m->findItem(tileDown)) && item->type == ITEM_BRIDGE) {
-                wallDown = false;
-            }
-
-            addMatrix(matrix);
-            if (wallUp) wallMatrices.push_back(glm::translate(matrix, glm::vec3(0.f, 0.f, -tileSize * 0.5f)));
-            if (wallDown) wallMatrices.push_back(glm::translate(matrix, glm::vec3(0.f, 0.f, tileSize * 0.5f)));
-        }
-    }
+	glDeleteBuffers(1, &arcMatrixVBO);
+	glDeleteBuffers(1, &wallMatrixVBO);
 }
 
 bool bridgeRenderer::init() {
@@ -80,18 +80,6 @@ bool bridgeRenderer::init() {
     return glGetError() == GL_NO_ERROR;
 }
 
-void bridgeRenderer::clean() {
-    vertexArray = 0;
-    matrixBuffer = 0;
-
-    model::clean();
-    glDeleteVertexArrays(1, &arcVAO);
-    glDeleteVertexArrays(1, &wallVAO);
-
-    glDeleteBuffers(1, &arcMatrixVBO);
-    glDeleteBuffers(1, &wallMatrixVBO);
-}
-
 void bridgeRenderer::render() {
     if (!matrices.empty()) {
         vertexArray = arcVAO;
@@ -114,17 +102,17 @@ void bridgeRenderer::render() {
 
 }
 
-void bridgeRenderer::renderShader(worldShader &shader) {
+void bridgeRenderer::renderShader(game *g, worldShader &shader) {
     if (!matrices.empty()) {
         vertexArray = arcVAO;
         bindModel();
 
-        shader.setMaterial(material::MAT_TILES);
+        shader.setMaterial(g->MAT_TILES);
 
         glDrawElementsInstanced(GL_TRIANGLES, GLsizei(underArc_offset - overArc_offset), GL_UNSIGNED_INT,
                                 (void*)(overArc_offset * sizeof(GLuint)), (GLsizei)matrices.size());
 
-        shader.setMaterial(material::MAT_PLASTER);
+        shader.setMaterial(g->MAT_PLASTER);
 
         glDrawElementsInstanced(GL_TRIANGLES, GLsizei(wall_offset - underArc_offset), GL_UNSIGNED_INT,
                                 (void*)(underArc_offset * sizeof(GLuint)), (GLsizei)matrices.size());
@@ -133,7 +121,7 @@ void bridgeRenderer::renderShader(worldShader &shader) {
     }
 
     if (!wallMatrices.empty()) {
-        shader.setMaterial(material::MAT_BRICKS);
+        shader.setMaterial(g->MAT_BRICKS);
 
         vertexArray = wallVAO;
         bindModel();

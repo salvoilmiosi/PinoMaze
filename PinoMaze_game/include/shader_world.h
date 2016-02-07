@@ -1,8 +1,23 @@
 #ifndef __SIMPLE_SHADER_H__
 #define __SIMPLE_SHADER_H__
 
+#include <memory>
+
 #include "shader_program.h"
-#include "material.h"
+#include "texture.h"
+
+using namespace std;
+
+struct material {
+	glm::vec3 ambient{ 1.f, 1.f, 1.f };
+	glm::vec3 diffuse{ 1.f, 1.f, 1.f };
+	glm::vec3 specular{ 0.3f, 0.3f, 0.3f };
+	glm::vec3 emissive{ 0.f, 0.f, 0.f };
+	float shininess = 25.f;
+
+	shared_ptr<texture> tex = nullptr;
+	shared_ptr<texture> normals = nullptr;
+};
 
 struct light {
     glm::vec3 ambient;

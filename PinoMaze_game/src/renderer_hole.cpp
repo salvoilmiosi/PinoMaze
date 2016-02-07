@@ -4,13 +4,7 @@
 #include "game.h"
 #include "globals.h"
 
-holeRenderer::~holeRenderer() {
-    clean();
-}
-
-void holeRenderer::setMaze(maze *_m) {
-    m = _m;
-
+holeRenderer::holeRenderer(maze *m) : m(m) {
     glm::mat4 matrix, identity;
 
     for (int i=0; i<m->datasize(); ++i) {
@@ -22,6 +16,19 @@ void holeRenderer::setMaze(maze *_m) {
             matrices.push_back(matrix);
         }
     }
+}
+
+holeRenderer::~holeRenderer() {
+	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &matrixBuffer);
+
+	glBindVertexArray(vertexArray);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	glDisableVertexAttribArray(4);
+	glDeleteVertexArrays(1, &vertexArray);
 }
 
 bool holeRenderer::init() {
@@ -88,28 +95,6 @@ bool holeRenderer::init() {
 	}
 
     return glGetError() == GL_NO_ERROR;
-}
-
-void holeRenderer::clean() {
-    glDeleteBuffers(1, &vertexBuffer);
-    glDeleteBuffers(1, &matrixBuffer);
-
-    glBindVertexArray(vertexArray);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
-    glDisableVertexAttribArray(3);
-    glDisableVertexAttribArray(4);
-    glDeleteVertexArrays(1, &vertexArray);
-
-	TEX_WATER_DUDV.clean();
-	TEX_WATER_NORMALS.clean();
-
-	refraction.clean();
-	refractionDepth.clean();
-	refractionFBO.clean();
-
-	shader.clean();
 }
 
 void holeRenderer::tick(game *g) {

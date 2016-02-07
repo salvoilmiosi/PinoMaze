@@ -18,14 +18,11 @@ private:
 	texture TEX_TELEPORT_TEXTURE;
 
 public:
-	teleportRenderer();
+	teleportRenderer(maze *m);
 	virtual ~teleportRenderer();
 
 public:
-	void setMaze(maze *m);
-
 	bool init();
-	virtual void clean();
 
 	void render(class game *g);
 };

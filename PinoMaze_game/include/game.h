@@ -23,6 +23,13 @@ static const glm::mat4 biasMatrix(
 	0.0f, 0.0f, 0.5f, 0.0f,
 	0.5f, 0.5f, 0.5f, 1.0f);
 
+inline const glm::vec3 colorToVec3(const int color) {
+	const int r = (color & 0x00ff0000) >> (8 * 2);
+	const int g = (color & 0x0000ff00) >> (8 * 1);
+	const int b = (color & 0x000000ff) >> (8 * 0);
+	return glm::vec3(r / 255.f, g / 255.f, b / 255.f);
+}
+
 class game {
 private:
     skyboxRenderer skybox;
@@ -44,12 +51,24 @@ private:
     maze *m = nullptr;
 
 public:
+	material MAT_FLOOR;
+	material MAT_FLOOR_REFRACTED;
+	material MAT_BRICKS;
+	material MAT_COBBLE;
+	material MAT_TILES;
+	material MAT_PLASTER;
+	material MAT_MARBLE;
+	material MAT_MARBLE_REFRACTED;
+	material MAT_START;
+	material MAT_END;
+	material MAT_ARROW;
+	material MAT_RUST;
+
+public:
 	game(maze *m);
-    virtual ~game();
 
 public:
     bool init();
-    virtual void clean();
 
 	void setStatus(char *str) {
 		hud.setStatus(str);
@@ -89,6 +108,8 @@ public:
 	glm::mat4 &lightMatrix() {
 		return m_light;
 	}
+
+	void loadMaterials();
 };
 
 #endif // __GAME_H__

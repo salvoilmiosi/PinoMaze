@@ -4,7 +4,12 @@
 #include "globals.h"
 
 hudRenderer::~hudRenderer() {
-    clean();
+	glBindVertexArray(vertexArray);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDeleteVertexArrays(1, &vertexArray);
+
+	glDeleteBuffers(1, &vertexBuffer);
 }
 
 glm::vec2 hudRenderer::toWorldCoords(int x, int y) {
@@ -42,17 +47,6 @@ bool hudRenderer::init() {
 void hudRenderer::setStatus(const char *str) {
 	text = str;
 	textChanged = true;
-}
-
-void hudRenderer::clean() {
-    glBindVertexArray(vertexArray);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDeleteVertexArrays(1, &vertexArray);
-
-    glDeleteBuffers(1, &vertexBuffer);
-
-	TEX_FONT_TEXTURE.clean();
 }
 
 int hudRenderer::buildTextBuffer() {

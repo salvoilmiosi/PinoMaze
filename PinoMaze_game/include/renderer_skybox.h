@@ -26,7 +26,6 @@ public:
 
 public:
     bool init();
-    virtual void clean();
 
     void render(class game *g);
 };

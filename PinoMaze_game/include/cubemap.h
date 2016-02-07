@@ -20,8 +20,6 @@ public:
     bool loadSurface(SDL_Surface *surface) = delete;
     SDL_Surface *getSurface() = delete;
 
-    virtual void clean();
-
 	void setFilter(GLenum f);
 
 	void setWrapParam(GLenum param);

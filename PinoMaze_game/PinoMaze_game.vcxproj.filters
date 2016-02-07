@@ -37,9 +37,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -118,9 +115,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\model.h">

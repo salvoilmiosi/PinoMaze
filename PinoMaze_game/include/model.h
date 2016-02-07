@@ -32,7 +32,6 @@ public:
 
 public:
     virtual bool init() = 0;
-    virtual void clean();
 
     virtual void bindModel();
     virtual void unbindModel();

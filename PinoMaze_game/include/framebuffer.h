@@ -15,7 +15,6 @@ public:
 
 public:
     bool init();
-    virtual void clean();
 
     void bindFramebuffer();
     void unbindFramebuffer();

@@ -154,7 +154,6 @@
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\game_logic.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\material.cpp" />
     <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\particle_system.cpp" />
     <ClCompile Include="src\renderer_bridge.cpp" />
@@ -183,7 +182,6 @@
     <ClInclude Include="include\game.h" />
     <ClInclude Include="include\game_logic.h" />
     <ClInclude Include="include\globals.h" />
-    <ClInclude Include="include\material.h" />
     <ClInclude Include="include\model.h" />
     <ClInclude Include="include\particle_system.h" />
     <ClInclude Include="include\renderer_bridge.h" />

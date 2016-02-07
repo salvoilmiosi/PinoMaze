@@ -7,14 +7,11 @@
 #include "res_loader.h"
 #include "globals.h"
 
-gameLogic::gameLogic() {
+gameLogic::gameLogic(maze *m) : m(m) {
 	SND_TELEPORT.loadChunk(loadWaveFromResource(IDW_TELEPORT));
 	SND_HOLE.loadChunk(loadWaveFromResource(IDW_HOLE));
 	SND_WIN.loadChunk(loadWaveFromResource(IDW_WIN));
-}
 
-void gameLogic::setMaze(maze *_m) {
-    m = _m;
 	teleportToStart(true);
 }
 
@@ -291,7 +288,7 @@ void gameLogic::startPathing() {
     path = pathfinder->getPath();
 
     if (path.empty()) {
-		pathfinder.release();
+		pathfinder = nullptr;
     } else {
         stepIndex = path.begin();
 		if (moving == 0) {
@@ -304,7 +301,7 @@ void gameLogic::nextStep() {
     const node *current = *stepIndex;
     ++stepIndex;
     if (pathfinder->getEndNode() == current) {
-		pathfinder.release();
+		pathfinder = nullptr;
         return;
     }
     const node *next = *stepIndex;
@@ -312,7 +309,7 @@ void gameLogic::nextStep() {
     int dy = next->y - current->y;
     if (abs(dx)+abs(dy) > 1) {
 		if (!useItem()) {
-			pathfinder.release();
+			pathfinder = nullptr;
 		}
     } else {
         if (dx == 0) {
@@ -329,7 +326,7 @@ void gameLogic::nextStep() {
             }
         }
 		if (!offsetMove(0)) {
-			pathfinder.release();
+			pathfinder = nullptr;
 		}
     }
 }
@@ -438,10 +435,10 @@ void gameLogic::tick() {
 	} else {
 		if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W]) {
 			offsetMove(0);
-			pathfinder.release();
+			pathfinder = nullptr;
 		} else if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S]) {
 			offsetMove(2);
-			pathfinder.release();
+			pathfinder = nullptr;
 		}
 
 		if (keys[SDL_SCANCODE_SPACE]) {
@@ -454,10 +451,10 @@ void gameLogic::tick() {
 
 		if (keys[SDL_SCANCODE_A]) {
 			offsetMove(1);
-			pathfinder.release();
+			pathfinder = nullptr;
 		} else if (keys[SDL_SCANCODE_D]) {
 			offsetMove(3);
-			pathfinder.release();
+			pathfinder = nullptr;
 		}
 	}
 
@@ -474,7 +471,7 @@ void gameLogic::tick() {
 	static bool pressed_r = false;
 	if (keys[SDL_SCANCODE_R]) {
 		if (!pressed_r) {
-			pathfinder.release();
+			pathfinder = nullptr;
 			teleportToStart(true);
 			pressed_r = true;
 		}

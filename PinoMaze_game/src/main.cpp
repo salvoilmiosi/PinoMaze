@@ -28,7 +28,7 @@ bool getOpenMazeFile(char *filename) {
 	ofn.lpstrInitialDir = nullptr;
 	ofn.Flags |= OFN_NOCHANGEDIR;
 
-	return (bool) GetOpenFileName(&ofn);
+	return GetOpenFileName(&ofn);
 }
 
 int main (int argc, char **argv) {
@@ -175,8 +175,8 @@ int main (int argc, char **argv) {
 	}
 
 	// Clean up everything
-	mainGame.release();
-	mainMaze.release();
+	mainGame = nullptr;
+	mainMaze = nullptr;
 
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);
