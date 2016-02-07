@@ -8,7 +8,7 @@ framebuffer::~framebuffer() {
 bool framebuffer::init() {
     glGenFramebuffers(1, &fboID);
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to init framebuffer");
 }
 
 void framebuffer::bindFramebuffer() {

@@ -41,7 +41,7 @@ bool hudRenderer::init() {
 
     glBindVertexArray(0);
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to init HUD");
 }
 
 void hudRenderer::setStatus(const char *str) {

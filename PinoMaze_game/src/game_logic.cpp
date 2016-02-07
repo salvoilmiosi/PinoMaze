@@ -8,20 +8,24 @@
 #include "globals.h"
 
 gameLogic::gameLogic(maze *m) : m(m) {
+}
+
+gameLogic::~gameLogic() {
+	MUS_MUSIC.stop();
+}
+
+bool gameLogic::init() {
 	SND_TELEPORT.loadChunk(loadWaveFromResource(IDW_TELEPORT));
 	SND_HOLE.loadChunk(loadWaveFromResource(IDW_HOLE));
 	SND_WIN.loadChunk(loadWaveFromResource(IDW_WIN));
 	MUS_MUSIC.loadMusic(loadMusicFromResource(IDM_MYSTERY));
 
 	MUS_MUSIC.volume(0.3f);
-
 	MUS_MUSIC.fadeIn(1000);
 
 	teleportToStart(true);
-}
 
-gameLogic::~gameLogic() {
-	MUS_MUSIC.stop();
+	return true;
 }
 
 void gameLogic::teleportTo(int _x, int _y) {

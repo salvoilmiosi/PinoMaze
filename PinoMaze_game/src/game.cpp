@@ -17,6 +17,8 @@ bool game::init() {
 	if (!particle.init()) return false;
 	if (!hud.init()) return false;
 
+	if (!logic.init()) return false;
+
     m_proj = glm::perspective(glm::radians(90.f), (float)windowWidth / (float)windowHeight, 0.1f, skyboxSize * sqrtf(2.f) + 2.f);
 
 	sun.direction = glm::vec3(0.43555f, 0.5f, -0.25391f);

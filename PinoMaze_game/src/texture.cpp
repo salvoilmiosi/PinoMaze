@@ -1,6 +1,7 @@
 #include "texture.h"
 
 #include "res_loader.h"
+#include "globals.h"
 
 texture::~texture() {
 	glDeleteTextures(1, &texID);
@@ -28,7 +29,7 @@ bool texture::loadSurface(SDL_Surface *_surface) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapParam);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapParam);
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to load texture");
 }
 
 bool texture::loadSurfaceFromResource(const int RES_ID) {
@@ -51,7 +52,7 @@ bool texture::createEmpty(int width, int height, bool isDepth) {
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to create texture");
 }
 
 SDL_Surface *texture::getSurface() {

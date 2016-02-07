@@ -84,32 +84,23 @@ bool model::loadToVAO(bool createNew) {
     }
     glBindVertexArray(0);
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Could not init model");
 }
 
 bool model::createBuffers(const vertex *vertices, const GLuint *indices,
 	size_t vertex_count, size_t index_count) {
 
-    GLenum error;
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(vertex), vertices, GL_STATIC_DRAW);
 
-    error = glGetError();
-    if (error != GL_NO_ERROR) {
-        fprintf(stderr, "Failed to create vertex buffer: %d", error);
-        return false;
-    }
+	if (!checkGlError("Failed to create vertex buffer")) return false;
 
     glGenBuffers(1, &indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof(GLuint), indices, GL_STATIC_DRAW);
 
-    error = glGetError();
-    if (error != GL_NO_ERROR) {
-        fprintf(stderr, "Failed to create index buffer: %d", error);
-        return false;
-    }
+	if (!checkGlError("Failed to create index buffer")) return false;
 
     return true;
 }
@@ -143,13 +134,7 @@ bool model::calculateNormals(const vertex *vertices, const GLuint *indices,
     glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertex_count, data.data(), GL_STATIC_DRAW);
 
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        fprintf(stderr, "Failed to create normal buffer: %d", error);
-        return false;
-    }
-
-    return true;
+	return checkGlError("Failed to create normal buffer");
 }
 
 bool model::calculateTangents(const vertex *vertices, const GLuint *indices,
@@ -179,17 +164,10 @@ bool model::calculateTangents(const vertex *vertices, const GLuint *indices,
     glBindBuffer(GL_ARRAY_BUFFER, tangentBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertex_count, data.data(), GL_STATIC_DRAW);
 
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR) {
-        fprintf(stderr, "Failed to create tangent buffer: %d", error);
-        return false;
-    }
-
-    return true;
+	return checkGlError("Failed to create tangent buffer");
 }
 
 bool model::createMatrixBuffer(const glm::mat4 *matrices, size_t matrix_count) {
-    GLenum error;
     glGenBuffers(1, &matrixBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, matrixBuffer);
 	size_t numMatrices = MAX<size_t>(1, matrix_count);
@@ -199,11 +177,5 @@ bool model::createMatrixBuffer(const glm::mat4 *matrices, size_t matrix_count) {
         glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * numMatrices, nullptr, GL_DYNAMIC_DRAW);
     }
 
-    error = glGetError();
-    if (error != GL_NO_ERROR) {
-        fprintf(stderr, "Failed to create matrix buffer: %d", error);
-        return false;
-    }
-
-    return true;
+	return checkGlError("Failed to create matrix buffer");
 }

@@ -34,22 +34,22 @@ bool getOpenMazeFile(char *filename) {
 int main (int argc, char **argv) {
 	// Init SDL2 libraries
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-		MessageBox(nullptr, "Could not init SDL2", "Error", MB_ICONERROR);
+		fprintf(stderr, "Could not init SDL2: %s\n", SDL_GetError());
 		return -1;
 	}
 
 	if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != IMG_INIT_PNG) {
-		MessageBox(nullptr, "Could not init png libraries", "Error", MB_ICONERROR);
+		fprintf(stderr, "Could not init png libraries: %s\n", IMG_GetError());
 		return -2;
 	}
 
 	if ((Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG) != MIX_INIT_OGG) {
-		MessageBox(nullptr, "Could not init ogg libraries", "Error", MB_ICONERROR);
+		fprintf(stderr, "Could not init ogg libraries: %s\n", Mix_GetError());
 		return -2;
 	}
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
-		MessageBox(nullptr, "Could not init audio libraries", "Error", MB_ICONERROR);
+		fprintf(stderr, "Could not init audio libraries: %s\n", Mix_GetError());
 		return -2;
 	}
 
@@ -71,7 +71,7 @@ int main (int argc, char **argv) {
 	}
 
 	if (mainMaze == nullptr) {
-		MessageBox(nullptr, "Cannot open this file", "PinoMaze", MB_ICONEXCLAMATION);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "PinoMaze", "Cannot open this file", nullptr);
 		return 0;
 	}
 
@@ -81,7 +81,7 @@ int main (int argc, char **argv) {
         windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
 	if (window == nullptr) {
-		MessageBox(nullptr, "Could not create window", "Error", MB_ICONERROR);
+		fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
 		return -3;
 	}
 
@@ -90,7 +90,7 @@ int main (int argc, char **argv) {
 	// Create OpenGL context and Init glew
     SDL_GLContext context = SDL_GL_CreateContext(window);
 	if (context == nullptr) {
-		MessageBox(nullptr, "Could not create OpenGL context", "Error", MB_ICONERROR);
+		fprintf(stderr, "Could not create OpenGL context: %s\n", SDL_GetError());
 		return -4;
 	}
 
@@ -108,7 +108,8 @@ int main (int argc, char **argv) {
 	unique_ptr<game> mainGame = make_unique<game>(mainMaze.get());
 
 	if (!mainGame->init()) {
-		MessageBox(nullptr, "Could not init game", "Error", MB_ICONERROR);
+		fprintf(stderr, "Could not init game\n");
+		fgetc(stdin);
 		return -5;
 	}
 

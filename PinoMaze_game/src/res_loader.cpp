@@ -24,7 +24,7 @@ static SDL_RWops *loadResourceRW(int RES_ID, const char *RES_TYPE) {
 
 	HRSRC hRes = FindResource(hModule, MAKEINTRESOURCE(RES_ID), RES_TYPE);
 	if (!hRes) {
-		fprintf(stderr, "Could not load resource %d %s", RES_ID, RES_TYPE);
+		fprintf(stderr, "Could not load resource %d %s\n", RES_ID, RES_TYPE);
 		return nullptr;
 	}
 	int res_size = SizeofResource(hModule, hRes);

@@ -1,12 +1,27 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
+#include <cstdio>
+
+#include <GL/glew.h>
+#include <GL/GL.h>
+
 template <typename T> const T MAX(const T& a, const T& b) {
 	return a > b ? a : b;
 }
 
 template <typename T> const T MIN(const T& a, const T& b) {
 	return a > b ? b : a;
+}
+
+static bool checkGlError(const char *message) {
+	GLenum error = glGetError();
+	if (error == GL_NO_ERROR) {
+		return true;
+	} else {
+		fprintf(stderr, "%s: %s\n", message, glewGetErrorString(error));
+		return false;
+	}
 }
 
 static constexpr int windowWidth = 800;

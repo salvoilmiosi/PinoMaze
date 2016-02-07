@@ -77,7 +77,7 @@ bool bridgeRenderer::init() {
     wallVAO = vertexArray;
     wallMatrixVBO = matrixBuffer;
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to init bridge model");
 }
 
 void bridgeRenderer::render() {

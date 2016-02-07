@@ -88,18 +88,16 @@ bool skyboxRenderer::init() {
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    if (glGetError() != GL_NO_ERROR) return false;
 
     glGenBuffers(1, &indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    if (glGetError() != GL_NO_ERROR) return false;
 
     glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 
     glBindVertexArray(0);
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to init skybox");
 }
 
 void skyboxRenderer::render(game *g) {

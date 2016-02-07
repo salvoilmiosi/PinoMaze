@@ -62,7 +62,7 @@ bool teleportRenderer::init() {
 		return false;
 	}
 
-	return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to init teleporter renderer");
 }
 
 void teleportRenderer::render(game *g) {

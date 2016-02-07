@@ -54,7 +54,7 @@ bool worldRenderer::init() {
 	if (!endBox.init()) return false;
 	if (!arrowBox.init()) return false;
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to init world renderer");
 }
 
 void worldRenderer::renderShadowmap(game *g) {

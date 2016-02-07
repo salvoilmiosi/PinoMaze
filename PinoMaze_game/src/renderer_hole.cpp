@@ -94,7 +94,7 @@ bool holeRenderer::init() {
 		return false;
 	}
 
-    return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to init hole model");
 }
 
 void holeRenderer::tick(game *g) {

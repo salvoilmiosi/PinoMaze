@@ -59,7 +59,7 @@ bool particleSystem::init() {
 
 	glBindVertexArray(0);
 
-	return glGetError() == GL_NO_ERROR;
+	return checkGlError("Failed to init particle system");
 }
 
 void particleSystem::removeDeadParticles() {

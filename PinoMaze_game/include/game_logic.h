@@ -67,6 +67,8 @@ public:
 	virtual ~gameLogic();
 
 public:
+	bool init();
+
     void tick();
 	void handleEvent(SDL_Event &e);
 
