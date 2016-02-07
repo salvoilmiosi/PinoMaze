@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <windows.h>
 
 #include <memory>
@@ -262,6 +263,9 @@ static void render(SDL_Renderer *renderer, char *fpsCounter) {
 
 int main (int argc, char **argv) {
 	if (SDL_Init(SDL_INIT_VIDEO) == -1)
+		return -1;
+
+	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
 		return -1;
 
     srand(SDL_GetTicks());

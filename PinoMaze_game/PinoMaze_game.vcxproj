@@ -206,6 +206,7 @@
     <ClInclude Include="include\sphere.h" />
     <ClInclude Include="include\texture.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="winres.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PinoMaze_game.rc" />

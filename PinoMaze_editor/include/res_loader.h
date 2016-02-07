@@ -2,6 +2,7 @@
 #define __RES_LOADER_H__
 
 #include <SDL2/SDL.h>
+
 #include "../resource.h"
 
 extern SDL_Texture *RES_TILES;

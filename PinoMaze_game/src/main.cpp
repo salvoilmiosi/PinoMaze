@@ -69,7 +69,7 @@ bool init() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    SDL_GL_SetSwapInterval(0);
+    SDL_GL_SetSwapInterval(1);
 
     return true;
 }
@@ -173,6 +173,8 @@ int main (int argc, char **argv) {
 		MessageBox(nullptr, "Could not create window", "Error", MB_ICONERROR);
 		return -3;
 	}
+
+	SDL_ShowCursor(0);
 
     SDL_GLContext context = SDL_GL_CreateContext(window);
 	if (context == nullptr) {

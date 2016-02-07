@@ -153,6 +153,7 @@
     <ClInclude Include="include\tool_teleport.h" />
     <ClInclude Include="include\tool_wall.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="winres.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />

@@ -16,8 +16,8 @@ shaderProgram::~shaderProgram() {
 }
 
 bool shaderProgram::loadProgramFromSource(const char *vertexSource, const char *fragmentSource) {
-	if (vertexSource == nullptr || fragmentSource == nullptr)
-		return false;
+	assert(vertexSource != nullptr);
+	assert(fragmentSource != nullptr);
 
 	programID = glCreateProgram();
 	GLint compiled = 0;
@@ -53,38 +53,23 @@ bool shaderProgram::loadProgramFromSource(const char *vertexSource, const char *
 }
 
 bool shaderProgram::loadProgramFromFile(const char *vertexFilename, const char *fragmentFilename) {
-	const char *vertexSource = loadStringFromFile(vertexFilename);
-	if (vertexSource == nullptr) {
-		return false;
-	}
+	std::string vertexSource = loadStringFromFile(vertexFilename);
+	if (vertexSource.empty()) return false;
 
-	const char *fragmentSource = loadStringFromFile(fragmentFilename);
-	if (fragmentSource == nullptr) {
-		delete[] vertexSource;
-		return false;
-	}
+	std::string fragmentSource = loadStringFromFile(fragmentFilename);
+	if (fragmentSource.empty()) return false;
 
-	bool ret = loadProgramFromSource(vertexSource, fragmentSource);
-	delete[] vertexSource;
-	delete[] fragmentSource;
-	return ret;
+	return loadProgramFromSource(vertexSource.c_str(), fragmentSource.c_str());
 }
 
 bool shaderProgram::loadProgramFromResource(int VERTEX_ID, int FRAGMENT_ID) {
-	const char *vertexSource = loadStringFromResource(VERTEX_ID);
-	if (vertexSource == nullptr) {
-		return false;
-	}
-	const char *fragmentSource = loadStringFromResource(FRAGMENT_ID);
-	if (fragmentSource == nullptr) {
-		delete[] vertexSource;
-		return false;
-	}
+	std::string vertexSource = loadStringFromResource(VERTEX_ID);
+	if (vertexSource.empty()) return false;
 
-	bool ret = loadProgramFromSource(vertexSource, fragmentSource);
-	delete[] vertexSource;
-	delete[] fragmentSource;
-	return ret;
+	std::string fragmentSource = loadStringFromResource(FRAGMENT_ID);
+	if (fragmentSource.empty()) return false;
+
+	return loadProgramFromSource(vertexSource.c_str(), fragmentSource.c_str());
 }
 
 void shaderProgram::clean() {

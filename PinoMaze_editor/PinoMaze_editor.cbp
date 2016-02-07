@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="PinoMaze_editor" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Win32">
+				<Option output="../bin/Win32/Debug/PinoMaze_editor" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../bin" />
+				<Option object_output="objs/Win32/Debug" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add directory="include" />
+					<Add directory="../PinoMaze_maze/include" />
+				</Compiler>
+				<Linker>
+					<Add library="..\bin\Win32\Debug\libmaze.a" />
+				</Linker>
+			</Target>
+			<Target title="Debug x64">
+				<Option output="../bin/x64/Debug/PinoMaze_editor" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../bin" />
+				<Option object_output="objs/x64/Debug" />
+				<Option type="1" />
+				<Option compiler="mingw-w64" />
+				<Compiler>
+					<Add directory="include" />
+					<Add directory="../PinoMaze_maze/include" />
+				</Compiler>
+				<Linker>
+					<Add library="..\bin\x64\Debug\libmaze.a" />
+				</Linker>
+			</Target>
+			<Target title="Release x64">
+				<Option output="../bin/x64/Release/PinoMaze_editor" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../bin" />
+				<Option object_output="objs/x64/Release" />
+				<Option type="0" />
+				<Option compiler="mingw-w64" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+					<Add directory="../PinoMaze_maze/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-static-libgcc -static-libstdc++" />
+					<Add library="..\bin\x64\Release\libmaze.a" />
+				</Linker>
+			</Target>
+			<Target title="Release Win32">
+				<Option output="../bin/Win32/Release/PinoMaze_editor" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../bin" />
+				<Option object_output="objs/Win32/Release" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+					<Add directory="../PinoMaze_maze/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-static-libgcc -static-libstdc++" />
+					<Add library="..\bin\Win32\Release\libmaze.a" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory="include" />
+			<Add directory="../PinoMaze_maze/include" />
+		</Compiler>
+		<Linker>
+			<Add library="mingw32" />
+			<Add library="SDL2main" />
+			<Add library="SDL2" />
+			<Add library="SDL2_image" />
+			<Add library="comdlg32" />
+		</Linker>
+		<Unit filename="PinoMaze_editor.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="include/maze_editor.h" />
+		<Unit filename="include/maze_random.h" />
+		<Unit filename="include/maze_renderer.h" />
+		<Unit filename="include/res_loader.h" />
+		<Unit filename="include/tool_arrow.h" />
+		<Unit filename="include/tool_base.h" />
+		<Unit filename="include/tool_block.h" />
+		<Unit filename="include/tool_bridge.h" />
+		<Unit filename="include/tool_crop.h" />
+		<Unit filename="include/tool_select.h" />
+		<Unit filename="include/tool_startend.h" />
+		<Unit filename="include/tool_teleport.h" />
+		<Unit filename="include/tool_wall.h" />
+		<Unit filename="resource.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/maze_editor.cpp" />
+		<Unit filename="src/maze_random.cpp" />
+		<Unit filename="src/maze_renderer.cpp" />
+		<Unit filename="src/res_loader.cpp" />
+		<Unit filename="src/tool_arrow.cpp" />
+		<Unit filename="src/tool_base.cpp" />
+		<Unit filename="src/tool_block.cpp" />
+		<Unit filename="src/tool_bridge.cpp" />
+		<Unit filename="src/tool_crop.cpp" />
+		<Unit filename="src/tool_select.cpp" />
+		<Unit filename="src/tool_startend.cpp" />
+		<Unit filename="src/tool_teleport.cpp" />
+		<Unit filename="src/tool_wall.cpp" />
+		<Unit filename="winres.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

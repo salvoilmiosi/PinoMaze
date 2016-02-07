@@ -60,7 +60,7 @@ static SDL_Surface *loadImageFromResources(int RES_ID) {
 	HGLOBAL hgRes = LoadResource(hModule, hRes);
 	unsigned char* res_data = (unsigned char*)LockResource(hgRes);
 
-	return IMG_Load_RW(SDL_RWFromConstMem(res_data, res_size), 1);
+	return IMG_LoadTyped_RW(SDL_RWFromConstMem(res_data, res_size), 1, "PNG");
 }
 
 static void convertPalette(SDL_Surface *surface, const SDL_Color *convertMap, const int ncolors) {

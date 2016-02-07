@@ -189,6 +189,9 @@
     <ClInclude Include="include\sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="winres.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PinoMaze_game.rc">
