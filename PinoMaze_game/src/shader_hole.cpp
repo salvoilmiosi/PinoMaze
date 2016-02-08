@@ -3,7 +3,7 @@
 #include "res_loader.h"
 
 bool holeShader::init() {
-    return shaderProgram::loadProgramFromResource(IDS_HOLE_VERTEX, IDS_HOLE_FRAGMENT);
+    return shaderProgram::loadProgramFromResource("IDS_HOLE_VERTEX", "IDS_HOLE_FRAGMENT");
 }
 
 bool holeShader::bindProgram() {

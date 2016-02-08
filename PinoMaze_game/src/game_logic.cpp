@@ -1,7 +1,5 @@
 #include "game_logic.h"
 
-#include <Windows.h>
-
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "res_loader.h"
@@ -15,10 +13,10 @@ gameLogic::~gameLogic() {
 }
 
 bool gameLogic::init() {
-	SND_TELEPORT.loadChunk(loadWaveFromResource(IDW_TELEPORT));
-	SND_HOLE.loadChunk(loadWaveFromResource(IDW_HOLE));
-	SND_WIN.loadChunk(loadWaveFromResource(IDW_WIN));
-	MUS_MUSIC.loadMusic(loadMusicFromResource(IDM_MYSTERY));
+	SND_TELEPORT.loadChunk(loadWaveFromResource("IDW_TELEPORT"));
+	SND_HOLE.loadChunk(loadWaveFromResource("IDW_HOLE"));
+	SND_WIN.loadChunk(loadWaveFromResource("IDW_WIN"));
+	MUS_MUSIC.loadMusic(loadMusicFromResource("IDM_TEMA1"));
 
 	MUS_MUSIC.volume(0.3f);
 	MUS_MUSIC.fadeIn(1000);

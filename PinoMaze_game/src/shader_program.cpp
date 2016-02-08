@@ -64,7 +64,7 @@ bool shaderProgram::loadProgramFromFile(const char *vertexFilename, const char *
 	return loadProgramFromSource(vertexSource.c_str(), fragmentSource.c_str());
 }
 
-bool shaderProgram::loadProgramFromResource(int VERTEX_ID, int FRAGMENT_ID) {
+bool shaderProgram::loadProgramFromResource(const char *VERTEX_ID, const char *FRAGMENT_ID) {
 	std::string vertexSource = loadStringFromResource(VERTEX_ID);
 	if (vertexSource.empty()) return false;
 

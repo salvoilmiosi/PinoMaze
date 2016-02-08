@@ -3,7 +3,7 @@
 #include "res_loader.h"
 
 bool particleShader::init() {
-	return shaderProgram::loadProgramFromResource(IDS_PARTICLE_VERTEX, IDS_PARTICLE_FRAGMENT);
+	return shaderProgram::loadProgramFromResource("IDS_PARTICLE_VERTEX", "IDS_PARTICLE_FRAGMENT");
 }
 
 bool particleShader::bindProgram() {

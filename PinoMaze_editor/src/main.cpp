@@ -282,7 +282,12 @@ int main (int argc, char **argv) {
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-    loadResources(renderer);
+	if (openResourceFile("resource.dat")) {
+		loadResources(renderer);
+		closeResourceFile();
+	} else {
+		return 3;
+	}
 
 	editor = make_unique<mazeEditor>();
 	mainGrid = make_unique<a_star>();

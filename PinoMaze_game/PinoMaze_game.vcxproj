@@ -203,42 +203,8 @@
     <ClInclude Include="include\sound.h" />
     <ClInclude Include="include\sphere.h" />
     <ClInclude Include="include\texture.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="winres.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="PinoMaze_game.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="resources\c_skybox_back.png" />
-    <Image Include="resources\c_skybox_bottom.png" />
-    <Image Include="resources\c_skybox_front.png" />
-    <Image Include="resources\c_skybox_left.png" />
-    <Image Include="resources\c_skybox_right.png" />
-    <Image Include="resources\c_skybox_top.png" />
-    <Image Include="resources\t_arrow.png" />
-    <Image Include="resources\t_bricks.png" />
-    <Image Include="resources\t_bricks_n.png" />
-    <Image Include="resources\t_cobble.png" />
-    <Image Include="resources\t_cobble_n.png" />
-    <Image Include="resources\t_floor.png" />
-    <Image Include="resources\t_floor_n.png" />
-    <Image Include="resources\t_marble.png" />
-    <Image Include="resources\t_marble_n.png" />
-    <Image Include="resources\t_particle.png" />
-    <Image Include="resources\t_plaster.png" />
-    <Image Include="resources\t_plaster_n.png" />
-    <Image Include="resources\t_rust.png" />
-    <Image Include="resources\t_rust_n.png" />
-    <Image Include="resources\t_teleport.png" />
-    <Image Include="resources\t_text.png" />
-    <Image Include="resources\t_tiles.png" />
-    <Image Include="resources\t_tiles_n.png" />
-    <Image Include="resources\t_water_dudv.png" />
-    <Image Include="resources\t_water_n.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="resources\m_mystery.ogg" />
     <None Include="shaders\s_hole_f.glsl" />
     <None Include="shaders\s_hole_v.glsl" />
     <None Include="shaders\s_hud_f.glsl" />
@@ -253,11 +219,6 @@
     <None Include="shaders\s_teleport_v.glsl" />
     <None Include="shaders\s_world_f.glsl" />
     <None Include="shaders\s_world_v.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="resources\w_hole.wav" />
-    <Media Include="resources\w_teleport.wav" />
-    <Media Include="resources\w_win.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

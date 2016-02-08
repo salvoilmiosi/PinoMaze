@@ -34,7 +34,7 @@ public:
     }
 
     bool loadSurface(SDL_Surface *surface);
-	bool loadSurfaceFromResource(const int RES_ID);
+	bool loadSurfaceFromResource(const char *RES_ID);
 
     bool createEmpty(int width, int height, bool isDepth = false);
 

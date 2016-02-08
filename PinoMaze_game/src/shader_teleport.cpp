@@ -3,7 +3,7 @@
 #include "res_loader.h"
 
 bool teleportShader::init() {
-	return loadProgramFromResource(IDS_TELEPORT_VERTEX, IDS_TELEPORT_FRAGMENT);
+	return loadProgramFromResource("IDS_TELEPORT_VERTEX", "IDS_TELEPORT_FRAGMENT");
 }
 
 bool teleportShader::bindProgram() {

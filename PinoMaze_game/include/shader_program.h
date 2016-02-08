@@ -23,7 +23,7 @@ protected:
 	bool loadProgramFromSource(const char *vertexSource, const char *fragmentSource);
 
     bool loadProgramFromFile(const char *vertexFilename, const char *fragmentFilename);
-    bool loadProgramFromResource(int ID_VERTEX, int ID_FRAGMENT);
+    bool loadProgramFromResource(const char *ID_VERTEX, const char *ID_FRAGMENT);
 
 public:
     virtual bool init() = 0;

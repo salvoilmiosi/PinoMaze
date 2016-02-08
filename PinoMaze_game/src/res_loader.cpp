@@ -1,9 +1,57 @@
 #include "res_loader.h"
 
-#include <Windows.h>
 #include <fstream>
+#include <vector>
 
 using namespace std;
+
+static const int ID_MAXSIZE = 32;
+
+struct resource {
+	size_t size;
+	size_t ptr;
+	char res_id[ID_MAXSIZE];
+};
+
+static vector<resource> resFiles;
+static ifstream resourceIfs;
+
+static unsigned int readInt(ifstream &ifs) {
+	char data[4];
+	ifs.read(data, 4);
+	unsigned int num =
+		(data[0] << 24 & 0xff000000) |
+		(data[1] << 16 & 0x00ff0000) |
+		(data[2] << 8 & 0x0000ff00) |
+		(data[3] & 0x000000ff);
+	return num;
+}
+
+bool openResourceFile(const char *filename) {
+	resourceIfs.open(filename, ios::binary);
+
+	if (resourceIfs.fail()) {
+		return false;
+	}
+
+	if (readInt(resourceIfs) != 0x255435f4) {
+		return false;
+	}
+
+	resFiles.resize(readInt(resourceIfs));
+
+	for (resource &res : resFiles) {
+		resourceIfs.read(res.res_id, ID_MAXSIZE);
+		res.size = readInt(resourceIfs);
+		res.ptr = readInt(resourceIfs);
+	}
+
+	return true;
+}
+
+void closeResourceFile() {
+	resourceIfs.close();
+}
 
 std::string loadStringFromFile(const char *filename) {
 	ifstream ifs(filename);
@@ -19,23 +67,21 @@ std::string loadStringFromFile(const char *filename) {
 	return str;
 }
 
-static SDL_RWops *loadResourceRW(int RES_ID, const char *RES_TYPE) {
-	HMODULE hModule = GetModuleHandle(nullptr);
+static SDL_RWops *loadResourceRW(const char *RES_ID, const char *RES_TYPE) {
+	for (resource &res : resFiles) {
+		if (strcmp(res.res_id, RES_ID) == 0) {
+			char *data = new char[res.size];
 
-	HRSRC hRes = FindResource(hModule, MAKEINTRESOURCE(RES_ID), RES_TYPE);
-	if (!hRes) {
-		fprintf(stderr, "Could not load resource %d %s\n", RES_ID, RES_TYPE);
-		return nullptr;
+			resourceIfs.seekg(res.ptr);
+			resourceIfs.read(data, res.size);
+
+			return SDL_RWFromConstMem(data, res.size);
+		}
 	}
-	int res_size = SizeofResource(hModule, hRes);
-
-	HGLOBAL hgRes = LoadResource(hModule, hRes);
-	char *res_data = (char*) LockResource(hgRes);
-
-	return SDL_RWFromConstMem(res_data, res_size);
+	return nullptr;
 }
 
-std::string loadStringFromResource(int RES_ID) {
+std::string loadStringFromResource(const char * RES_ID) {
 	SDL_RWops *data = loadResourceRW(RES_ID, "TEXTFILE");
 
 	if (!data)
@@ -57,39 +103,39 @@ std::string loadStringFromResource(int RES_ID) {
 	return str;
 }
 
-SDL_Surface *loadImageFromResources(int RES_ID) {
+SDL_Surface *loadImageFromResource(const char *RES_ID) {
 	SDL_RWops *data = loadResourceRW(RES_ID, "PNG");
 
 	if (data) {
 		SDL_Surface *surf = IMG_LoadTyped_RW(data, 1, "PNG");
 		if (!surf) {
-			fprintf(stderr, "Could not load image %d: %s\n", RES_ID, IMG_GetError());
+			fprintf(stderr, "Could not load image %s: %s\n", RES_ID, IMG_GetError());
 		}
 		return surf;
 	}
 	return nullptr;
 }
 
-Mix_Chunk *loadWaveFromResource(int RES_ID) {
+Mix_Chunk *loadWaveFromResource(const char *RES_ID) {
 	SDL_RWops *data = loadResourceRW(RES_ID, "WAVE");
 
 	if (data) {
 		Mix_Chunk *chunk = Mix_LoadWAV_RW(data, 1);
 		if (!chunk) {
-			fprintf(stderr, "Could not load audio %d: %s\n", RES_ID, Mix_GetError());
+			fprintf(stderr, "Could not load audio %s: %s\n", RES_ID, Mix_GetError());
 		}
 		return chunk;
 	}
 	return nullptr;
 }
 
-Mix_Music *loadMusicFromResource(int RES_ID) {
+Mix_Music *loadMusicFromResource(const char *RES_ID) {
 	SDL_RWops *data = loadResourceRW(RES_ID, "OGG");
 
 	if (data) {
 		Mix_Music *mus = Mix_LoadMUSType_RW(data, MUS_OGG, 1);
 		if (!mus) {
-			fprintf(stderr, "Could not load music %d: %s\n", RES_ID, Mix_GetError());
+			fprintf(stderr, "Could not load music %s: %s\n", RES_ID, Mix_GetError());
 		}
 		return mus;
 	}

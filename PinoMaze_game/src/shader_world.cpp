@@ -3,7 +3,7 @@
 #include "res_loader.h"
 
 bool worldShader::init() {
-    return shaderProgram::loadProgramFromResource(IDS_WORLD_VERTEX, IDS_WORLD_FRAGMENT);
+    return shaderProgram::loadProgramFromResource("IDS_WORLD_VERTEX", "IDS_WORLD_FRAGMENT");
 }
 
 bool worldShader::bindProgram() {

@@ -32,8 +32,8 @@ bool texture::loadSurface(SDL_Surface *_surface) {
 	return checkGlError("Failed to load texture");
 }
 
-bool texture::loadSurfaceFromResource(const int RES_ID) {
-	return loadSurface(loadImageFromResources(RES_ID));
+bool texture::loadSurfaceFromResource(const char *RES_ID) {
+	return loadSurface(loadImageFromResource(RES_ID));
 }
 
 bool texture::createEmpty(int width, int height, bool isDepth) {

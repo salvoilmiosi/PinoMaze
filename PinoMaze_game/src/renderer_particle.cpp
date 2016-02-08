@@ -8,7 +8,7 @@ bool particleRenderer::init() {
 
 	if (!system.init()) return false;
 
-	TEX_PARTICLE_TEXTURE.loadSurface(loadImageFromResources(IDT_PARTICLE_TEXTURE));
+	TEX_PARTICLE_TEXTURE.loadSurface(loadImageFromResource("IDT_PARTICLE_TEXTURE"));
 
 	if (shader.bindProgram()) {
 		shader.setTexSize(0.5f);

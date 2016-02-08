@@ -13,12 +13,12 @@ bool skyboxRenderer::init() {
     if (!shader.init()) return false;
 
 	SDL_Surface *skyboxSurfaces[] = {
-		loadImageFromResources(IDC_SKYBOX_LEFT),
-		loadImageFromResources(IDC_SKYBOX_RIGHT),
-		loadImageFromResources(IDC_SKYBOX_TOP),
-		loadImageFromResources(IDC_SKYBOX_BOTTOM),
-		loadImageFromResources(IDC_SKYBOX_BACK),
-		loadImageFromResources(IDC_SKYBOX_FRONT),
+		loadImageFromResource("IDC_SKYBOX_LEFT"),
+		loadImageFromResource("IDC_SKYBOX_RIGHT"),
+		loadImageFromResource("IDC_SKYBOX_TOP"),
+		loadImageFromResource("IDC_SKYBOX_BOTTOM"),
+		loadImageFromResource("IDC_SKYBOX_BACK"),
+		loadImageFromResource("IDC_SKYBOX_FRONT"),
 	};
 
 	CUB_SKYBOX.setWrapParam(GL_CLAMP_TO_EDGE);

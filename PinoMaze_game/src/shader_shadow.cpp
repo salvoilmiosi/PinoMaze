@@ -3,7 +3,7 @@
 #include "res_loader.h"
 
 bool shadowShader::init() {
-    return shaderProgram::loadProgramFromResource(IDS_SHADOW_VERTEX, IDS_SHADOW_FRAGMENT);
+    return shaderProgram::loadProgramFromResource("IDS_SHADOW_VERTEX", "IDS_SHADOW_FRAGMENT");
 }
 
 bool shadowShader::bindProgram() {

@@ -3,8 +3,6 @@
 
 #include <SDL2/SDL.h>
 
-#include "../resource.h"
-
 extern SDL_Texture *RES_TILES;
 extern const int RES_TILES_NUM;
 extern int RES_TILES_SIZE;
@@ -62,6 +60,9 @@ inline bool operator == (const SDL_Color &a, const SDL_Color &b) {
         (a.b == b.b) &&
         (a.a == b.a);
 }
+
+bool openResourceFile(const char *filename);
+void closeResourceFile();
 
 void loadResources(SDL_Renderer *renderer);
 

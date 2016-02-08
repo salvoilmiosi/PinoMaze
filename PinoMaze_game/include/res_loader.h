@@ -1,18 +1,19 @@
 #ifndef __RES_LOADER_H__
 #define __RES_LOADER_H__
 
-#include "../resource.h"
-
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 
 #include <string>
 
-std::string loadStringFromFile(const char *filename);
-std::string loadStringFromResource(int RES_ID);
+bool openResourceFile(const char *filename);
+void closeResourceFile();
 
-SDL_Surface *loadImageFromResources(int RES_ID);
-Mix_Chunk *loadWaveFromResource(int RES_ID);
-Mix_Music *loadMusicFromResource(int RES_ID);
+std::string loadStringFromFile(const char *filename);
+
+std::string loadStringFromResource(const char *RES_ID);
+SDL_Surface *loadImageFromResource(const char *RES_ID);
+Mix_Chunk *loadWaveFromResource(const char *RES_ID);
+Mix_Music *loadMusicFromResource(const char *RES_ID);
 
 #endif

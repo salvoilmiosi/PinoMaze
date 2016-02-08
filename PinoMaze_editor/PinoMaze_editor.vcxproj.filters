@@ -54,12 +54,6 @@
     <ClInclude Include="include\tool_wall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="winres.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -104,24 +98,5 @@
     <ClCompile Include="src\tool_wall.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="PinoMaze_editor.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="resources\MDA_8x14.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\potash_10x10.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\tiles_10x10.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\tools.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>

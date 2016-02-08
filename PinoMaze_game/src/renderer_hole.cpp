@@ -49,8 +49,8 @@ bool holeRenderer::init() {
 
 	if (!shader.init()) return false;
 
-	TEX_WATER_DUDV.loadSurface(loadImageFromResources(IDT_WATER_DUDV));
-	TEX_WATER_NORMALS.loadSurface(loadImageFromResources(IDT_WATER_NORMALS));
+	TEX_WATER_DUDV.loadSurface(loadImageFromResource("IDT_WATER_DUDV"));
+	TEX_WATER_NORMALS.loadSurface(loadImageFromResource("IDT_WATER_NORMALS"));
 
     const glm::vec3 vertices[] = {
         glm::vec3(0.0, 0.f, 0.0),

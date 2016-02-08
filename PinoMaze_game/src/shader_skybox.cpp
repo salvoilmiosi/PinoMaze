@@ -10,7 +10,7 @@ void skyboxShader::setViewMatrix(glm::mat4 m) {
 }
 
 bool skyboxShader::init() {
-    return shaderProgram::loadProgramFromResource(IDS_SKYBOX_VERTEX, IDS_SKYBOX_FRAGMENT);
+    return shaderProgram::loadProgramFromResource("IDS_SKYBOX_VERTEX", "IDS_SKYBOX_FRAGMENT");
 }
 
 bool skyboxShader::bindProgram() {

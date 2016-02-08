@@ -23,7 +23,7 @@ glm::vec2 hudRenderer::toWorldVector(int x, int y) {
 bool hudRenderer::init() {
     if (!shader.init()) return false;
 
-	TEX_FONT_TEXTURE.loadSurface(loadImageFromResources(IDT_FONT_TEXTURE));
+	TEX_FONT_TEXTURE.loadSurface(loadImageFromResource("IDT_FONT_TEXTURE"));
 	TEX_FONT_TEXTURE.setFilter(GL_NEAREST);
 
     glGenBuffers(1, &vertexBuffer);

@@ -3,7 +3,7 @@
 #include "res_loader.h"
 
 bool hudShader::init() {
-    return shaderProgram::loadProgramFromResource(IDS_HUD_VERTEX, IDS_HUD_FRAGMENT);
+    return shaderProgram::loadProgramFromResource("IDS_HUD_VERTEX", "IDS_HUD_FRAGMENT");
 }
 
 bool hudShader::bindProgram() {

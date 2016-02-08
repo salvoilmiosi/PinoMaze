@@ -33,7 +33,7 @@ teleportRenderer::~teleportRenderer() {
 
 bool teleportRenderer::init() {
 	TEX_TELEPORT_TEXTURE.setFilter(GL_NEAREST);
-	TEX_TELEPORT_TEXTURE.loadSurface(loadImageFromResources(IDT_TELEPORT_TEXTURE));
+	TEX_TELEPORT_TEXTURE.loadSurface(loadImageFromResource("IDT_TELEPORT_TEXTURE"));
 
 	if (!box::init()) return false;
 	if (!shader.init()) return false;

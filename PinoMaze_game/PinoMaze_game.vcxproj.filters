@@ -165,9 +165,6 @@
     <ClInclude Include="include\texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\shader_teleport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -183,94 +180,6 @@
     <ClInclude Include="include\sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="winres.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="PinoMaze_game.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="resources\c_skybox_back.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\c_skybox_bottom.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\c_skybox_front.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\c_skybox_left.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\c_skybox_right.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\c_skybox_top.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_arrow.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_bricks.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_bricks_n.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_cobble.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_cobble_n.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_floor.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_floor_n.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_marble.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_marble_n.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_plaster.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_plaster_n.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_teleport.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_text.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_tiles.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_tiles_n.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_water_dudv.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_water_n.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_rust.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_rust_n.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resources\t_particle.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\s_hole_f.glsl">
@@ -315,19 +224,5 @@
     <None Include="shaders\s_world_v.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="resources\m_mystery.ogg">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="resources\w_teleport.wav">
-      <Filter>Resource Files</Filter>
-    </Media>
-    <Media Include="resources\w_hole.wav">
-      <Filter>Resource Files</Filter>
-    </Media>
-    <Media Include="resources\w_win.wav">
-      <Filter>Resource Files</Filter>
-    </Media>
   </ItemGroup>
 </Project>

@@ -50,7 +50,7 @@ int main (int argc, char **argv) {
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
 		fprintf(stderr, "Could not init audio libraries: %s\n", Mix_GetError());
-		return -2;
+		return -3;
 	}
 
 	unique_ptr<maze> mainMaze = nullptr;
@@ -82,16 +82,21 @@ int main (int argc, char **argv) {
 
 	if (window == nullptr) {
 		fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
-		return -3;
+		return -4;
 	}
 
 	SDL_ShowCursor((SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) == 0);
+
+	if (!openResourceFile("resource.dat")) {
+		fprintf(stderr, "Could not load resources\n");
+		return -5;
+	}
 
 	// Create OpenGL context and Init glew
     SDL_GLContext context = SDL_GL_CreateContext(window);
 	if (context == nullptr) {
 		fprintf(stderr, "Could not create OpenGL context: %s\n", SDL_GetError());
-		return -4;
+		return -6;
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -110,7 +115,7 @@ int main (int argc, char **argv) {
 	if (!mainGame->init()) {
 		fprintf(stderr, "Could not init game\n");
 		fgetc(stdin);
-		return -5;
+		return -7;
 	}
 
 	// Setup OpenGL options
@@ -184,6 +189,8 @@ int main (int argc, char **argv) {
 	// Clean up everything
 	mainGame = nullptr;
 	mainMaze = nullptr;
+
+	closeResourceFile();
 
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);

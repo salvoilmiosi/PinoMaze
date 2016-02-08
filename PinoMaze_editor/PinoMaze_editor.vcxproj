@@ -152,8 +152,6 @@
     <ClInclude Include="include\tool_startend.h" />
     <ClInclude Include="include\tool_teleport.h" />
     <ClInclude Include="include\tool_wall.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="winres.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
@@ -170,15 +168,6 @@
     <ClCompile Include="src\tool_startend.cpp" />
     <ClCompile Include="src\tool_teleport.cpp" />
     <ClCompile Include="src\tool_wall.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="PinoMaze_editor.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="resources\MDA_8x14.png" />
-    <Image Include="resources\potash_10x10.png" />
-    <Image Include="resources\tiles_10x10.png" />
-    <Image Include="resources\tools.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

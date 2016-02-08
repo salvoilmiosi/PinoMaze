@@ -1,9 +1,9 @@
 #include "res_loader.h"
 
-#include <windows.h>
 #include <SDL2/SDL_image.h>
 
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -51,16 +51,66 @@ const SDL_Color COLOR_CROP_RECT =    {0xff, 0xff, 0xff, 0xff};
 const SDL_Color COLOR_CROP_BLINK =   {0xff, 0xff, 0xff, 0x80};
 const SDL_Color COLOR_TEXT =         {0xff, 0x00, 0x00, 0xff};
 
-static SDL_Surface *loadImageFromResources(int RES_ID) {
-	HMODULE hModule = GetModuleHandle(nullptr);
+static const int ID_MAXSIZE = 32;
 
-	HRSRC hRes = FindResource(hModule, MAKEINTRESOURCE(RES_ID), "PNG");
-	unsigned int res_size = SizeofResource(hModule, hRes);
+struct resource {
+	size_t size;
+	size_t ptr;
+	char res_id[ID_MAXSIZE];
+};
 
-	HGLOBAL hgRes = LoadResource(hModule, hRes);
-	unsigned char* res_data = (unsigned char*)LockResource(hgRes);
+static vector<resource> resFiles;
+static ifstream resourceIfs;
 
-	return IMG_LoadTyped_RW(SDL_RWFromConstMem(res_data, res_size), 1, "PNG");
+static unsigned int readInt(ifstream &ifs) {
+	char data[4];
+	ifs.read(data, 4);
+	unsigned int num =
+		(data[0] << 24 & 0xff000000) |
+		(data[1] << 16 & 0x00ff0000) |
+		(data[2] << 8 & 0x0000ff00) |
+		(data[3] & 0x000000ff);
+	return num;
+}
+
+bool openResourceFile(const char *filename) {
+	resourceIfs.open(filename, ios::binary);
+
+	if (resourceIfs.fail()) {
+		return false;
+	}
+
+	if (readInt(resourceIfs) != 0x255435f4) {
+		return false;
+	}
+
+	resFiles.resize(readInt(resourceIfs));
+
+	for (resource &res : resFiles) {
+		resourceIfs.read(res.res_id, ID_MAXSIZE);
+		res.size = readInt(resourceIfs);
+		res.ptr = readInt(resourceIfs);
+	}
+
+	return true;
+}
+
+void closeResourceFile() {
+	resourceIfs.close();
+}
+
+static SDL_Surface *loadImageFromResource(const char *RES_ID) {
+	for (resource &res : resFiles) {
+		if (strcmp(res.res_id, RES_ID) == 0) {
+			char *data = new char[res.size];
+
+			resourceIfs.seekg(res.ptr);
+			resourceIfs.read(data, res.size);
+
+			return IMG_LoadTyped_RW(SDL_RWFromConstMem(data, res.size), 1, "PNG");
+		}
+	}
+	return nullptr;
 }
 
 static void convertPalette(SDL_Surface *surface, const SDL_Color *convertMap, const int ncolors) {
@@ -121,7 +171,7 @@ static void loadMazeTiles(SDL_Renderer *renderer) {
         {0xff, 0x00, 0x00, 0xff}, COLOR_TPDEST,
     };
 
-    SDL_Surface *surface = loadImageFromResources(IDB_TILES);
+    SDL_Surface *surface = loadImageFromResource("IDB_TILES");
     if (surface != nullptr) {
         convertPalette(surface, convertMap, 9);
         SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0xff, 0x0, 0xff));
@@ -138,7 +188,7 @@ static void loadTeleportTiles(SDL_Renderer *renderer) {
         {0xff, 0xff, 0xff, 0xff}, COLOR_TPTEXT
     };
 
-    SDL_Surface *surface = loadImageFromResources(IDB_TP_FONT);
+    SDL_Surface *surface = loadImageFromResource("IDB_TP_FONT");
     if (surface != nullptr) {
         convertPalette(surface, convertMap, 2);
 
@@ -149,7 +199,7 @@ static void loadTeleportTiles(SDL_Renderer *renderer) {
 }
 
 static void loadToolTiles(SDL_Renderer *renderer) {
-    SDL_Surface *surface = loadImageFromResources(IDB_TOOLS);
+    SDL_Surface *surface = loadImageFromResource("IDB_TOOLS");
     if (surface != nullptr) {
         RES_TOOLS_SIZE = surface->w / RES_TOOLS_NUM;
         RES_TOOLS = SDL_CreateTextureFromSurface(renderer, surface);
@@ -163,7 +213,7 @@ static void loadTextTiles(SDL_Renderer *renderer) {
         {0xff, 0xff, 0xff, 0xff}, COLOR_TEXT
     };
 
-    SDL_Surface *surface = loadImageFromResources(IDB_TEXT);
+    SDL_Surface *surface = loadImageFromResource("IDB_TEXT");
     if (surface != nullptr) {
         convertPalette(surface, convertMap, 2);
 
