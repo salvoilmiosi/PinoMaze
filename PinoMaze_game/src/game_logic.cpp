@@ -5,20 +5,46 @@
 #include "res_loader.h"
 #include "globals.h"
 
-gameLogic::gameLogic(maze *m) : m(m) {
+static const char *musics[] = {
+	"IDM_MYSTERY1",
+	"IDM_MYSTERY2",
+	"IDM_KEYGEN1",
+	"IDM_TEMA1",
+	"IDM_TEMA2",
+	"IDM_TEMA3",
+	"IDM_TEMA4",
+	"IDM_TEMA5",
+	"IDM_TEMA6",
+	"IDM_TEMA7",
+	"IDM_MACLEOD1",
+	"IDM_MACLEOD2",
+	"IDM_MACLEOD3",
+	"IDM_MACLEOD4"
+};
+
+const char *randomMusic() {
+	static const int NUM_MUSIC = sizeof(musics) / sizeof(*musics);
+	static int i = -1, n = -1;
+	while (i == n) {
+		n = rand() % NUM_MUSIC;
+	}
+	i = n;
+	return musics[i];
 }
+
+gameLogic::gameLogic(maze *m) : m(m) {}
 
 gameLogic::~gameLogic() {
 	MUS_MUSIC.stop();
 }
 
 bool gameLogic::init() {
-	SND_TELEPORT.loadChunk(loadWaveFromResource("IDW_TELEPORT"));
-	SND_HOLE.loadChunk(loadWaveFromResource("IDW_HOLE"));
-	SND_WIN.loadChunk(loadWaveFromResource("IDW_WIN"));
-	MUS_MUSIC.loadMusic(loadMusicFromResource("IDM_TEMA1"));
+	loadWaveFromResource(SND_TELEPORT, "IDW_TELEPORT");
+	loadWaveFromResource(SND_HOLE, "IDW_HOLE");
+	loadWaveFromResource(SND_WIN, "IDW_WIN");
 
-	MUS_MUSIC.volume(0.3f);
+	loadMusicFromResource(MUS_MUSIC, randomMusic());
+	MUS_MUSIC.volume(0.6f);
 	MUS_MUSIC.fadeIn(1000);
 
 	teleportToStart(true);
@@ -486,6 +512,7 @@ void gameLogic::tick() {
 			pathfinder = nullptr;
 			teleportToStart(true);
 			pressed_r = true;
+			loadMusicFromResource(MUS_MUSIC, randomMusic());
 			MUS_MUSIC.fadeIn(1000);
 		}
 	} else {

@@ -1,4 +1,5 @@
 #include <windows.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
@@ -53,6 +54,12 @@ int main (int argc, char **argv) {
 		return -3;
 	}
 
+	// Load resources
+	if (!openResourceFile("resource.dat") || !openResourceFile("music.dat")) {
+		fprintf(stderr, "Could not load resources\n");
+		return -4;
+	}
+
 	unique_ptr<maze> mainMaze = nullptr;
 
 	if (argc > 1) {
@@ -76,21 +83,18 @@ int main (int argc, char **argv) {
 	}
 
 	// Create a window with SDL2
+	int winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
+	if (fullscreen) winflags |= SDL_WINDOW_FULLSCREEN;
     SDL_Window *window = SDL_CreateWindow("PinoMaze Game",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        windowWidth, windowHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+        windowWidth, windowHeight, winflags);
 
 	if (window == nullptr) {
 		fprintf(stderr, "Could not create window: %s\n", SDL_GetError());
-		return -4;
-	}
-
-	SDL_ShowCursor((SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) == 0);
-
-	if (!openResourceFile("resource.dat")) {
-		fprintf(stderr, "Could not load resources\n");
 		return -5;
 	}
+
+	SDL_ShowCursor(!fullscreen);
 
 	// Create OpenGL context and Init glew
     SDL_GLContext context = SDL_GL_CreateContext(window);
@@ -108,6 +112,8 @@ int main (int argc, char **argv) {
 	if (error != GLEW_OK) {
 		return false;
 	}
+
+	srand(SDL_GetTicks());
 
 	// Create and init the game object
 	unique_ptr<game> mainGame = make_unique<game>(mainMaze.get());
@@ -189,8 +195,6 @@ int main (int argc, char **argv) {
 	// Clean up everything
 	mainGame = nullptr;
 	mainMaze = nullptr;
-
-	closeResourceFile();
 
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);

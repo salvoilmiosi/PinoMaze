@@ -53,11 +53,11 @@ bool bridgeRenderer::init() {
     drawArc(-l/2.f, l/2.f, l, bridgeArcHeight, l, false);
 
     wall_offset = indices.size();
-	drawArc(wallThickness / 2.f, -wallThickness / 2.f, l, bridgeArcHeight, l / 1.5f, false);
+	drawArc(wallThickness / 2.f, -wallThickness / 2.f, l, bridgeArcHeight, tileSize / 1.5f, false);
     drawTopWall(wallThickness / 2.f, -wallThickness /2.f, l, l / 1.5f);
 
-    drawArcWall(-wallThickness / 2.f, -l, tileSize / 1.5f);
-    drawArcWall(wallThickness / 2.f, l, tileSize / 1.5f);
+    drawArcWall(-wallThickness / 2.f, -l, tileSize * 0.66f);
+    drawArcWall(wallThickness / 2.f, l, tileSize * 0.66f);
 
     index_count = indices.size();
 

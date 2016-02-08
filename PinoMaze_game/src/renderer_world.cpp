@@ -7,9 +7,9 @@
 #include "globals.h"
 
 worldRenderer::worldRenderer(maze *m) : m(m), bridge(m) {
-	pillarBox.setSize(pillarSize, pillarHeight, pillarSize, tileSize / 2.5f);
+	pillarBox.setSize(pillarSize, pillarHeight, pillarSize, tileSize * 0.4f);
     groundBox.setSize(tileSize, blockHeight * 2.f, tileSize, tileSize);
-    wallBox.setSize(tileSize - wallThickness, wallHeight, wallThickness, tileSize / 1.5f);
+    wallBox.setSize(tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.6f);
     startBox.setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);
     endBox.setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);
     arrowBox.setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);

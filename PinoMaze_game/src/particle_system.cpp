@@ -10,8 +10,6 @@ particleSystem::particleSystem() {
 	position = glm::vec3(0.f);
 	enabled = false;
 	numAlive = 0;
-
-	srand(SDL_GetTicks());
 }
 
 particleSystem::~particleSystem() {

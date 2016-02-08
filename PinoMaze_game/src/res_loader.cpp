@@ -1,20 +1,20 @@
 #include "res_loader.h"
 
 #include <fstream>
-#include <vector>
+#include <map>
+#include <memory>
 
 using namespace std;
 
 static const int ID_MAXSIZE = 32;
 
 struct resource {
-	size_t size;
-	size_t ptr;
-	char res_id[ID_MAXSIZE];
+	size_t size = 0;
+	size_t ptr = 0;
+	const char *filename;
 };
 
-static vector<resource> resFiles;
-static ifstream resourceIfs;
+map<string, resource> resFiles;
 
 static unsigned int readInt(ifstream &ifs) {
 	char data[4];
@@ -28,29 +28,36 @@ static unsigned int readInt(ifstream &ifs) {
 }
 
 bool openResourceFile(const char *filename) {
-	resourceIfs.open(filename, ios::binary);
+	ifstream ifs(filename, ios::binary);
 
-	if (resourceIfs.fail()) {
+	if (ifs.fail()) {
 		return false;
 	}
 
-	if (readInt(resourceIfs) != 0x255435f4) {
+	if (readInt(ifs) != 0x255435f4) {
 		return false;
 	}
 
-	resFiles.resize(readInt(resourceIfs));
+	int numRes = readInt(ifs);
+	char res_id[ID_MAXSIZE];
 
-	for (resource &res : resFiles) {
-		resourceIfs.read(res.res_id, ID_MAXSIZE);
-		res.size = readInt(resourceIfs);
-		res.ptr = readInt(resourceIfs);
+	resource res;
+	while (numRes > 0) {
+		memset(&res, 0, sizeof(res));
+		memset(res_id, 0, sizeof(res_id));
+
+		ifs.read(res_id, ID_MAXSIZE);
+
+		res.size = readInt(ifs);
+		res.ptr = readInt(ifs);
+		res.filename = filename;
+
+		resFiles[res_id] = res;
+
+		--numRes;
 	}
 
 	return true;
-}
-
-void closeResourceFile() {
-	resourceIfs.close();
 }
 
 std::string loadStringFromFile(const char *filename) {
@@ -67,47 +74,37 @@ std::string loadStringFromFile(const char *filename) {
 	return str;
 }
 
-static SDL_RWops *loadResourceRW(const char *RES_ID, const char *RES_TYPE) {
-	for (resource &res : resFiles) {
-		if (strcmp(res.res_id, RES_ID) == 0) {
-			char *data = new char[res.size];
+unique_ptr<buffer> loadResourceBuffer(const char *RES_ID) {
+	auto it = resFiles.find(RES_ID);
 
-			resourceIfs.seekg(res.ptr);
-			resourceIfs.read(data, res.size);
+	if (it != resFiles.end()) {
+		resource &res = it->second;
+		char *data = new char[res.size];
 
-			return SDL_RWFromConstMem(data, res.size);
-		}
+		ifstream ifs(res.filename, ios::binary);
+		ifs.seekg(res.ptr);
+		ifs.read(data, res.size);
+
+		return make_unique<buffer>(data, res.size);
 	}
+
 	return nullptr;
 }
 
-std::string loadStringFromResource(const char * RES_ID) {
-	SDL_RWops *data = loadResourceRW(RES_ID, "TEXTFILE");
+string loadStringFromResource(const char * RES_ID) {
+	unique_ptr<buffer> data = loadResourceBuffer(RES_ID);
 
 	if (!data)
 		return "";
 
-	size_t datasize = (size_t)SDL_RWsize(data);
-	if (datasize <= 0)
-		return "";
-
-	char *buf = new char[datasize + 1];
-	memset(buf, 0, datasize + 1);
-
-	SDL_RWread(data, buf, datasize, 1);
-	SDL_RWclose(data);
-
-	std::string str(buf);
-	delete[]buf;
-
-	return str;
+	return string(data->data, data->size);
 }
 
 SDL_Surface *loadImageFromResource(const char *RES_ID) {
-	SDL_RWops *data = loadResourceRW(RES_ID, "PNG");
+	unique_ptr<buffer> data = loadResourceBuffer(RES_ID);
 
 	if (data) {
-		SDL_Surface *surf = IMG_LoadTyped_RW(data, 1, "PNG");
+		SDL_Surface *surf = IMG_LoadTyped_RW(data->rw, 0, "PNG");
 		if (!surf) {
 			fprintf(stderr, "Could not load image %s: %s\n", RES_ID, IMG_GetError());
 		}
@@ -116,28 +113,18 @@ SDL_Surface *loadImageFromResource(const char *RES_ID) {
 	return nullptr;
 }
 
-Mix_Chunk *loadWaveFromResource(const char *RES_ID) {
-	SDL_RWops *data = loadResourceRW(RES_ID, "WAVE");
-
-	if (data) {
-		Mix_Chunk *chunk = Mix_LoadWAV_RW(data, 1);
-		if (!chunk) {
-			fprintf(stderr, "Could not load audio %s: %s\n", RES_ID, Mix_GetError());
-		}
-		return chunk;
+bool loadWaveFromResource(sound &snd, const char *RES_ID) {
+	if (!snd.loadChunk(loadResourceBuffer(RES_ID))) {
+		fprintf(stderr, "Could not load audio %s: %s\n", RES_ID, Mix_GetError());
+		return false;
 	}
-	return nullptr;
+	return true;
 }
 
-Mix_Music *loadMusicFromResource(const char *RES_ID) {
-	SDL_RWops *data = loadResourceRW(RES_ID, "OGG");
-
-	if (data) {
-		Mix_Music *mus = Mix_LoadMUSType_RW(data, MUS_OGG, 1);
-		if (!mus) {
-			fprintf(stderr, "Could not load music %s: %s\n", RES_ID, Mix_GetError());
-		}
-		return mus;
+bool loadMusicFromResource(music &mus, const char *RES_ID) {
+	if (!mus.loadMusic(loadResourceBuffer(RES_ID))) {
+		fprintf(stderr, "Could not load music %s: %s\n", RES_ID, Mix_GetError());
+		return false;
 	}
-	return nullptr;
+	return true;
 }

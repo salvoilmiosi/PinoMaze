@@ -1,0 +1,18 @@
+# Music
+
+IDM_MYSTERY1            "music/m_mystery1.ogg"
+IDM_MYSTERY2            "music/m_mystery2.ogg"
+IDM_KEYGEN1             "music/m_keygen1.ogg
+
+IDM_TEMA1               "music/m_tema1.ogg"
+IDM_TEMA2               "music/m_tema2.ogg"
+IDM_TEMA3               "music/m_tema3.ogg"
+IDM_TEMA4               "music/m_tema4.ogg"
+IDM_TEMA5               "music/m_tema5.ogg"
+IDM_TEMA6               "music/m_tema6.ogg"
+IDM_TEMA7               "music/m_tema7.ogg"
+
+IDM_MACLEOD1            "music/m_macleod1.ogg"
+IDM_MACLEOD2            "music/m_macleod2.ogg"
+IDM_MACLEOD3            "music/m_macleod3.ogg"
+IDM_MACLEOD4            "music/m_macleod4.ogg"

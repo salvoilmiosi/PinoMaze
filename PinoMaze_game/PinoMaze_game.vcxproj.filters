@@ -180,6 +180,9 @@
     <ClInclude Include="include\sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\s_hole_f.glsl">

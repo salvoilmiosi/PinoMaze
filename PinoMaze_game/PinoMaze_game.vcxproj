@@ -177,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\box.h" />
+    <ClInclude Include="include\buffer.h" />
     <ClInclude Include="include\cubemap.h" />
     <ClInclude Include="include\framebuffer.h" />
     <ClInclude Include="include\game.h" />

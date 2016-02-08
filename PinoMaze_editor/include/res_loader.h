@@ -62,8 +62,7 @@ inline bool operator == (const SDL_Color &a, const SDL_Color &b) {
 }
 
 bool openResourceFile(const char *filename);
-void closeResourceFile();
 
-void loadResources(SDL_Renderer *renderer);
+bool loadResources(SDL_Renderer *renderer);
 
 #endif // __RES_LOADER_H__

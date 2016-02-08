@@ -24,8 +24,9 @@ static bool checkGlError(const char *message) {
 	}
 }
 
-static constexpr int windowWidth = 800;
-static constexpr int windowHeight = 600;
+static constexpr int windowWidth = 1024;
+static constexpr int windowHeight = 768;
+static constexpr bool fullscreen = true;
 static constexpr int tickrate = 60;
 
 static constexpr float tileSize = 1.f;

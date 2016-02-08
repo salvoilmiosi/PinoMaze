@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL_image.h>
 
+#include <map>
 #include <vector>
 #include <fstream>
 
@@ -54,13 +55,12 @@ const SDL_Color COLOR_TEXT =         {0xff, 0x00, 0x00, 0xff};
 static const int ID_MAXSIZE = 32;
 
 struct resource {
-	size_t size;
-	size_t ptr;
-	char res_id[ID_MAXSIZE];
+	size_t size = 0;
+	size_t ptr = 0;
+	const char *filename;
 };
 
-static vector<resource> resFiles;
-static ifstream resourceIfs;
+map<string, resource> resFiles;
 
 static unsigned int readInt(ifstream &ifs) {
 	char data[4];
@@ -74,41 +74,54 @@ static unsigned int readInt(ifstream &ifs) {
 }
 
 bool openResourceFile(const char *filename) {
-	resourceIfs.open(filename, ios::binary);
+	ifstream ifs(filename, ios::binary);
 
-	if (resourceIfs.fail()) {
+	if (ifs.fail()) {
 		return false;
 	}
 
-	if (readInt(resourceIfs) != 0x255435f4) {
+	if (readInt(ifs) != 0x255435f4) {
 		return false;
 	}
 
-	resFiles.resize(readInt(resourceIfs));
+	int numRes = readInt(ifs);
 
-	for (resource &res : resFiles) {
-		resourceIfs.read(res.res_id, ID_MAXSIZE);
-		res.size = readInt(resourceIfs);
-		res.ptr = readInt(resourceIfs);
+	resource res;
+	char res_id[ID_MAXSIZE];
+
+	while (numRes > 0) {
+		memset(&res, 0, sizeof(res));
+		memset(res_id, 0, sizeof(res_id));
+
+		ifs.read(res_id, ID_MAXSIZE);
+
+		res.size = readInt(ifs);
+		res.ptr = readInt(ifs);
+		res.filename = filename;
+
+		resFiles[res_id] = res;
+
+		--numRes;
 	}
 
 	return true;
 }
 
-void closeResourceFile() {
-	resourceIfs.close();
-}
-
 static SDL_Surface *loadImageFromResource(const char *RES_ID) {
-	for (resource &res : resFiles) {
-		if (strcmp(res.res_id, RES_ID) == 0) {
-			char *data = new char[res.size];
+	auto it = resFiles.find(RES_ID);
 
-			resourceIfs.seekg(res.ptr);
-			resourceIfs.read(data, res.size);
+	if (it != resFiles.end()) {
+		resource &res = it->second;
+		char *data = new char[res.size];
 
-			return IMG_LoadTyped_RW(SDL_RWFromConstMem(data, res.size), 1, "PNG");
-		}
+		ifstream ifs(res.filename, ios::binary);
+		ifs.seekg(res.ptr);
+		ifs.read(data, res.size);
+
+		SDL_Surface *surf = IMG_LoadTyped_RW(SDL_RWFromConstMem(data, res.size), 1, "PNG");
+		return surf;
+
+		delete[]data;
 	}
 	return nullptr;
 }
@@ -158,7 +171,7 @@ static void convertPalette(SDL_Surface *surface, const SDL_Color *convertMap, co
     SDL_UnlockSurface(surface);
 }
 
-static void loadMazeTiles(SDL_Renderer *renderer) {
+static bool loadMazeTiles(SDL_Renderer *renderer) {
     const SDL_Color convertMap[] = {
         {0xff, 0xff, 0xff, 0xff}, COLOR_FLOOR_BLEND,
         {0xcc, 0xcc, 0xcc, 0xff}, COLOR_NODE_CLOSED,
@@ -172,61 +185,75 @@ static void loadMazeTiles(SDL_Renderer *renderer) {
     };
 
     SDL_Surface *surface = loadImageFromResource("IDB_TILES");
-    if (surface != nullptr) {
-        convertPalette(surface, convertMap, 9);
-        SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0xff, 0x0, 0xff));
+	if (surface == nullptr)
+		return false;
 
-        RES_TILES_SIZE = surface->w / RES_TILES_NUM;
-        RES_TILES = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
-    }
+    convertPalette(surface, convertMap, 9);
+    SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0xff, 0x0, 0xff));
+
+    RES_TILES_SIZE = surface->w / RES_TILES_NUM;
+    RES_TILES = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+	return true;
 }
 
-static void loadTeleportTiles(SDL_Renderer *renderer) {
+static bool loadTeleportTiles(SDL_Renderer *renderer) {
     const SDL_Color convertMap[] = {
         {0xff, 0x00, 0xff, 0xff}, COLOR_TELEPORT,
         {0xff, 0xff, 0xff, 0xff}, COLOR_TPTEXT
     };
 
     SDL_Surface *surface = loadImageFromResource("IDB_TP_FONT");
-    if (surface != nullptr) {
-        convertPalette(surface, convertMap, 2);
+	if (surface == nullptr)
+		return false;
 
-        RES_TP_FONT_SIZE = surface->w / RES_TP_FONT_NUM;
-        RES_TP_FONT = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
-    }
+    convertPalette(surface, convertMap, 2);
+
+    RES_TP_FONT_SIZE = surface->w / RES_TP_FONT_NUM;
+    RES_TP_FONT = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+	return true;
 }
 
-static void loadToolTiles(SDL_Renderer *renderer) {
+static bool loadToolTiles(SDL_Renderer *renderer) {
     SDL_Surface *surface = loadImageFromResource("IDB_TOOLS");
-    if (surface != nullptr) {
-        RES_TOOLS_SIZE = surface->w / RES_TOOLS_NUM;
-        RES_TOOLS = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
-    }
+	if (surface == nullptr)
+		return false;
+
+    RES_TOOLS_SIZE = surface->w / RES_TOOLS_NUM;
+    RES_TOOLS = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+	return true;
 }
 
-static void loadTextTiles(SDL_Renderer *renderer) {
+static bool loadTextTiles(SDL_Renderer *renderer) {
     const SDL_Color convertMap[] = {
         {0xff, 0x00, 0xff, 0xff}, {0x00, 0x00, 0x00, 0x00},
         {0xff, 0xff, 0xff, 0xff}, COLOR_TEXT
     };
 
     SDL_Surface *surface = loadImageFromResource("IDB_TEXT");
-    if (surface != nullptr) {
-        convertPalette(surface, convertMap, 2);
+	if (surface == nullptr)
+		return false;
 
-        RES_TEXT_W = surface->w / RES_TEXT_NUM;
-        RES_TEXT_H = surface->h / RES_TEXT_NUM;
-        RES_TEXT = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
-    }
+    convertPalette(surface, convertMap, 2);
+
+    RES_TEXT_W = surface->w / RES_TEXT_NUM;
+    RES_TEXT_H = surface->h / RES_TEXT_NUM;
+    RES_TEXT = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+	return true;
 }
 
-void loadResources(SDL_Renderer *renderer) {
-    loadMazeTiles(renderer);
-    loadTeleportTiles(renderer);
-    loadToolTiles(renderer);
-    loadTextTiles(renderer);
+bool loadResources(SDL_Renderer *renderer) {
+	if (!loadMazeTiles(renderer)) return false;
+	if (!loadTeleportTiles(renderer)) return false;
+	if (!loadToolTiles(renderer)) return false;
+	if (!loadTextTiles(renderer)) return false;
+
+	return true;
 }

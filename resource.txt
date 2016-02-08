@@ -1,76 +1,59 @@
 # Editor
 
-IDB_TILES       PNG "resources\\editor\\tiles_10x10.png"
-IDB_TP_FONT     PNG "resources\\editor\\potash_10x10.png"
-IDB_TOOLS       PNG "resources\\editor\\tools.png"
-IDB_TEXT        PNG "resources\\editor\\MDA_8x14.png"
+IDB_TILES               "resources/editor/tiles_10x10.png"
+IDB_TP_FONT             "resources/editor/potash_10x10.png"
+IDB_TOOLS               "resources/editor/tools.png"
+IDB_TEXT                "resources/editor/MDA_8x14.png"
 
-# PNG
+# Game textures
 
-IDC_SKYBOX_BACK         PNG                     "resources\\c_skybox_back.png"
-IDC_SKYBOX_BOTTOM       PNG                     "resources\\c_skybox_bottom.png"
-IDC_SKYBOX_FRONT        PNG                     "resources\\c_skybox_front.png"
-IDC_SKYBOX_LEFT         PNG                     "resources\\c_skybox_left.png"
-IDC_SKYBOX_RIGHT        PNG                     "resources\\c_skybox_right.png"
-IDC_SKYBOX_TOP          PNG                     "resources\\c_skybox_top.png"
-IDT_ARROW_TEXTURE       PNG                     "resources\\t_arrow.png"
-IDT_BRICKS_TEXTURE      PNG                     "resources\\t_bricks.png"
-IDT_BRICKS_NORMALS      PNG                     "resources\\t_bricks_n.png"
-IDT_COBBLE_TEXTURE      PNG                     "resources\\t_cobble.png"
-IDT_COBBLE_NORMALS      PNG                     "resources\\t_cobble_n.png"
-IDT_FLOOR_TEXTURE       PNG                     "resources\\t_floor.png"
-IDT_FLOOR_NORMALS       PNG                     "resources\\t_floor_n.png"
-IDT_MARBLE_TEXTURE      PNG                     "resources\\t_marble.png"
-IDT_MARBLE_NORMALS      PNG                     "resources\\t_marble_n.png"
-IDT_PLASTER_TEXTURE     PNG                     "resources\\t_plaster.png"
-IDT_PLASTER_NORMALS     PNG                     "resources\\t_plaster_n.png"
-IDT_TELEPORT_TEXTURE    PNG                     "resources\\t_teleport.png"
-IDT_FONT_TEXTURE        PNG                     "resources\\t_text.png"
-IDT_TILES_TEXTURE       PNG                     "resources\\t_tiles.png"
-IDT_TILES_NORMALS       PNG                     "resources\\t_tiles_n.png"
-IDT_WATER_DUDV          PNG                     "resources\\t_water_dudv.png"
-IDT_WATER_NORMALS       PNG                     "resources\\t_water_n.png"
-IDT_RUST_TEXTURE        PNG                     "resources\\t_rust.png"
-IDT_RUST_NORMALS        PNG                     "resources\\t_rust_n.png"
-IDT_PARTICLE_TEXTURE    PNG                     "resources\\t_particle.png"
+IDC_SKYBOX_BACK         "resources/c_skybox_back.png"
+IDC_SKYBOX_BOTTOM       "resources/c_skybox_bottom.png"
+IDC_SKYBOX_FRONT        "resources/c_skybox_front.png"
+IDC_SKYBOX_LEFT         "resources/c_skybox_left.png"
+IDC_SKYBOX_RIGHT        "resources/c_skybox_right.png"
+IDC_SKYBOX_TOP          "resources/c_skybox_top.png"
 
+IDT_ARROW_TEXTURE       "resources/t_arrow.png"
+IDT_BRICKS_TEXTURE      "resources/t_bricks.png"
+IDT_BRICKS_NORMALS      "resources/t_bricks_n.png"
+IDT_COBBLE_TEXTURE      "resources/t_cobble.png"
+IDT_COBBLE_NORMALS      "resources/t_cobble_n.png"
+IDT_FLOOR_TEXTURE       "resources/t_floor.png"
+IDT_FLOOR_NORMALS       "resources/t_floor_n.png"
+IDT_MARBLE_TEXTURE      "resources/t_marble.png"
+IDT_MARBLE_NORMALS      "resources/t_marble_n.png"
+IDT_PLASTER_TEXTURE     "resources/t_plaster.png"
+IDT_PLASTER_NORMALS     "resources/t_plaster_n.png"
+IDT_TELEPORT_TEXTURE    "resources/t_teleport.png"
+IDT_FONT_TEXTURE        "resources/t_text.png"
+IDT_TILES_TEXTURE       "resources/t_tiles.png"
+IDT_TILES_NORMALS       "resources/t_tiles_n.png"
+IDT_WATER_DUDV          "resources/t_water_dudv.png"
+IDT_WATER_NORMALS       "resources/t_water_n.png"
+IDT_RUST_TEXTURE        "resources/t_rust.png"
+IDT_RUST_NORMALS        "resources/t_rust_n.png"
+IDT_PARTICLE_TEXTURE    "resources/t_particle.png"
 
-# TEXTFILE
+# Game shaders
 
-IDS_HOLE_FRAGMENT       TEXTFILE                "PinoMaze_game\\shaders\\s_hole_f.glsl"
-IDS_HOLE_VERTEX         TEXTFILE                "PinoMaze_game\\shaders\\s_hole_v.glsl"
-IDS_HUD_FRAGMENT        TEXTFILE                "PinoMaze_game\\shaders\\s_hud_f.glsl"
-IDS_HUD_VERTEX          TEXTFILE                "PinoMaze_game\\shaders\\s_hud_v.glsl"
-IDS_SHADOW_FRAGMENT     TEXTFILE                "PinoMaze_game\\shaders\\s_shadow_f.glsl"
-IDS_SHADOW_VERTEX       TEXTFILE                "PinoMaze_game\\shaders\\s_shadow_v.glsl"
-IDS_SKYBOX_FRAGMENT     TEXTFILE                "PinoMaze_game\\shaders\\s_skybox_f.glsl"
-IDS_SKYBOX_VERTEX       TEXTFILE                "PinoMaze_game\\shaders\\s_skybox_v.glsl"
-IDS_WORLD_FRAGMENT      TEXTFILE                "PinoMaze_game\\shaders\\s_world_f.glsl"
-IDS_WORLD_VERTEX        TEXTFILE                "PinoMaze_game\\shaders\\s_world_v.glsl"
-IDS_TELEPORT_FRAGMENT   TEXTFILE                "PinoMaze_game\\shaders\\s_teleport_f.glsl"
-IDS_TELEPORT_VERTEX     TEXTFILE                "PinoMaze_game\\shaders\\s_teleport_v.glsl"
-IDS_PARTICLE_FRAGMENT   TEXTFILE                "PinoMaze_game\\shaders\\s_particle_f.glsl"
-IDS_PARTICLE_VERTEX     TEXTFILE                "PinoMaze_game\\shaders\\s_particle_v.glsl"
+IDS_HOLE_FRAGMENT       "PinoMaze_game/shaders/s_hole_f.glsl"
+IDS_HOLE_VERTEX         "PinoMaze_game/shaders/s_hole_v.glsl"
+IDS_HUD_FRAGMENT        "PinoMaze_game/shaders/s_hud_f.glsl"
+IDS_HUD_VERTEX          "PinoMaze_game/shaders/s_hud_v.glsl"
+IDS_SHADOW_FRAGMENT     "PinoMaze_game/shaders/s_shadow_f.glsl"
+IDS_SHADOW_VERTEX       "PinoMaze_game/shaders/s_shadow_v.glsl"
+IDS_SKYBOX_FRAGMENT     "PinoMaze_game/shaders/s_skybox_f.glsl"
+IDS_SKYBOX_VERTEX       "PinoMaze_game/shaders/s_skybox_v.glsl"
+IDS_WORLD_FRAGMENT      "PinoMaze_game/shaders/s_world_f.glsl"
+IDS_WORLD_VERTEX        "PinoMaze_game/shaders/s_world_v.glsl"
+IDS_TELEPORT_FRAGMENT   "PinoMaze_game/shaders/s_teleport_f.glsl"
+IDS_TELEPORT_VERTEX     "PinoMaze_game/shaders/s_teleport_v.glsl"
+IDS_PARTICLE_FRAGMENT   "PinoMaze_game/shaders/s_particle_f.glsl"
+IDS_PARTICLE_VERTEX     "PinoMaze_game/shaders/s_particle_v.glsl"
 
+# Game sounds
 
-# WAVE
-
-IDW_TELEPORT            WAVE                    "resources\\audio\\w_teleport.wav"
-IDW_HOLE                WAVE                    "resources\\audio\\w_hole.wav"
-IDW_WIN                 WAVE                    "resources\\audio\\w_win.wav"
-
-
-# OGG
-
-IDM_MYSTERY             OGG                     "resources\\audio\\m_mystery.ogg"
-
-# Musica Sleepwalker
-
-IDM_TEMA1 OGG "resources\\audio\\tema1.ogg"
-IDM_TEMA2 OGG "resources\\audio\\tema2.ogg"
-IDM_TEMA3 OGG "resources\\audio\\tema3.ogg"
-IDM_TEMA4 OGG "resources\\audio\\tema4.ogg"
-IDM_TEMA5 OGG "resources\\audio\\tema5.ogg"
-IDM_TEMA6 OGG "resources\\audio\\tema6.ogg"
-IDM_TEMA7 OGG "resources\\audio\\tema7.ogg"
-
+IDW_TELEPORT            "resources/sound/w_teleport.wav"
+IDW_HOLE                "resources/sound/w_hole.wav"
+IDW_WIN                 "resources/sound/w_win.wav"

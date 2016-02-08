@@ -1,6 +1,7 @@
+#include <windows.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <windows.h>
 
 #include <memory>
 #include <cstdio>
@@ -282,10 +283,8 @@ int main (int argc, char **argv) {
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-	if (openResourceFile("resource.dat")) {
-		loadResources(renderer);
-		closeResourceFile();
-	} else {
+	if (!openResourceFile("resource.dat") || !loadResources(renderer)) {
+		fprintf(stderr, "Could not load resources\n");
 		return 3;
 	}
 
