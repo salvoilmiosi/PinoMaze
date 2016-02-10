@@ -1,41 +1,38 @@
 #include "game_logic.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "res_loader.h"
 #include "globals.h"
 
-static const char *musics[] = {
-	"IDM_MYSTERY1",
-	"IDM_MYSTERY2",
-	"IDM_KEYGEN1",
-	"IDM_TEMA1",
-	"IDM_TEMA2",
-	"IDM_TEMA3",
-	"IDM_TEMA4",
-	"IDM_TEMA5",
-	"IDM_TEMA6",
-	"IDM_TEMA7",
-	"IDM_MACLEOD1",
-	"IDM_MACLEOD2",
-	"IDM_MACLEOD3",
-	"IDM_MACLEOD4"
-};
+glm::mat4 camera::viewMatrix() const {
+	glm::mat4 m_position, m_pitch, m_yaw, m_roll;
 
-const char *randomMusic() {
-	static const int NUM_MUSIC = sizeof(musics) / sizeof(*musics);
-	static int i = -1, n = -1;
-	while (i == n) {
-		n = rand() % NUM_MUSIC;
-	}
-	i = n;
-	return musics[i];
+	m_position = glm::translate(m_position, -position);
+	m_pitch = glm::rotate(m_pitch, pitch, glm::vec3(1.f, 0.f, 0.f));
+	m_yaw = glm::rotate(m_yaw, -yaw, glm::vec3(0.f, 1.f, 0.f));
+	m_roll = glm::rotate(m_roll, -roll, glm::vec3(0.f, 0.f, 1.f));
+
+	return m_roll * m_pitch * m_yaw * m_position;
+}
+
+void gameLogic::loadMusic() {
+	static const int NUM_MUSIC = 24;
+
+	static int i = rand() % NUM_MUSIC;
+	static char MUSIC_ID[16];
+
+	memset(MUSIC_ID, 0, 16);
+	snprintf(MUSIC_ID, 16, "MUSIC_%d", i);
+
+	i = (++i) % NUM_MUSIC;
+
+	loadMusicFromResource(currentMusic, MUSIC_ID);
+	currentMusic.play();
 }
 
 gameLogic::gameLogic(maze *m) : m(m) {}
 
 gameLogic::~gameLogic() {
-	MUS_MUSIC.stop();
+	currentMusic.stop();
 }
 
 bool gameLogic::init() {
@@ -43,9 +40,8 @@ bool gameLogic::init() {
 	loadWaveFromResource(SND_HOLE, "IDW_HOLE");
 	loadWaveFromResource(SND_WIN, "IDW_WIN");
 
-	loadMusicFromResource(MUS_MUSIC, randomMusic());
-	MUS_MUSIC.volume(0.6f);
-	MUS_MUSIC.fadeIn(1000);
+	currentMusic.volume(musicVolume);
+	loadMusic();
 
 	teleportToStart(true);
 
@@ -56,6 +52,7 @@ void gameLogic::teleportTo(int _x, int _y) {
     tx = _x;
     ty = _y;
 	restartDelay = 0;
+	moving = 0;
 
 	int a;
 	for (int angle = angleFacing; angle - angleFacing < 4; ++angle) {
@@ -69,56 +66,16 @@ void gameLogic::teleportTo(int _x, int _y) {
 		}
 	}
 
-    rotationY = angleFacing * (float) M_PI / 2.f;
-    x = (tx + 0.5f) * tileSize;
-    y = marbleRadius;
-    z = (ty + 0.5f) * tileSize;
+	marblePos = { (tx + 0.5f) * tileSize, marbleRadius, (ty + 0.5f) * tileSize };
 
-    cameraY = cameraHeight;
-    moving = 0;
+	cam.yaw = angleFacing * (float)M_PI / 2.f;
+	cam.position = marblePos;
+    cam.position.y = cameraHeight;
 
 	endMove();
 
 	teleported = true;
 	lockToMarble = false;
-}
-
-glm::mat4 gameLogic::viewMatrix() {
-	glm::mat4 camera, pitch, yaw, distance;
-
-	static float anglePitch = glm::radians(cameraPitch);
-	static float c_distanceY;
-	static float c_distanceZ;
-	if (lockToMarble) {
-		c_distanceZ = cosf(glm::radians(cameraPitch)) * cameraDistance;
-		c_distanceY = sinf(glm::radians(cameraPitch)) * cameraDistance;
-		float a = c_distanceZ;
-		float b = c_distanceY + cameraY - y;
-		float angleToMarble = atan2f(b, a);
-		float offset = angleToMarble - anglePitch;
-		anglePitch += offset * 0.05f;
-	} else {
-		anglePitch = glm::radians(cameraPitch);
-		c_distanceY = 0.f;
-		c_distanceZ = cameraDistance;
-	}
-
-	camera = glm::translate(camera, glm::vec3(-x, -cameraY, -z));
-	yaw = glm::rotate(yaw, rotationY, glm::vec3(0.f, -1.f, 0.f));
-	distance = glm::translate(distance, glm::vec3(0.f, -c_distanceY, -c_distanceZ));
-	pitch = glm::rotate(pitch, anglePitch, glm::vec3(1.f, 0.f, 0.f));
-
-	if (lockToMarble) {
-		return pitch * distance * yaw * camera;
-	} else {
-		return distance * pitch * yaw * camera;
-	}
-}
-
-glm::mat4 gameLogic::marbleMatrix() {
-    glm::mat4 position;
-    position = glm::translate(position, glm::vec3(x, y, z));
-    return position * marbleRotation;
 }
 
 bool gameLogic::canMove(int moveAngle, bool checkBlocks) {
@@ -187,8 +144,8 @@ bool gameLogic::offsetMove(int angleOffset) {
     }
 	if (canMove(moveAngle)) {
 		lastMoveAngle = moveAngle;
-		startTx = tx;
-		startTy = ty;
+		tx_prev = tx;
+		ty_prev = ty;
 		switch (moveAngle) {
 		case 0:
 			--ty;
@@ -203,8 +160,8 @@ bool gameLogic::offsetMove(int angleOffset) {
 			++tx;
 			break;
 		}
-		startX = x;
-		startZ = z;
+		startX = marblePos.x;
+		startZ = marblePos.z;
 		moving = ticksPerMove;
 
 		return true;
@@ -213,25 +170,65 @@ bool gameLogic::offsetMove(int angleOffset) {
 	return false;
 }
 
-void gameLogic::calculateRotation() {
-    float angleDiff = angleFacing * (float) M_PI / 2.f - rotationY;
+void gameLogic::setupCamera() {
+	cam.position.x = marblePos.x;
+	cam.position.z = marblePos.z;
+
+    float angleDiff = angleFacing * (float) M_PI / 2.f - cam.yaw;
     if (angleDiff > M_PI) {
         angleDiff -= (float) M_PI * 2.f;
     }
     if (angleDiff < -M_PI) {
         angleDiff += (float) M_PI * 2.f;
     }
-    rotationY += angleDiff * cameraTurnSpeed;
-    if (rotationY < 0.f) {
-        rotationY += (float) M_PI * 2.f;
+    cam.yaw += angleDiff * cameraTurnSpeed;
+    if (cam.yaw < 0.f) {
+		cam.yaw += (float) M_PI * 2.f;
     }
-    if (rotationY >= (float) M_PI * 2.f) {
-        rotationY -= (float) M_PI * 2.f;
+    if (cam.yaw >= (float) M_PI * 2.f) {
+		cam.yaw -= (float) M_PI * 2.f;
     }
+
+	tile *tile_from = m->getTile(tx_prev, ty_prev);
+	tile *tile_to = m->getTile(tx, ty);
+
+	float cameraToY = cameraHeight;
+
+	if (tile_from->state == STATE_ITEM || tile_to->state == STATE_ITEM) {
+		mazeItem *item_from = m->findItem(tile_from);
+		mazeItem *item_to = m->findItem(tile_to);
+
+		if ((lastMoveAngle == 0 || lastMoveAngle == 2)
+			&& ((item_to && item_to->type == ITEM_BRIDGE)
+				|| (item_from && item_from->type == ITEM_BRIDGE && moving >= ticksPerMove / 2))) {
+			cameraToY = bridgeArcHeight * 0.4f;
+		} else if ((item_to && item_to->type == ITEM_BRIDGE) || (item_from && item_from->type == ITEM_BRIDGE)) {
+			cameraToY += marblePos.y - marbleRadius;
+		}
+	}
+
+	float pitch = glm::radians(cameraPitch);
+
+	float radius = cosf(pitch) * cameraDistance;
+	float distX = sinf(cam.yaw) * radius;
+	float distY = sinf(pitch) * cameraDistance;
+	float distZ = cosf(cam.yaw) * radius;
+	cam.position += glm::vec3(distX, 0.f, distZ);
+
+	float dy = cameraToY + distY - cam.position.y;
+	cam.position.y += dy * cameraSpeed;
+
+	if (lockToMarble) {
+		float cameraToPitch = atan2f(cam.position.y - marblePos.y, radius);
+		float delta = cameraToPitch - cam.pitch;
+		cam.pitch += delta * 0.05f;
+	} else {
+		cam.pitch = pitch;
+	}
 }
 
-void gameLogic::calculateHeight() {
-	tile *tile_from = m->getTile(startTx, startTy);
+void gameLogic::setupMarble() {
+	tile *tile_from = m->getTile(tx_prev, ty_prev);
 	tile *tile_to = m->getTile(tx, ty);
 
 	static const float l = tileSize - wallThickness;
@@ -239,7 +236,6 @@ void gameLogic::calculateHeight() {
 	static const float a = l2 / 2.f + marbleRadius;
 	static const float b = l2 / l * bridgeArcHeight + marbleRadius;
 
-	float cameraToY = cameraHeight;
 	bool onItem = false;
 
 	if (tile_from->state == STATE_ITEM || tile_to->state == STATE_ITEM) {
@@ -248,59 +244,49 @@ void gameLogic::calculateHeight() {
 
 		if (moving > 0 && (lastMoveAngle == 1 || lastMoveAngle == 3)) {
 			if (item_from && item_from->type == ITEM_BRIDGE) {
-				float dx = abs(x - startX);
+				float dx = abs(marblePos.x - startX);
 				if (dx < a) {
 					dx += a;
-					y = MAX(b / a * sqrtf(dx * (2.f * a - dx)), marbleRadius);
+					marblePos.y = MAX(b / a * sqrtf(dx * (2.f * a - dx)), marbleRadius);
 				} else {
-					y = marbleRadius;
+					marblePos.y = marbleRadius;
 				}
 			}
 			if (item_to && item_to->type == ITEM_BRIDGE) {
-				float dx = abs(x - startX);
+				float dx = abs(marblePos.x - startX);
 				dx -= tileSize - a;
 				if (dx > 0.f) {
-					y = MAX(b / a * sqrtf(dx * (2.f * a - dx)), y);
+					marblePos.y = MAX(b / a * sqrtf(dx * (2.f * a - dx)), marblePos.y);
 				} else {
-					y = MAX(marbleRadius, y);
+					marblePos.y = MAX(marbleRadius, marblePos.y);
 				}
 			}
 		}
 
-		if ((lastMoveAngle == 0 || lastMoveAngle == 2)
-			&& ((item_to && item_to->type == ITEM_BRIDGE)
-			|| (item_from && item_from->type == ITEM_BRIDGE && moving >= ticksPerMove / 2))) {
-			cameraToY = bridgeArcHeight * 0.4f;
-		} else if ((item_to && item_to->type == ITEM_BRIDGE) || (item_from && item_from->type == ITEM_BRIDGE)) {
-			cameraToY += y - marbleRadius;
-		}
 		onItem = true;
 	}
 	
 	if (tile_to->state == STATE_BLOCK) {
 		if (moving <= ticksPerMove / 2) {
-			y -= fallSpeed;
+			marblePos.y -= fallSpeed;
 			fallSpeed += gravityAccel;
 			lockToMarble = true;
 		} else {
 			fallSpeed = 0.f;
 		}
 	} else if (!onItem) {
-		y = marbleRadius;
+		marblePos.y = marbleRadius;
 	}
-
-	float dy = cameraToY - cameraY;
-	cameraY += dy * cameraSpeed;
 }
 
-void gameLogic::rollMarble(float ox, float oy, float oz) {
+void gameLogic::rollMarble(glm::vec3 delta) {
 	float rollAmount = 1.f / marbleRadius / (float) M_PI;
 
-    float angleX = (oz != 0.f) ? sqrtf(oz*oz + oy*oy) * rollAmount : 0.f;
-	if (oz < 0.f) angleX = -angleX;
+    float angleX = (delta.z != 0.f) ? sqrtf(delta.z*delta.z + delta.y*delta.y) * rollAmount : 0.f;
+	if (delta.z < 0.f) angleX = -angleX;
 
-    float angleZ = (ox != 0.f) ? sqrtf(ox*ox + oy*oy) * rollAmount : 0.f;
-	if (ox < 0.f) angleZ = -angleZ;
+    float angleZ = (delta.x != 0.f) ? sqrtf(delta.x*delta.x + delta.y*delta.y) * rollAmount : 0.f;
+	if (delta.x < 0.f) angleZ = -angleZ;
 
     glm::mat4 rotation;
     rotation = glm::rotate(rotation, angleX, glm::vec3( 1.f, 0.f, 0.f));
@@ -369,7 +355,7 @@ void gameLogic::nextStep() {
 }
 
 bool gameLogic::useItem() {
-	tile *t = m->getTile((short)(x/tileSize), (short)(z/tileSize));
+	tile *t = m->getTile((short)(marblePos.x/tileSize), (short)(marblePos.z/tileSize));
 	if (t) {
 		mazeItem *item = m->findItem(t);
 		if (item) {
@@ -399,7 +385,6 @@ void gameLogic::endMove() {
 			if (!won) {
 				won = true;
 				SND_WIN.play();
-				MUS_MUSIC.fadeOut(3000);
 			}
 			break;
 		}
@@ -427,6 +412,7 @@ void gameLogic::teleportToStart(bool resetWon) {
 }
 
 void gameLogic::tick() {
+	++tickCount;
 	teleported = false;
 
 	if (moving > 0) {
@@ -435,8 +421,8 @@ void gameLogic::tick() {
 
 		--moving;
 
-		x = endX - (endX - startX) * ((float)moving / ticksPerMove);
-		z = endZ - (endZ - startZ) * ((float)moving / ticksPerMove);
+		marblePos.x = endX - (endX - startX) * ((float)moving / ticksPerMove);
+		marblePos.z = endZ - (endZ - startZ) * ((float)moving / ticksPerMove);
 
 		if (moving == 0) {
 			endMove();
@@ -453,16 +439,16 @@ void gameLogic::tick() {
 			float move = tileSize / ticksPerMove * MAX((1 - powf((fallingDelay - restartDelay) / 10.f, 2.f)), 0.f);
 			switch (lastMoveAngle) {
 			case 0:
-				z -= move;
+				marblePos.z -= move;
 				break;
 			case 1:
-				x -= move;
+				marblePos.x -= move;
 				break;
 			case 2:
-				z += move;
+				marblePos.z += move;
 				break;
 			case 3:
-				x += move;
+				marblePos.x += move;
 				break;
 			}
 		}
@@ -512,11 +498,19 @@ void gameLogic::tick() {
 			pathfinder = nullptr;
 			teleportToStart(true);
 			pressed_r = true;
-			loadMusicFromResource(MUS_MUSIC, randomMusic());
-			MUS_MUSIC.fadeIn(1000);
 		}
 	} else {
 		pressed_r = false;
+	}
+
+	static bool pressed_m = false;
+	if (keys[SDL_SCANCODE_M]) {
+		if (!pressed_m) {
+			loadMusic();
+			pressed_m = true;
+		}
+	} else {
+		pressed_m = false;
 	}
 
     static bool leftPressed = false;
@@ -544,20 +538,12 @@ void gameLogic::tick() {
         rightPressed = false;
     }
 
-	static float lastX = x;
-	static float lastY = y;
-	static float lastZ = z;
+	static glm::vec3 lastPos = marblePos;
 
-	rollMarble(x - lastX, y - lastY, z - lastZ);
+	rollMarble(marblePos - lastPos);
 
-    calculateRotation();
-    calculateHeight();
+    setupMarble();
+	setupCamera();
 
-	lastX = x;
-	lastY = y;
-	lastZ = z;
-}
-
-void gameLogic::handleEvent(SDL_Event & e) {
-
+	lastPos = marblePos;
 }

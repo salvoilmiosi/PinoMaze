@@ -1,68 +1,57 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
-#include <cstdio>
-
-#include <GL/glew.h>
-#include <GL/GL.h>
-
-template <typename T> const T MAX(const T& a, const T& b) {
+static auto MAX = [](auto a, auto b) {
 	return a > b ? a : b;
-}
+};
 
-template <typename T> const T MIN(const T& a, const T& b) {
+static auto MIN = [](auto a, auto b) {
 	return a > b ? b : a;
-}
+};
 
-static bool checkGlError(const char *message) {
-	GLenum error = glGetError();
-	if (error == GL_NO_ERROR) {
-		return true;
-	} else {
-		fprintf(stderr, "%s: %s\n", message, glewGetErrorString(error));
-		return false;
-	}
-}
+bool checkGlError(const char *message);
 
-static constexpr int windowWidth = 1024;
-static constexpr int windowHeight = 768;
-static constexpr bool fullscreen = true;
-static constexpr int tickrate = 60;
+extern const int windowWidth;
+extern const int windowHeight;
+extern const bool fullscreen;
+extern const int tickrate;
 
-static constexpr float tileSize = 1.f;
-static constexpr float blockHeight = 0.15f;
+extern const float tileSize;
+extern const float blockHeight;
 
-static constexpr float startBoxSize = 0.8f;
-static constexpr float startBoxHeight = 0.01f;
+extern const float startBoxSize;
+extern const float startBoxHeight;
 
-static constexpr float marbleRadius = 0.07f;
+extern const float marbleRadius;
 
-static constexpr float pillarHeight = 0.54f;
-static constexpr float pillarSize = 0.13f;
+extern const float pillarHeight;
+extern const float pillarSize;
 
-static constexpr float wallHeight = 0.5f;
-static constexpr float wallThickness = 0.1f;
+extern const float wallHeight;
+extern const float wallThickness;
 
-static constexpr float bridgeArcHeight = 0.4f;
-static constexpr float bridgeArcThickness = 0.027f;
-static constexpr float bridgeWallHeight = 0.63f;
+extern const float bridgeArcHeight;
+extern const float bridgeArcThickness;
+extern const float bridgeWallHeight;
 
-static constexpr int bridgeSubsH = 10;
-static constexpr int bridgeSubsV = 3;
+extern const int bridgeSubsH;
+extern const int bridgeSubsV;
 
-static constexpr float skyboxSize = 20.f;
+extern const float skyboxSize;
 
-static constexpr int ticksPerMove = 25;
-static constexpr int fallingDelay = 40;
+extern const int ticksPerMove;
+extern const int fallingDelay;
 
-static constexpr float gravityAccel = 0.0012f;
+extern const float gravityAccel;
 
-static constexpr float cameraHeight = 0.26f;
-static constexpr float cameraDistance = 0.33f;
-static constexpr float cameraPitch = 15.f;
-static constexpr float cameraSpeed = 0.1f;
-static constexpr float cameraTurnSpeed = 0.12f;
+extern const float cameraHeight;
+extern const float cameraDistance;
+extern const float cameraPitch;
+extern const float cameraSpeed;
+extern const float cameraTurnSpeed;
 
-static constexpr float shadowArea = 4.f;
+extern const float shadowArea;
+
+extern const float musicVolume;
 
 #endif // __GLOBALS_H__

@@ -170,7 +170,7 @@ bool model::calculateTangents(const vertex *vertices, const GLuint *indices,
 bool model::createMatrixBuffer(const glm::mat4 *matrices, size_t matrix_count) {
     glGenBuffers(1, &matrixBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, matrixBuffer);
-	size_t numMatrices = MAX<size_t>(1, matrix_count);
+	size_t numMatrices = MAX(1, matrix_count);
     if (matrices && matrix_count > 0) {
         glBufferData(GL_ARRAY_BUFFER, numMatrices * sizeof(glm::mat4), matrices, GL_STATIC_DRAW);
     } else {

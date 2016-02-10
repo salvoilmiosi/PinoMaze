@@ -4,8 +4,6 @@
 #include <map>
 #include <memory>
 
-using namespace std;
-
 static const int ID_MAXSIZE = 32;
 
 struct resource {
@@ -60,7 +58,7 @@ bool openResourceFile(const char *filename) {
 	return true;
 }
 
-std::string loadStringFromFile(const char *filename) {
+string loadStringFromFile(const char *filename) {
 	ifstream ifs(filename);
 	string str;
 

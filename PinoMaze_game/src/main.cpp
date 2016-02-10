@@ -45,7 +45,7 @@ int main (int argc, char **argv) {
 	}
 
 	if ((Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG) != MIX_INIT_OGG) {
-		fprintf(stderr, "Could not init ogg libraries: %s\n", Mix_GetError());
+		fprintf(stderr, "Could not init mp3 libraries: %s\n", Mix_GetError());
 		return -2;
 	}
 
@@ -55,7 +55,7 @@ int main (int argc, char **argv) {
 	}
 
 	// Load resources
-	if (!openResourceFile("resource.dat") || !openResourceFile("music.dat")) {
+	if (!openResourceFile("resource.dat", "music.dat", "shaders.dat")) {
 		fprintf(stderr, "Could not load resources\n");
 		return -4;
 	}

@@ -2,12 +2,20 @@
 #define __RES_LOADER_H__
 
 #include <SDL2/SDL_image.h>
+
 #include <string>
+
+using namespace std;
 
 #include "sound.h"
 #include "buffer.h"
 
 bool openResourceFile(const char *filename);
+
+template<typename ... T>
+inline bool openResourceFile(const char *first, T ... filenames) {
+	return openResourceFile(first) ? openResourceFile(filenames ...) : false;
+}
 
 std::string loadStringFromFile(const char *filename);
 

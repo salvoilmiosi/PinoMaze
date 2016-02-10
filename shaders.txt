@@ -1,0 +1,16 @@
+# Game shaders
+
+IDS_HOLE_FRAGMENT       "PinoMaze_game/shaders/s_hole_f.glsl"
+IDS_HOLE_VERTEX         "PinoMaze_game/shaders/s_hole_v.glsl"
+IDS_HUD_FRAGMENT        "PinoMaze_game/shaders/s_hud_f.glsl"
+IDS_HUD_VERTEX          "PinoMaze_game/shaders/s_hud_v.glsl"
+IDS_SHADOW_FRAGMENT     "PinoMaze_game/shaders/s_shadow_f.glsl"
+IDS_SHADOW_VERTEX       "PinoMaze_game/shaders/s_shadow_v.glsl"
+IDS_SKYBOX_FRAGMENT     "PinoMaze_game/shaders/s_skybox_f.glsl"
+IDS_SKYBOX_VERTEX       "PinoMaze_game/shaders/s_skybox_v.glsl"
+IDS_WORLD_FRAGMENT      "PinoMaze_game/shaders/s_world_f.glsl"
+IDS_WORLD_VERTEX        "PinoMaze_game/shaders/s_world_v.glsl"
+IDS_TELEPORT_FRAGMENT   "PinoMaze_game/shaders/s_teleport_f.glsl"
+IDS_TELEPORT_VERTEX     "PinoMaze_game/shaders/s_teleport_v.glsl"
+IDS_PARTICLE_FRAGMENT   "PinoMaze_game/shaders/s_particle_f.glsl"
+IDS_PARTICLE_VERTEX     "PinoMaze_game/shaders/s_particle_v.glsl"

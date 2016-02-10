@@ -19,7 +19,7 @@ bool game::init() {
 
 	if (!logic.init()) return false;
 
-    m_proj = glm::perspective(glm::radians(90.f), (float)windowWidth / (float)windowHeight, 0.1f, skyboxSize * sqrtf(2.f) + 2.f);
+    m_proj = glm::perspective(glm::radians(90.f), (float)windowWidth / (float)windowHeight, 0.1f, skyboxSize * 2.f);
 
 	sun.direction = glm::vec3(0.43555f, 0.5f, -0.25391f);
 
@@ -33,7 +33,7 @@ void game::handleEvent(SDL_Event &e) {
 void game::tick() {
     logic.tick();
 
-	m_view = logic.viewMatrix();
+	m_view = logic.getCamera().viewMatrix();
 	m_marble = logic.marbleMatrix();
 
 	world.tick(this);

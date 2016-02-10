@@ -66,6 +66,7 @@ bool saveFiles(const char *output_dir) {
 		char output[FILENAME_MAX];
 		strncpy(output, output_dir, FILENAME_MAX);
 		strncat(output, res.res_id, FILENAME_MAX);
+		strncat(output, ".ogg", FILENAME_MAX);
 		
 		vector<char> data(res.size);
 		
