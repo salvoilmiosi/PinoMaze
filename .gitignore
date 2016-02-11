@@ -210,3 +210,8 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/resources/src
+/music
+/music.dat
+/resource_unpack.exe
+/resource_pack.exe

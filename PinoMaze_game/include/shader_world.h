@@ -21,6 +21,8 @@ struct color : public glm::vec3 {
 };
 
 struct material {
+	static const material MAT_DEFAULT;
+
 	color ambient = 0xffffff;
 	color diffuse = 0xffffff;
 	color specular = 0x4c4c4c;
@@ -30,6 +32,14 @@ struct material {
 
 	shared_ptr<texture> tex = nullptr;
 	shared_ptr<texture> normals = nullptr;
+
+	material() {}
+
+	material(color ambient, color diffuse, color specular, color emissive,
+		shared_ptr<texture> tex = nullptr, shared_ptr<texture> normals = nullptr)
+		: ambient(ambient), diffuse(diffuse), specular(specular), emissive(emissive), tex(tex), normals(normals) {}
+
+	material(shared_ptr<texture> tex, shared_ptr<texture> normals) : tex(tex), normals(normals) {}
 };
 
 struct light {

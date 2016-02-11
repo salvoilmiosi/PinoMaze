@@ -1,6 +1,8 @@
 #include "shader_world.h"
-
 #include "res_loader.h"
+#include "globals.h"
+
+const material material::MAT_DEFAULT;
 
 bool worldShader::init() {
     return shaderProgram::loadProgramFromResource("IDS_WORLD_VERTEX", "IDS_WORLD_FRAGMENT");
@@ -47,13 +49,13 @@ void worldShader::setMaterial(const material &m) {
     setUniform(matSpecular, m.specular);
     setUniform(matEmissive, m.emissive);
     setUniform(matShininess, m.shininess);
-    if (m.tex) {
+    if (enableTextures && m.tex) {
         m.tex->bindTexture(diffuseSampler);
         setUniform(enableTexture, true);
     } else {
         setUniform(enableTexture, false);
     }
-    if (m.normals) {
+    if (enableNormalMaps && m.normals) {
         m.normals->bindTexture(normalSampler);
         setUniform(enableNormalMap, true);
     } else {

@@ -56,8 +56,8 @@ bool bridgeRenderer::init() {
 	drawArc(wallThickness / 2.f, -wallThickness / 2.f, l, bridgeArcHeight, tileSize / 1.5f, false);
     drawTopWall(wallThickness / 2.f, -wallThickness /2.f, l, l / 1.5f);
 
-    drawArcWall(-wallThickness / 2.f, -l, tileSize * 0.66f);
-    drawArcWall(wallThickness / 2.f, l, tileSize * 0.66f);
+    drawArcWall(-wallThickness / 2.f, -l, tileSize * 0.5f);
+    drawArcWall(wallThickness / 2.f, l, tileSize * 0.5f);
 
     index_count = indices.size();
 
@@ -107,12 +107,12 @@ void bridgeRenderer::renderShader(game *g, worldShader &shader) {
         vertexArray = arcVAO;
         bindModel();
 
-        shader.setMaterial(g->MAT_TILES);
+        shader.setMaterial(g->getMaterial("MAT_TILES"));
 
         glDrawElementsInstanced(GL_TRIANGLES, GLsizei(underArc_offset - overArc_offset), GL_UNSIGNED_INT,
                                 (void*)(overArc_offset * sizeof(GLuint)), (GLsizei)matrices.size());
 
-        shader.setMaterial(g->MAT_PLASTER);
+        shader.setMaterial(g->getMaterial("MAT_CEILING"));
 
         glDrawElementsInstanced(GL_TRIANGLES, GLsizei(wall_offset - underArc_offset), GL_UNSIGNED_INT,
                                 (void*)(underArc_offset * sizeof(GLuint)), (GLsizei)matrices.size());
@@ -121,7 +121,7 @@ void bridgeRenderer::renderShader(game *g, worldShader &shader) {
     }
 
     if (!wallMatrices.empty()) {
-        shader.setMaterial(g->MAT_BRICKS);
+        shader.setMaterial(g->getMaterial("MAT_BRICKS"));
 
         vertexArray = wallVAO;
         bindModel();

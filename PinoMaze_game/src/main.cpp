@@ -34,7 +34,7 @@ bool getOpenMazeFile(char *filename) {
 
 int main (int argc, char **argv) {
 	// Init SDL2 libraries
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
 		fprintf(stderr, "Could not init SDL2: %s\n", SDL_GetError());
 		return -1;
 	}

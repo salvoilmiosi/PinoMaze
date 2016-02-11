@@ -54,4 +54,7 @@ extern const float shadowArea;
 
 extern const float musicVolume;
 
+extern const bool enableTextures;
+extern const bool enableNormalMaps;
+
 #endif // __GLOBALS_H__

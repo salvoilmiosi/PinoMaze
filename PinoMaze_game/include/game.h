@@ -6,6 +6,9 @@
 
 #include <glm/glm.hpp>
 
+#include <map>
+#include <string>
+
 #include "maze.h"
 
 #include "renderer_skybox.h"
@@ -16,6 +19,8 @@
 #include "renderer_hud.h"
 
 #include "game_logic.h"
+
+using namespace std;
 
 static const glm::mat4 biasMatrix(
 	0.5f, 0.0f, 0.0f, 0.0f,
@@ -43,19 +48,7 @@ private:
 
     maze *m = nullptr;
 
-public:
-	material MAT_FLOOR;
-	material MAT_FLOOR_REFRACTED;
-	material MAT_BRICKS;
-	material MAT_COBBLE;
-	material MAT_TILES;
-	material MAT_PLASTER;
-	material MAT_MARBLE;
-	material MAT_MARBLE_REFRACTED;
-	material MAT_START;
-	material MAT_END;
-	material MAT_ARROW;
-	material MAT_RUST;
+	map<string, material> mat;
 
 public:
 	game(maze *m);
@@ -102,7 +95,9 @@ public:
 		return m_light;
 	}
 
-	void loadMaterials();
+	bool loadMaterials();
+
+	const material &getMaterial(const char *name);
 };
 
 #endif // __GAME_H__

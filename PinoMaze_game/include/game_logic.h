@@ -32,6 +32,8 @@ private:
 
 	music currentMusic;
 
+	SDL_GameController *controller = nullptr;
+
 private:
 	int tickCount = 0;
 

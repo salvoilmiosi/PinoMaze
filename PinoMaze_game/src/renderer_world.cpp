@@ -7,9 +7,9 @@
 #include "globals.h"
 
 worldRenderer::worldRenderer(maze *m) : m(m), bridge(m) {
-	pillarBox.setSize(pillarSize, pillarHeight, pillarSize, tileSize * 0.4f);
+	pillarBox.setSize(pillarSize, pillarHeight, pillarSize, pillarHeight);
     groundBox.setSize(tileSize, blockHeight * 2.f, tileSize, tileSize);
-    wallBox.setSize(tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.6f);
+    wallBox.setSize(tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f);
     startBox.setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);
     endBox.setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);
     arrowBox.setSize(startBoxSize, startBoxHeight, startBoxSize, startBoxSize);
@@ -113,28 +113,28 @@ void worldRenderer::render(game *g) {
 
 		shadowMap.bindTexture(2);
 
-		shader.setMaterial(g->MAT_FLOOR);
+		shader.setMaterial(g->getMaterial("MAT_FLOOR"));
 		groundBox.render();
 
-		shader.setMaterial(g->MAT_COBBLE);
+		shader.setMaterial(g->getMaterial("MAT_PILLAR"));
 		pillarBox.render();
 
-		shader.setMaterial(g->MAT_BRICKS);
+		shader.setMaterial(g->getMaterial("MAT_BRICKS"));
 		wallBox.render();
 
 		bridge.renderShader(g, shader);
 
-		shader.setMaterial(g->MAT_START);
+		shader.setMaterial(g->getMaterial("MAT_START"));
 		startBox.render();
 
-		shader.setMaterial(g->MAT_END);
+		shader.setMaterial(g->getMaterial("MAT_END"));
 		endBox.render();
 
-		shader.setMaterial(g->MAT_ARROW);
+		shader.setMaterial(g->getMaterial("MAT_ARROW"));
 		arrowBox.render();
 
 		if (teleportTimer % 18 < 9) {
-			shader.setMaterial(g->MAT_MARBLE);
+			shader.setMaterial(g->getMaterial("MAT_MARBLE"));
 			marble.render();
 		}
 
@@ -149,10 +149,10 @@ void worldRenderer::renderRefraction(game *g) {
 
 		shader.setRefractionHeight(-blockHeight);
 
-		shader.setMaterial(g->MAT_FLOOR_REFRACTED);
+		shader.setMaterial(g->getMaterial("MAT_FLOOR"));
 		groundBox.render();
 
-		shader.setMaterial(g->MAT_MARBLE_REFRACTED);
+		shader.setMaterial(g->getMaterial("MAT_MARBLE"));
 		marble.render();
 
 		shader.setRefractionHeight(999.f);

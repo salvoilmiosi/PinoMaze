@@ -73,7 +73,7 @@ void teleportRenderer::render(game *g) {
 
 		shader.setLight(g->viewLight());
 
-		shader.setMaterial(g->MAT_RUST);
+		shader.setMaterial(g->getMaterial("MAT_RUST"));
 		TEX_TELEPORT_TEXTURE.bindTexture(3);
 		box::render();
 

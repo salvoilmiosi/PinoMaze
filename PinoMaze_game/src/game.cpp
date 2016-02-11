@@ -5,10 +5,15 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+#include <functional>
+
 game::game(maze *m) : m(m), world(m), hole(m), teleport(m), logic(m) {}
 
 bool game::init() {
-	loadMaterials();
+	if (!loadMaterials()) return false;
 
 	if (!skybox.init()) return false;
 	if (!world.init()) return false;
@@ -67,70 +72,138 @@ light game::viewLight() {
 	return l;
 }
 
-#define LOAD_TEXTURE(RES_ID) make_shared<texture>(loadImageFromResource(RES_ID))
+static void trim(string &s) {
+	s.erase(s.begin(), find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace))));
+	s.erase(find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(), s.end());
+}
 
-void game::loadMaterials() {
-	auto TEX_MARBLE_TEXTURE = LOAD_TEXTURE("IDT_MARBLE_TEXTURE");
-	auto TEX_MARBLE_NORMALS = LOAD_TEXTURE("IDT_MARBLE_NORMALS");
-	auto TEX_FLOOR_TEXTURE = LOAD_TEXTURE("IDT_FLOOR_TEXTURE");
-	auto TEX_FLOOR_NORMALS = LOAD_TEXTURE("IDT_FLOOR_NORMALS");
-	auto TEX_BRICKS_TEXTURE = LOAD_TEXTURE("IDT_BRICKS_TEXTURE");
-	auto TEX_BRICKS_NORMALS = LOAD_TEXTURE("IDT_BRICKS_NORMALS");
-	auto TEX_COBBLE_TEXTURE = LOAD_TEXTURE("IDT_COBBLE_TEXTURE");
-	auto TEX_COBBLE_NORMALS = LOAD_TEXTURE("IDT_COBBLE_NORMALS");
-	auto TEX_TILES_TEXTURE = LOAD_TEXTURE("IDT_TILES_TEXTURE");
-	auto TEX_TILES_NORMALS = LOAD_TEXTURE("IDT_TILES_NORMALS");
-	auto TEX_PLASTER_TEXTURE = LOAD_TEXTURE("IDT_PLASTER_TEXTURE");
-	auto TEX_PLASTER_NORMALS = LOAD_TEXTURE("IDT_PLASTER_NORMALS");
-	auto TEX_ARROW_TEXTURE = LOAD_TEXTURE("IDT_ARROW_TEXTURE");
-	auto TEX_RUST_TEXTURE = LOAD_TEXTURE("IDT_RUST_TEXTURE");
-	auto TEX_RUST_NORMALS = LOAD_TEXTURE("IDT_RUST_NORMALS");
+bool game::loadMaterials() {
+	string txt = loadStringFromResource("IDM_MATERIALS");
+	if (txt.empty()) {
+		cerr << "Could not load materials\n";
+		return false;
+	}
 
-	MAT_FLOOR.specular = 0x262626;
-	MAT_FLOOR.tex = TEX_FLOOR_TEXTURE;
-	MAT_FLOOR.normals = TEX_FLOOR_NORMALS;
+	istringstream iss(txt);
 
-	MAT_FLOOR_REFRACTED.diffuse = 0x9999b2;
-	MAT_FLOOR_REFRACTED.specular = 0x000000;
-	MAT_FLOOR_REFRACTED.tex = TEX_FLOOR_TEXTURE;
+	string line;
+	int line_num = 0;
 
-	MAT_BRICKS.tex = TEX_BRICKS_TEXTURE;
-	MAT_BRICKS.normals = TEX_BRICKS_NORMALS;
+	map<string, shared_ptr<texture>> tex;
 
-	MAT_COBBLE.tex = TEX_COBBLE_TEXTURE;
-	MAT_COBBLE.normals = TEX_COBBLE_NORMALS;
+	while (getline(iss, line)) {
+		trim(line);
 
-	MAT_TILES.diffuse = 0xffffbf;
-	MAT_TILES.specular = 0x666666;
-	MAT_TILES.tex = TEX_TILES_TEXTURE;
-	MAT_TILES.normals = TEX_TILES_NORMALS;
+		++line_num;
 
-	MAT_PLASTER.ambient = 0xffffff;
-	MAT_PLASTER.diffuse = 0xaea4a9;
-	MAT_PLASTER.specular = 0x333333;
-	MAT_PLASTER.tex = TEX_PLASTER_TEXTURE;
-	MAT_PLASTER.normals = TEX_PLASTER_NORMALS;
+		if (line.empty()) continue;
+		if (line.at(0) == '#') continue;
 
-	MAT_MARBLE.ambient = 0xb2b2b2;
-	MAT_MARBLE.specular = 0x999999;
-	MAT_MARBLE.tex = TEX_MARBLE_TEXTURE;
-	MAT_MARBLE.normals = TEX_MARBLE_NORMALS;
+		istringstream line_iss(line);
 
-	MAT_MARBLE_REFRACTED.diffuse = 0x9999b2;
-	MAT_MARBLE_REFRACTED.specular = 0x000000;
-	MAT_MARBLE_REFRACTED.tex = TEX_MARBLE_TEXTURE;
+		string token;
+		line_iss >> token;
+		if (token == "texture") {
+			string tex_name, tex_id;
+			line_iss >> tex_name >> tex_id; // texture name
+			if (line_iss.fail()) {
+				cerr << "Syntax error at line #" << line_num << "\n" << line << "\n";
+				return false;
+			}
+			tex[tex_name] = make_shared<texture>(loadImageFromResource(tex_id.c_str()));
+		} else if (token == "material") {
+			string mat_name;
+			line_iss >> mat_name;
+			material &m = mat[mat_name];
 
-	MAT_START.diffuse = 0xff0000;
-	MAT_START.tex = TEX_PLASTER_TEXTURE;
-	MAT_START.normals = TEX_PLASTER_NORMALS;
+			string token;
+			while (!line_iss.eof()) {
+				line_iss >> token;
+				if (token == "texture") {
+					string tex_name;
+					line_iss >> tex_name;
+					if (line_iss.fail()) {
+						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
+						return false;
+					}
+					auto it = tex.find(tex_name);
+					if (it != tex.end()) {
+						m.tex = it->second;
+					} else {
+						cerr << "Could not find texture " << tex_name << ", skipping\n";
+					}
+				} else if (token == "normals") {
+					string tex_name;
+					line_iss >> tex_name;
+					if (line_iss.fail()) {
+						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
+						return false;
+					}
+					auto it = tex.find(tex_name);
+					if (it != tex.end()) {
+						m.normals = it->second;
+					} else {
+						cerr << "Could not find texture " << tex_name << ", skipping\n";
+					}
+				} else if (token == "ambient") {
+					int col;
+					line_iss >> hex >> col;
+					if (line_iss.fail()) {
+						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
+						return false;
+					}
+					m.ambient = col;
+				} else if (token == "diffuse") {
+					int col;
+					line_iss >> hex >> col;
+					if (line_iss.fail()) {
+						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
+						return false;
+					}
+					m.diffuse = col;
+				} else if (token == "specular") {
+					int col;
+					line_iss >> hex >> col;
+					if (line_iss.fail()) {
+						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
+						return false;
+					}
+					m.specular = col;
+				} else if (token == "emissive") {
+					int col;
+					line_iss >> hex >> col;
+					if (line_iss.fail()) {
+						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
+						return false;
+					}
+					m.emissive = col;
+				} else if (token == "shininess") {
+					float s;
+					line_iss >> dec >> s;
+					if (line_iss.fail()) {
+						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected float\n";
+						return false;
+					}
+					m.shininess = s;
+				} else {
+					cerr << "Sintax error at line #" << line_num << ": unexpected token \"" << token << "\"\n";
+					return false;
+				}
+			}
+		} else {
+			cerr << "Sintax error at line #" << line_num << ": unexpected token \"" << token << "\"\n";
+			return false;
+		}
+	}
 
-	MAT_END.diffuse = 0xff00ff;
-	MAT_END.tex = TEX_PLASTER_TEXTURE;
-	MAT_END.normals = TEX_PLASTER_NORMALS;
+	return true;
+}
 
-	MAT_ARROW.tex = TEX_ARROW_TEXTURE;
-	MAT_ARROW.normals = TEX_PLASTER_NORMALS;
-
-	MAT_RUST.tex = TEX_RUST_TEXTURE;
-	MAT_RUST.normals = TEX_RUST_NORMALS;
+const material &game::getMaterial(const char *name) {
+	auto it = mat.find(name);
+	if (it != mat.end()) {
+		return it->second;
+	} else {
+		return material::MAT_DEFAULT;
+	}
 }

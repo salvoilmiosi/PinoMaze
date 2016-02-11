@@ -33,6 +33,10 @@ gameLogic::gameLogic(maze *m) : m(m) {}
 
 gameLogic::~gameLogic() {
 	currentMusic.stop();
+
+	if (controller) {
+		SDL_GameControllerClose(controller);
+	}
 }
 
 bool gameLogic::init() {
@@ -44,6 +48,8 @@ bool gameLogic::init() {
 	loadMusic();
 
 	teleportToStart(true);
+
+	controller = SDL_GameControllerOpen(0);
 
 	return true;
 }
@@ -432,6 +438,19 @@ void gameLogic::tick() {
 	const Uint8* keys = SDL_GetKeyboardState(nullptr);
 	static bool pressed_space = false;
 
+	bool up, down, left, right, strafeleft, straferight, use, reset, autoplay, changemusic;
+
+	up = (keys[SDL_SCANCODE_UP] != 0) || (keys[SDL_SCANCODE_W] != 0);
+	down = (keys[SDL_SCANCODE_DOWN] != 0) || (keys[SDL_SCANCODE_S] != 0);
+	left = keys[SDL_SCANCODE_LEFT] != 0;
+	right = keys[SDL_SCANCODE_RIGHT] != 0;
+	strafeleft = keys[SDL_SCANCODE_A] != 0;
+	straferight = keys[SDL_SCANCODE_D] != 0;
+	use = keys[SDL_SCANCODE_SPACE] != 0;
+	reset = keys[SDL_SCANCODE_R] != 0;
+	autoplay = keys[SDL_SCANCODE_P] != 0;
+	changemusic = keys[SDL_SCANCODE_M] != 0;
+
 	if (restartDelay > 0) {
 		--restartDelay;
 		if (moving == 0) {
@@ -457,15 +476,41 @@ void gameLogic::tick() {
 			SND_HOLE.play();
 		}
 	} else {
-		if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W]) {
+		if (controller) {
+			use = use || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A);
+			reset = reset || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START);
+			autoplay = autoplay || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_X);
+			changemusic = changemusic || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_BACK);
+
+			static const short sens = 20000;
+
+			short l_x = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
+			strafeleft = strafeleft || (l_x < -sens);
+			straferight = straferight || (l_x > sens);
+
+			short l_y = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
+			up = up || (l_y < -sens);
+			down = down || (l_y > sens);
+
+			short r_x = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
+			left = left || (r_x < -sens);
+			right = right || (r_x > sens);
+
+			up = up || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP);
+			down = down || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+			left = left || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+			right = right || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+		}
+
+		if (up) {
 			offsetMove(0);
 			pathfinder = nullptr;
-		} else if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S]) {
+		} else if (down) {
 			offsetMove(2);
 			pathfinder = nullptr;
 		}
 
-		if (keys[SDL_SCANCODE_SPACE]) {
+		if (use) {
 			if (!pressed_space && useItem()) {
 				pressed_space = true;
 			}
@@ -473,17 +518,17 @@ void gameLogic::tick() {
 			pressed_space = false;
 		}
 
-		if (keys[SDL_SCANCODE_A]) {
+		if (strafeleft) {
 			offsetMove(1);
 			pathfinder = nullptr;
-		} else if (keys[SDL_SCANCODE_D]) {
+		} else if (straferight) {
 			offsetMove(3);
 			pathfinder = nullptr;
 		}
 	}
 
 	static bool pressed_p = false;
-	if (keys[SDL_SCANCODE_P]) {
+	if (autoplay) {
 		if (!pressed_p) {
 			startPathing();
 			pressed_p = true;
@@ -493,7 +538,7 @@ void gameLogic::tick() {
 	}
 
 	static bool pressed_r = false;
-	if (keys[SDL_SCANCODE_R]) {
+	if (reset) {
 		if (!pressed_r) {
 			pathfinder = nullptr;
 			teleportToStart(true);
@@ -504,7 +549,7 @@ void gameLogic::tick() {
 	}
 
 	static bool pressed_m = false;
-	if (keys[SDL_SCANCODE_M]) {
+	if (changemusic) {
 		if (!pressed_m) {
 			loadMusic();
 			pressed_m = true;
@@ -514,7 +559,7 @@ void gameLogic::tick() {
 	}
 
     static bool leftPressed = false;
-    if (keys[SDL_SCANCODE_LEFT]) {
+    if (left) {
         if (!leftPressed) {
             ++angleFacing;
             if (angleFacing > 3) {
@@ -526,7 +571,7 @@ void gameLogic::tick() {
         leftPressed = false;
     }
     static bool rightPressed = false;
-    if (keys[SDL_SCANCODE_RIGHT]) {
+    if (right) {
         if (!rightPressed) {
             --angleFacing;
             if (angleFacing < 0) {
