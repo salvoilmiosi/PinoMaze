@@ -143,7 +143,7 @@ void bridgeRenderer::drawArc(float z1, float z2, float w, float h, float texSize
 	float angle;
 
 	for (int i=0; i <= bridgeSubsH; ++i) {
-        angle = (float) M_PI / bridgeSubsH * i;
+        angle = M_PI_F / bridgeSubsH * i;
 
 		position = {cosf(angle) * w / 2.f, sinf(angle) * h, 0.f};
 
@@ -167,7 +167,7 @@ void bridgeRenderer::drawArcWall(float z, float w, float texSize) {
     for (int i=0; i<bridgeSubsV; ++i) {
         GLuint startIndex = (GLuint)vertices.size();
         for (int j=0; j<=bridgeSubsH; ++j) {
-            float angle_bottom = (float) M_PI * j / bridgeSubsH;
+            float angle_bottom = M_PI_F * j / bridgeSubsH;
 
             float x = cosf(angle_bottom);
             float vx = x * w / 2.f;
@@ -194,8 +194,8 @@ void bridgeRenderer::drawArcWall(float z, float w, float texSize) {
             v2.y = vy_over;
             v1.z = v2.z = z;
 
-            v1.u = - angle_under * bridgeWallHeight / bridgeArcHeight / (float) M_PI / texSize;
-            v2.u = - angle_over * bridgeWallHeight / bridgeArcHeight / (float) M_PI / texSize;
+            v1.u = - angle_under * bridgeWallHeight / bridgeArcHeight / M_PI_F / texSize;
+            v2.u = - angle_over * bridgeWallHeight / bridgeArcHeight / M_PI_F / texSize;
             v1.v = 1.f - (radius_under - 1.f) * bridgeArcHeight / texSize;
             v2.v = 1.f - (radius_over - 1.f) * bridgeArcHeight / texSize;
 
@@ -219,7 +219,7 @@ void bridgeRenderer::drawTopWall(float z1, float z2, float w, float texSize) {
     float b = bridgeWallHeight;
 
 	for (int i=0; i <= bridgeSubsH; ++i) {
-        angle = (float) M_PI / bridgeSubsH * i;
+        angle = M_PI_F / bridgeSubsH * i;
 
         float x = cosf(angle) * w / 2.f;
         position.x = x;

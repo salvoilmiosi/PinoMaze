@@ -16,7 +16,7 @@ bool sphere::init() {
 	glm::vec3 t;
     for (int i=0; i <= sphereSubsV; ++i) {
         v.v = 1.f - (float) i / sphereSubsV;
-        angleX = (0.5f - v.v) * (float) M_PI;
+        angleX = (0.5f - v.v) * M_PI_F;
 
         radius = cosf(angleX);
 
@@ -26,7 +26,7 @@ bool sphere::init() {
 
         for (int j=0; j<=sphereSubsH; ++j) {
             v.u = (float) j / sphereSubsH;
-            angleY = v.u * (float) M_PI * 2.f;
+            angleY = v.u * M_PI_F * 2.f;
 
 			t.x = sinf(angleY);
 			t.z = cosf(angleY);

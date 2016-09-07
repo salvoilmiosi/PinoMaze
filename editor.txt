@@ -1,0 +1,6 @@
+# Editor
+
+IDB_TILES               "resources/editor/tiles_10x10.png"
+IDB_TP_FONT             "resources/editor/potash_10x10.png"
+IDB_TOOLS               "resources/editor/tools.png"
+IDB_TEXT                "resources/editor/MDA_8x14.png"

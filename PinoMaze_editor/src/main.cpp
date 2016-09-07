@@ -283,7 +283,7 @@ int main (int argc, char **argv) {
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-	if (!openResourceFile("resource.dat") || !loadResources(renderer)) {
+	if (!openResourceFile("editor.dat") || !loadResources(renderer)) {
 		fprintf(stderr, "Could not load resources\n");
 		return 3;
 	}
