@@ -1,6 +1,6 @@
 #include "tool_crop.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 void toolCrop::handleEvent(SDL_Event &e) {
     switch (e.type) {

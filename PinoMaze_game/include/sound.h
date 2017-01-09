@@ -3,10 +3,6 @@
 
 #include <SDL2/SDL_mixer.h>
 
-#include "buffer.h"
-
-#include <memory>
-
 using namespace std;
 
 class sound {
@@ -21,15 +17,15 @@ public:
 		}
 	}
 
-	bool loadChunk(unique_ptr<buffer> b, int chan = -1) {
-		if (!b || b->rw == nullptr) {
+	bool loadChunk(SDL_RWops *rw, int chan = -1) {
+		if (!rw) {
 			return false;
 		}
-		Mix_Chunk *c = Mix_LoadWAV_RW(b->rw, 0);
-		if (c == nullptr) {
+		Mix_Chunk *c = Mix_LoadWAV_RW(rw, 1);
+		if (!c) {
 			return false;
 		}
-		if (chunk != nullptr && chunk != c) {
+		if (chunk && chunk != c) {
 			Mix_FreeChunk(chunk);
 		}
 		chunk = c;
@@ -61,7 +57,7 @@ public:
 class music {
 private:
 	Mix_Music *mus = nullptr;
-	unique_ptr<buffer> buf;
+	SDL_RWops *rw_buf;
 
 public:
 	virtual ~music() {
@@ -69,22 +65,26 @@ public:
 			//stop();
 			Mix_FreeMusic(mus);
 		}
+
+		if (rw_buf) {
+			SDL_RWclose(rw_buf);
+		}
 	}
 
-	bool loadMusic(unique_ptr<buffer> b) {
-		if (!b || b->rw == nullptr) {
+	bool loadMusic(SDL_RWops *rw) {
+		if (!rw) {
 			return false;
 		}
-		Mix_Music *m = Mix_LoadMUSType_RW(b->rw, MUS_OGG, 0);
-		if (m == nullptr) {
+		Mix_Music *m = Mix_LoadMUSType_RW(rw, MUS_OGG, 0);
+		if (!m) {
 			return false;
 		}
-		if (mus != nullptr && mus != m) {
+		if (mus && mus != m) {
 			stop();
 			Mix_FreeMusic(mus);
 		}
 		mus = m;
-		buf = move(b);
+		rw_buf = rw;
 		return true;
 	}
 

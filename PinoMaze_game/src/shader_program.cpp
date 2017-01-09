@@ -55,13 +55,15 @@ bool shaderProgram::loadProgramFromSource(const char *vertexSource, const char *
 }
 
 bool shaderProgram::loadProgramFromFile(const char *vertexFilename, const char *fragmentFilename) {
+	return false;
+	/*
 	std::string vertexSource = loadStringFromFile(vertexFilename);
 	if (vertexSource.empty()) return false;
 
 	std::string fragmentSource = loadStringFromFile(fragmentFilename);
 	if (fragmentSource.empty()) return false;
 
-	return loadProgramFromSource(vertexSource.c_str(), fragmentSource.c_str());
+	return loadProgramFromSource(vertexSource.c_str(), fragmentSource.c_str());*/
 }
 
 bool shaderProgram::loadProgramFromResource(const char *VERTEX_ID, const char *FRAGMENT_ID) {

@@ -1,6 +1,6 @@
 #include "tool_teleport.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 extern int windowWidth;
 extern int windowHeight;

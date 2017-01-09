@@ -1,12 +1,10 @@
 #include "maze.h"
 
-#include "res_loader.h"
-
 extern int windowWidth;
 extern int windowHeight;
 #include "tile.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 SDL_Color getTileColor(const tile &t) {
     switch (t.state) {

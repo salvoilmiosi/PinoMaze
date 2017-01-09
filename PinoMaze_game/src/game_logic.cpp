@@ -74,7 +74,7 @@ void gameLogic::teleportTo(int _x, int _y) {
 
 	marblePos = { (tx + 0.5f) * tileSize, marbleRadius, (ty + 0.5f) * tileSize };
 
-	cam.yaw = angleFacing * M_PI_F / 2.f;
+	cam.yaw = angleFacing * M_PI / 2.f;
 	cam.position = marblePos;
     cam.position.y = cameraHeight;
 
@@ -180,19 +180,19 @@ void gameLogic::setupCamera() {
 	cam.position.x = marblePos.x;
 	cam.position.z = marblePos.z;
 
-    float angleDiff = angleFacing * M_PI_F / 2.f - cam.yaw;
-    if (angleDiff > M_PI_F) {
-        angleDiff -= M_PI_F * 2.f;
+    float angleDiff = angleFacing * M_PI / 2.f - cam.yaw;
+    if (angleDiff > M_PI) {
+        angleDiff -= M_PI * 2.f;
     }
-    if (angleDiff < -M_PI_F) {
-        angleDiff += M_PI_F * 2.f;
+    if (angleDiff < -M_PI) {
+        angleDiff += M_PI * 2.f;
     }
     cam.yaw += angleDiff * cameraTurnSpeed;
     if (cam.yaw < 0.f) {
-		cam.yaw += M_PI_F * 2.f;
+		cam.yaw += M_PI * 2.f;
     }
-    if (cam.yaw >= M_PI_F * 2.f) {
-		cam.yaw -= M_PI_F * 2.f;
+    if (cam.yaw >= M_PI * 2.f) {
+		cam.yaw -= M_PI * 2.f;
     }
 
 	tile *tile_from = m->getTile(tx_prev, ty_prev);
@@ -286,7 +286,7 @@ void gameLogic::setupMarble() {
 }
 
 void gameLogic::rollMarble(glm::vec3 delta) {
-	float rollAmount = 1.f / marbleRadius / M_PI_F;
+	float rollAmount = 1.f / marbleRadius / M_PI;
 
     float angleX = (delta.z != 0.f) ? sqrtf(delta.z*delta.z + delta.y*delta.y) * rollAmount : 0.f;
 	if (delta.z < 0.f) angleX = -angleX;

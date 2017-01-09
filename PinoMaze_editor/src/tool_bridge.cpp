@@ -1,6 +1,6 @@
 #include "tool_bridge.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 void toolBridge::handleEvent(SDL_Event &e) {
     short gridX;

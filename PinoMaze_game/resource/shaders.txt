@@ -1,0 +1,16 @@
+# Game shaders
+
+IDS_HOLE_FRAGMENT       "shaders/s_hole_f.glsl"
+IDS_HOLE_VERTEX         "shaders/s_hole_v.glsl"
+IDS_HUD_FRAGMENT        "shaders/s_hud_f.glsl"
+IDS_HUD_VERTEX          "shaders/s_hud_v.glsl"
+IDS_SHADOW_FRAGMENT     "shaders/s_shadow_f.glsl"
+IDS_SHADOW_VERTEX       "shaders/s_shadow_v.glsl"
+IDS_SKYBOX_FRAGMENT     "shaders/s_skybox_f.glsl"
+IDS_SKYBOX_VERTEX       "shaders/s_skybox_v.glsl"
+IDS_WORLD_FRAGMENT      "shaders/s_world_f.glsl"
+IDS_WORLD_VERTEX        "shaders/s_world_v.glsl"
+IDS_TELEPORT_FRAGMENT   "shaders/s_teleport_f.glsl"
+IDS_TELEPORT_VERTEX     "shaders/s_teleport_v.glsl"
+IDS_PARTICLE_FRAGMENT   "shaders/s_particle_f.glsl"
+IDS_PARTICLE_VERTEX     "shaders/s_particle_v.glsl"

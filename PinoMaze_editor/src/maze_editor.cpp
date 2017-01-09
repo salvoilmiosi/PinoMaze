@@ -1,6 +1,6 @@
 #include "maze_editor.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 #include "tool_select.h"
 #include "tool_crop.h"

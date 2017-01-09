@@ -1,6 +1,6 @@
 #include "tool_wall.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 #include <cstdlib>
 

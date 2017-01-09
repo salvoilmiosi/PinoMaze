@@ -13,7 +13,9 @@
 #include "maze_editor.h"
 #include "maze_renderer.h"
 
-#include "res_loader.h"
+#include "resources.h"
+
+using namespace std;
 
 int windowWidth = 800;
 int windowHeight = 600;

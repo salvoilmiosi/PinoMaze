@@ -1,6 +1,6 @@
 #include "tool_base.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 void mazeEditorTool::renderSelection(SDL_Renderer *renderer, tile *selectedTile) {
     if (selectedTile == nullptr) return;
