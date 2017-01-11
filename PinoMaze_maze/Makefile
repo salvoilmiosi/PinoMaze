@@ -1,20 +1,16 @@
 CXX = g++
-LD = g++
-CFLAGS = -g -Wall --std=c++11
-
-LDFLAGS = -shared
-LIBS = 
+AR = ar
+CFLAGS = -g -Wall --std=c++14
 
 INCLUDE = include
-BIN_DIR = ../bin
+BIN_DIR = lib
 OBJ_DIR = obj
 
 MAKE = make
 
-OUT_BIN = PinoMaze_maze.so
+OUT_BIN = libmaze.a
 
 ifeq ($(OS),Windows_NT)
-	OUT_BIN := $(OUT_BIN:.so=.dll)
 	MAKE := mingw32-make
 endif
 
@@ -29,11 +25,11 @@ OBJECTS = $(patsubst src/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES))) $(resource_loa
 all: $(BIN_DIR)/$(OUT_BIN)
 
 clean:
-	rm -rf $(BIN_DIR)
+	rm -f $(BIN_DIR)/$(OUT_BIN)
 	rm -rf $(OBJ_DIR)
 
 $(BIN_DIR)/$(OUT_BIN): $(OBJECTS)
-	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS)
+	$(AR) rvs $(BIN_DIR)/$(OUT_BIN) $(OBJECTS)
 
 $(OBJ_DIR)/%.o : src/%.cpp
 $(OBJ_DIR)/%.o : src/%.cpp $(OBJ_DIR)/%.d

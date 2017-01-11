@@ -14,6 +14,6 @@ enum message_type {
 
 const char *getMazeFilename(dialog_type diag, const char *lastName = nullptr);
 
-void messageBox(message_type diag, const char *message, const char *title = "Error");
+void messageBox(message_type diag, const char *message);
 
 #endif

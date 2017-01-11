@@ -43,7 +43,7 @@ const char *getMazeFilename(dialog_type diag, const char *lastName) {
     return nullptr;
 }
 
-void messageBox(message_type diag, const char *message, const char *title) {
+void messageBox(message_type diag, const char *message) {
 	UINT flags = 0;
 	switch (diag) {
 	case MESSAGE_ERROR:
@@ -56,7 +56,7 @@ void messageBox(message_type diag, const char *message, const char *title) {
 		flags |= MB_OK | MB_ICONWARNING;
 		break;
 	}
-	MessageBox(nullptr, message, title, flags);
+	MessageBox(nullptr, message, "PinoMaze", flags);
 }
 
 #else
@@ -68,7 +68,7 @@ const char *getMazeFilename(dialog_type diag, const char *lastName) {
 	return nullptr;
 }
 
-void messageBox(message_type diag, const char *message, const char *title) {
+void messageBox(message_type diag, const char *message) {
 	Uint32 flags = 0;
 	switch (diag) {
 	case MESSAGE_ERROR:
@@ -81,7 +81,7 @@ void messageBox(message_type diag, const char *message, const char *title) {
 		flags |= SDL_MESSAGEBOX_WARNING;
 		break;
 	}
-	SDL_ShowSimpleMessageBox(flags, title, message, nullptr);
+	SDL_ShowSimpleMessageBox(flags, "PinoMaze", message, nullptr);
 }
 
 #endif
