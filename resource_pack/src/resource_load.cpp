@@ -10,7 +10,7 @@ static const int ID_MAXSIZE = 32;
 struct resource {
 	size_t size = 0;
 	size_t ptr = 0;
-	const char *filename;
+	std::string filename;
 };
 
 static map<string, resource> resFiles;
@@ -26,7 +26,7 @@ static unsigned int readInt(ifstream &ifs) {
 	return num;
 }
 
-bool openResourceFile(const char *filename) {
+bool openResourceFile(const std::string &filename) {
 	ifstream ifs(filename, ios::binary);
 
 	if (ifs.fail()) {
@@ -63,7 +63,7 @@ bool openResourceFile(const char *filename) {
 SDL_RWops *getResourceRW(const char *RES_ID) {
 	try {
 		resource &res = resFiles.at(RES_ID);
-		char *data = new char[res.size];
+		char *data = (char *)malloc(res.size);
 
 		ifstream ifs(res.filename, ios::binary);
 		ifs.seekg(res.ptr);

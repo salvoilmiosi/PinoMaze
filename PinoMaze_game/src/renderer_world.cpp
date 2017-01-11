@@ -31,7 +31,7 @@ bool worldRenderer::init() {
     if (!shadowBuffer.init()) return false;
     shadowMap.setFilter(GL_NEAREST);
     shadowMap.setWrapParam(GL_CLAMP_TO_EDGE);
-    shadowMap.createEmpty(1024, 1024, true);
+    shadowMap.createEmpty(4096, 4096, true);
     shadowBuffer.attachDepthMap(shadowMap);
 
 	if (shader.bindProgram()) {
