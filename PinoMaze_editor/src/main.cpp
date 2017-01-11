@@ -1,5 +1,3 @@
-#include <windows.h>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -14,6 +12,8 @@
 #include "maze_renderer.h"
 
 #include "resources.h"
+
+#include "gui.h"
 
 using namespace std;
 
@@ -74,27 +74,12 @@ static const char *fileExtension(const char *filename) {
 }
 
 static bool openMazeFile() {
-    char filename[MAX_PATH];
-    memset(filename, 0, MAX_PATH);
+    const char *filename = getMazeFilename(DIALOG_OPEN);
 
-	OPENFILENAME ofn;
-	ZeroMemory(&ofn, sizeof(ofn));
-
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = nullptr;
-	ofn.lpstrFile = filename;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrFilter = "Mazes (*.pmz)\0*.pmz\0All files (*.*)\0*.*\0";
-	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = nullptr;
-	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = nullptr;
-	ofn.Flags |= OFN_NOCHANGEDIR;
-
-    if (GetOpenFileName(&ofn)) {
+    if (filename) {
 		unique_ptr<maze> m = openMaze(filename);
         if (m == nullptr) {
-            MessageBox(nullptr, "Cannot open this file", "Error", MB_OK | MB_ICONERROR);
+            messageBox(MESSAGE_ERROR, "Cannot open this file");
             return false;
         } else {
 			lastFilename = filename;
@@ -106,34 +91,13 @@ static bool openMazeFile() {
 }
 
 static bool saveMazeFile() {
-	char filename[MAX_PATH];
-	memset(filename, 0, MAX_PATH);
-	snprintf(filename, MAX_PATH, "%s", lastFilename.c_str());
+    const char *filename = getMazeFilename(DIALOG_SAVE, lastFilename.c_str());
 
-	OPENFILENAME ofn;
-	ZeroMemory(&ofn, sizeof(ofn));
-
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = nullptr;
-	ofn.lpstrFile = filename;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrFilter = "Mazes (*.pmz)\0*.pmz\0All files (*.*)\0*.*\0";
-	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = nullptr;
-	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = nullptr;
-	ofn.Flags |= OFN_NOCHANGEDIR;
-
-    if (GetSaveFileName(&ofn)) {
+    if (filename) {
+        lastFilename = filename;
         if (strlen(fileExtension(filename)) == 0) {
-			size_t namesize = strlen(filename);
-			filename[namesize] = '.';
-			filename[namesize + 1] = 'p';
-			filename[namesize + 2] = 'm';
-			filename[namesize + 3] = 'z';
-			filename[namesize + 4] = '\0';
+            lastFilename += ".pmz";
         }
-		lastFilename = filename;
         saveMaze(filename, mainMaze.get());
         return true;
     }

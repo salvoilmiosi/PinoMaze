@@ -11,7 +11,7 @@ INCLUDE = -Iinclude -I$(PinoMaze_maze_dir)/include
 BIN_DIR = ../bin
 OBJ_DIR = obj
 
-PinoMaze_maze = $(BIN_DIR)/PinoMaze_maze.so
+PinoMaze_maze = $(PinoMaze_maze_dir)/lib/libmaze.a
 
 MAKE = make
 
@@ -25,7 +25,6 @@ ifeq ($(OS),Windows_NT)
 	LDFLAGS += -mwindows -lmingw32 -lSDL2main
 	OUT_BIN := $(OUT_BIN).exe
 	resource_pack := $(resource_pack).exe
-	PinoMaze_maze := $(PinoMaze_maze:.so=.dll)
 	MAKE := mingw32-make
 endif
 
@@ -40,7 +39,8 @@ OBJECTS = $(patsubst src/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES))) $(resource_loa
 all: $(BIN_DIR)/$(OUT_BIN)
 
 clean:
-	rm -rf $(BIN_DIR)
+	rm -f $(BIN_DIR)/$(OUT_BIN)
+	rm -f $(BIN_DIR)/editor.dat
 	rm -rf $(OBJ_DIR)
 	$(MAKE) -C $(PinoMaze_maze_dir) clean
 	$(MAKE) -C $(resource_pack_dir) clean
