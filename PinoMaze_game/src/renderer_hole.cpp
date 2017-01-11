@@ -1,6 +1,6 @@
 #include "renderer_hole.h"
 
-#include "res_loader.h"
+#include "resources.h"
 #include "game.h"
 #include "globals.h"
 

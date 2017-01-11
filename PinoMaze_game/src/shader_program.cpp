@@ -1,6 +1,6 @@
 #include "shader_program.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <cstdio>

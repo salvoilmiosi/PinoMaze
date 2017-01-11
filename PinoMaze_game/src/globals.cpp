@@ -3,7 +3,7 @@
 #include <cstdio>
 
 #include <GL/glew.h>
-#include <GL/GL.h>
+#include <GL/gl.h>
 
 bool checkGlError(const char *message) {
 	GLenum error = glGetError();

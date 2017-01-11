@@ -1,6 +1,6 @@
 #include "texture.h"
 
-#include "res_loader.h"
+#include "resources.h"
 #include "globals.h"
 
 texture::~texture() {

@@ -5,7 +5,6 @@
 #include <GL/gl.h>
 
 #include "cubemap.h"
-#include "res_loader.h"
 
 #include "shader_skybox.h"
 

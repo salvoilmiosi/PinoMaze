@@ -1,6 +1,6 @@
 #include "renderer_hud.h"
 
-#include "res_loader.h"
+#include "resources.h"
 #include "globals.h"
 
 hudRenderer::~hudRenderer() {

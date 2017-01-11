@@ -1,6 +1,6 @@
 #include "shader_hole.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 bool holeShader::init() {
     return shaderProgram::loadProgramFromResource("IDS_HOLE_VERTEX", "IDS_HOLE_FRAGMENT");

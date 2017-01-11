@@ -1,5 +1,5 @@
 #include "shader_world.h"
-#include "res_loader.h"
+#include "resources.h"
 #include "globals.h"
 
 const material material::MAT_DEFAULT;

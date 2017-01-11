@@ -1,6 +1,6 @@
 #include "shader_skybox.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 void skyboxShader::setViewMatrix(glm::mat4 m) {
     m[3][0] = 0.f;

@@ -1,6 +1,6 @@
 #include "game.h"
 
-#include "res_loader.h"
+#include "resources.h"
 #include "globals.h"
 
 #include <glm/gtc/matrix_transform.hpp>

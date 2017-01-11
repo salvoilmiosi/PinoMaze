@@ -11,9 +11,11 @@ using namespace std;
 
 #include "sound.h"
 
+bool openResourceFile(const char *dir, const char *filename);
+
 template<typename ... T>
-inline bool openResourceFile(const char *first, T ... filenames) {
-	return openResourceFile(first) ? openResourceFile(filenames ...) : false;
+inline bool openResourceFile(const char *dir, const char *first, T ... filenames) {
+	return openResourceFile(dir, first) ? openResourceFile(dir, filenames ...) : false;
 }
 
 std::string loadStringFromResource(const char *RES_ID);

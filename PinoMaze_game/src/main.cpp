@@ -1,5 +1,3 @@
-#include <windows.h>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
@@ -14,23 +12,9 @@
 
 #include "game.h"
 
-bool getOpenMazeFile(char *filename) {
-	OPENFILENAME ofn;
-	ZeroMemory(&ofn, sizeof(ofn));
+#include "gui.h"
 
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = nullptr;
-	ofn.lpstrFile = filename;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrFilter = "Mazes (*.pmz)\0*.pmz\0All files (*.*)\0*.*\0";
-	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = nullptr;
-	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = nullptr;
-	ofn.Flags |= OFN_NOCHANGEDIR;
-
-	return GetOpenFileName(&ofn) != 0;
-}
+#include "resources.h"
 
 int main (int argc, char **argv) {
 	// Init SDL2 libraries
@@ -55,7 +39,7 @@ int main (int argc, char **argv) {
 	}
 
 	// Load resources
-	if (!openResourceFile("resource.dat", "music.dat", "shaders.dat")) {
+	if (!openResourceFile(argv[0], "resource.dat", "music.dat", "shaders.dat")) {
 		fprintf(stderr, "Could not load resources\n");
 		return -4;
 	}
@@ -67,10 +51,9 @@ int main (int argc, char **argv) {
 		mainMaze = openMaze(argv[1]);
 	} else {
 		// Or open the dialog
-		char filename[MAX_PATH];
-		memset(filename, 0, sizeof(filename));
+		const char *filename = getMazeFilename(DIALOG_OPEN);
 
-		if (!getOpenMazeFile(filename)) {
+		if (!filename) {
 			return 0;
 		}
 
@@ -78,7 +61,7 @@ int main (int argc, char **argv) {
 	}
 
 	if (mainMaze == nullptr) {
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "PinoMaze", "Cannot open this file", nullptr);
+		messageBox(MESSAGE_WARNING, "Cannot open this file");
 		return 0;
 	}
 
@@ -110,7 +93,7 @@ int main (int argc, char **argv) {
 	glewExperimental = true;
 	GLenum error = glewInit();
 	if (error != GLEW_OK) {
-		return false;
+		return -7;
 	}
 
 	srand(SDL_GetTicks());
@@ -120,8 +103,7 @@ int main (int argc, char **argv) {
 
 	if (!mainGame->init()) {
 		fprintf(stderr, "Could not init game\n");
-		fgetc(stdin);
-		return -7;
+		return -8;
 	}
 
 	// Setup OpenGL options

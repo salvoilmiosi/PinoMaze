@@ -1,6 +1,6 @@
 #include "game_logic.h"
 
-#include "res_loader.h"
+#include "resources.h"
 #include "globals.h"
 
 glm::mat4 camera::viewMatrix() const {

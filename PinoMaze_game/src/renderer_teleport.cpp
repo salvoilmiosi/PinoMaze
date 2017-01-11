@@ -3,6 +3,8 @@
 #include "globals.h"
 #include "game.h"
 
+#include "resources.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 teleportRenderer::teleportRenderer(maze *m) : m(m) {

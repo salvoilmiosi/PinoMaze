@@ -1,6 +1,6 @@
 #include "shader_hud.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 bool hudShader::init() {
     return shaderProgram::loadProgramFromResource("IDS_HUD_VERTEX", "IDS_HUD_FRAGMENT");

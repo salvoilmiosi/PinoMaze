@@ -1,6 +1,6 @@
 #include "shader_particle.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 bool particleShader::init() {
 	return shaderProgram::loadProgramFromResource("IDS_PARTICLE_VERTEX", "IDS_PARTICLE_FRAGMENT");

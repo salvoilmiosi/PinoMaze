@@ -2,6 +2,16 @@
 
 #include <vector>
 
+bool openResourceFile(const char *dir, const char *filename) {
+    std::string path;
+    if (dir) {
+        path = dir;
+        path = path.substr(0, 1 + path.find_last_of("\\/"));
+    }
+    path += filename;
+    return openResourceFile(path.c_str());
+}
+
 string loadStringFromResource(const char * RES_ID) {
 	SDL_RWops *data = getResourceRW(RES_ID);
 

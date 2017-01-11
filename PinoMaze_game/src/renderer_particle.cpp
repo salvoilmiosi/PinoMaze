@@ -1,6 +1,6 @@
 #include "renderer_particle.h"
 
-#include "res_loader.h"
+#include "resources.h"
 #include "game.h"
 
 bool particleRenderer::init() {

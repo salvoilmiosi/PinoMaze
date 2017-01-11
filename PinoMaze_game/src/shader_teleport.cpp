@@ -1,6 +1,6 @@
 #include "shader_teleport.h"
 
-#include "res_loader.h"
+#include "resources.h"
 
 bool teleportShader::init() {
 	return loadProgramFromResource("IDS_TELEPORT_VERTEX", "IDS_TELEPORT_FRAGMENT");

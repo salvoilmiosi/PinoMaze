@@ -249,7 +249,11 @@ int main (int argc, char **argv) {
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-	if (!openResourceFile("editor.dat") || !loadResources(renderer)) {
+    std::string res_path = argv[0];
+    res_path = res_path.substr(0, 1 + res_path.find_last_of("\\/"));
+    res_path += "editor.dat";
+
+	if (!openResourceFile(res_path.c_str()) || !loadResources(renderer)) {
 		fprintf(stderr, "Could not load resources\n");
 		return 3;
 	}
