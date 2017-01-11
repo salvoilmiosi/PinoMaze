@@ -4,6 +4,7 @@
 
 #include <windows.h>
 #include <cstring>
+#include <cstdio>
 
 const char *getMazeFilename(dialog_type diag, const char *lastName) {
 	static char filename[MAX_PATH];
