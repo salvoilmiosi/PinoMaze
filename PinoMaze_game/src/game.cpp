@@ -92,6 +92,8 @@ bool game::loadMaterials() {
 	map<string, shared_ptr<texture>> tex;
 
 	while (getline(iss, line)) {
+		const char *c_line = line.c_str();
+		
 		trim(line);
 
 		++line_num;

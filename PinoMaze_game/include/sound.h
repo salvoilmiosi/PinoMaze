@@ -57,12 +57,11 @@ public:
 class music {
 private:
 	Mix_Music *mus = nullptr;
-	SDL_RWops *rw_buf;
+	SDL_RWops *rw_buf = nullptr;
 
 public:
 	virtual ~music() {
-		if (mus != nullptr) {
-			//stop();
+		if (mus) {
 			Mix_FreeMusic(mus);
 		}
 
@@ -82,6 +81,9 @@ public:
 		if (mus && mus != m) {
 			stop();
 			Mix_FreeMusic(mus);
+			if (rw_buf) {
+				SDL_RWclose(rw_buf);
+			}
 		}
 		mus = m;
 		rw_buf = rw;
