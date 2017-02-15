@@ -2,7 +2,9 @@ CXX = g++
 AR = ar
 CFLAGS = -g -Wall --std=c++14
 
-INCLUDE = include
+tfd = ../tinyfiledialogs
+
+INCLUDE = -Iinclude -I$(tfd)
 BIN_DIR = lib
 OBJ_DIR = obj
 
@@ -27,13 +29,17 @@ all: $(BIN_DIR)/$(OUT_BIN)
 clean:
 	rm -f $(BIN_DIR)/$(OUT_BIN)
 	rm -rf $(OBJ_DIR)
+	$(MAKE) -C $(tfd) clean
 
-$(BIN_DIR)/$(OUT_BIN): $(OBJECTS)
-	$(AR) rvs $(BIN_DIR)/$(OUT_BIN) $(OBJECTS)
+$(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(tfd)/libtfd.a
+	$(AR) rvs $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(tfd)/tinyfiledialogs.o
+
+$(tfd)/libtfd.a:
+	$(MAKE) -C $(tfd)
 
 $(OBJ_DIR)/%.o : src/%.cpp
 $(OBJ_DIR)/%.o : src/%.cpp $(OBJ_DIR)/%.d
-	$(CXX) $(DEPFLAGS) $(CFLAGS) -c -I$(INCLUDE) -o $@ $<
+	$(CXX) $(DEPFLAGS) $(CFLAGS) -c $(INCLUDE) -o $@ $<
 	@mv -f $(OBJ_DIR)/$*.Td $(OBJ_DIR)/$*.d
 
 $(OBJ_DIR)/%.d: ;
