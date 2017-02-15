@@ -3,7 +3,7 @@ LD = g++
 CFLAGS = -g -Wall --std=c++14
 
 LDFLAGS =
-LIBS = -lSDL2 -lSDL2_image -lSDL2_mixer
+LIBS = -lSDL2 -lSDL2_image -lSDL2_mixer $(PinoMaze_maze)
 
 PinoMaze_maze_dir = ../PinoMaze_maze
 
@@ -22,7 +22,7 @@ resource_pack = $(resource_pack_dir)/bin/resource_pack
 resource_load = $(resource_pack_dir)/bin/libresource_load.a
 
 ifeq ($(OS),Windows_NT)
-	LIBS += -lglew32 -lopengl32
+	LIBS += -lglew32 -lopengl32 -lole32
 	LDFLAGS += -mwindows -lmingw32 -lSDL2main
 	OUT_BIN := $(OUT_BIN).exe
 	resource_pack := $(resource_pack).exe
@@ -52,7 +52,7 @@ clean:
 	$(MAKE) -C $(resource_pack_dir) clean
 
 $(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(RESOURCES) $(PinoMaze_maze)
-	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS) $(PinoMaze_maze)
+	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS)
 
 $(PinoMaze_maze):
 	$(MAKE) -C $(PinoMaze_maze_dir)
