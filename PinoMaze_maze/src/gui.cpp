@@ -12,7 +12,7 @@ const char *getMazeFilename(dialog_type diag, const char *lastName) {
 	case DIALOG_OPEN:
 		return tinyfd_openFileDialog(TITLE, "", 1, FILTERS, DESCRIPTION, 0);
 	case DIALOG_SAVE:
-		return tinyfd_saveFileDialog(TITLE, "", 1, FILTERS, DESCRIPTION);
+		return tinyfd_saveFileDialog(TITLE, lastName, 1, FILTERS, DESCRIPTION);
 	default:
 		return nullptr;
 	}

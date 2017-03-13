@@ -9,34 +9,7 @@ bool openResourceFile(const char *dir, const char *filename) {
         path = path.substr(0, 1 + path.find_last_of("\\/"));
     }
     path += filename;
-    return openResourceFile(path);
-}
-
-string loadStringFromResource(const char * RES_ID) {
-	SDL_RWops *rw = getResourceRW(RES_ID);
-	if (!rw) {
-		return "";
-	}
-
-	Sint64 res_size = SDL_RWsize(rw);
-	char *res = (char*)malloc(res_size + 1);
-	memset(res, 0, res_size + 1);
-
-	Sint64 nb_read_total = 0, nb_read = 1;
-	char* buf = res;
-	while (nb_read_total < res_size && nb_read != 0) {
-		nb_read = SDL_RWread(rw, buf, 1, (res_size - nb_read_total));
-		nb_read_total += nb_read;
-		buf += nb_read;
-	}
-	SDL_RWclose(rw);
-	if (nb_read_total != res_size) {
-		free(res);
-		return "";
-	}
-
-	res[nb_read_total] = '\0';
-	return std::string(res, res_size);
+    return openResourceFile(path.c_str());
 }
 
 SDL_Surface *loadImageFromResource(const char *RES_ID) {

@@ -253,7 +253,7 @@ int main (int argc, char **argv) {
     res_path = res_path.substr(0, 1 + res_path.find_last_of("\\/"));
     res_path += "editor.dat";
 
-	if (!openResourceFile(res_path) || !loadResources(renderer)) {
+	if (!openResourceFile(res_path.c_str()) || !loadResources(renderer)) {
 		fprintf(stderr, "Could not load resources\n");
 		return 3;
 	}
