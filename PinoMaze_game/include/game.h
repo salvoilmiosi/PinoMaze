@@ -30,23 +30,23 @@ static const glm::mat4 biasMatrix(
 
 class game {
 private:
-    skyboxRenderer skybox;
-    worldRenderer world;
-    holeRenderer hole;
+	maze *m;
+
+	skyboxRenderer skybox;
+	worldRenderer world;
+	holeRenderer hole;
 	teleportRenderer teleport;
 	particleRenderer particle;
 	hudRenderer hud;
 
-    gameLogic logic;
+	gameLogic logic;
 
 	glm::mat4 m_view;
 	glm::mat4 m_proj;
 	glm::mat4 m_marble;
 	glm::mat4 m_light;
 
-    light sun;
-
-    maze *m = nullptr;
+	light sun;
 
 	map<string, material> mat;
 
@@ -54,7 +54,7 @@ public:
 	game(maze *m);
 
 public:
-    bool init();
+	bool init();
 
 	void setStatus(char *str) {
 		hud.setStatus(str);
@@ -62,8 +62,8 @@ public:
 
 	void handleEvent(SDL_Event &e);
 
-    void tick();
-    void render();
+	void tick();
+	void render();
 
 	const light &worldLight() {
 		return sun;

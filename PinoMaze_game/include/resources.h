@@ -14,8 +14,8 @@ using namespace std;
 bool openResourceFile(const char *dir, const char *filename);
 
 template<typename ... T>
-inline bool openResourceFile(const char *dir, const char *first, T ... filenames) {
-	return openResourceFile(dir, first) ? openResourceFile(dir, filenames ...) : false;
+inline int openResourceFiles(const char *dir, T ... filenames) {
+	return (openResourceFile(dir, filenames) + ...);
 }
 
 SDL_Surface *loadImageFromResource(const char *RES_ID);

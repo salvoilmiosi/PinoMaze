@@ -28,10 +28,10 @@ int main (int argc, char **argv) {
 		return -2;
 	}
 
-	if ((Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG) != MIX_INIT_OGG) {
-		fprintf(stderr, "Could not init mp3 libraries: %s\n", Mix_GetError());
-		return -2;
-	}
+	// if ((Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG) != MIX_INIT_OGG) {
+	// 	fprintf(stderr, "Could not init audio libraries: %s\n", Mix_GetError());
+	// 	return -2;
+	// }
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
 		fprintf(stderr, "Could not init audio libraries: %s\n", Mix_GetError());
@@ -39,7 +39,7 @@ int main (int argc, char **argv) {
 	}
 
 	// Load resources
-	if (!openResourceFile(argv[0], "resource.dat", "music.dat", "shaders.dat")) {
+	if (openResourceFiles(argv[0], "resource.dat", "music.dat", "shaders.dat") != 3) {
 		fprintf(stderr, "Could not load resources\n");
 		return -4;
 	}

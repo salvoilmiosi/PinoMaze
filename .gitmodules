@@ -1,3 +1,6 @@
 [submodule "resource_pack"]
 	path = resource_pack
 	url = https://github.com/salvoilmiosi/resource-pack.git
+[submodule "tinyfiledialogs"]
+	path = tinyfiledialogs
+	url = http://github.com/salvoilmiosi/tinyfiledialogs

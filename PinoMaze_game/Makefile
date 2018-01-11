@@ -1,6 +1,6 @@
 CXX = g++
 LD = g++
-CFLAGS = -g -Wall --std=c++14
+CFLAGS = -g -Wall --std=c++1z
 
 LDFLAGS =
 LIBS = -lSDL2 -lSDL2_image -lSDL2_mixer $(PinoMaze_maze)
@@ -23,7 +23,7 @@ resource_load = $(resource_pack_dir)/bin/libresource_load.a
 
 ifeq ($(OS),Windows_NT)
 	LIBS += -lglew32 -lopengl32 -lole32
-	LDFLAGS += -mwindows -lmingw32 -lSDL2main
+	LDFLAGS := -mwindows -lmingw32 -lSDL2main $(LIBS)
 	OUT_BIN := $(OUT_BIN).exe
 	resource_pack := $(resource_pack).exe
 	MAKE := mingw32-make
