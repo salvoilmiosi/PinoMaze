@@ -39,7 +39,7 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $(OBJ_DIR)/$*.Td
 SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(patsubst src/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES))) $(resource_load)
 
-RES_TXT = resource/music.txt resource/resource.txt resource/shaders.txt
+RES_TXT = resource/resource.txt resource/shaders.txt resource/music.txt
 RESOURCES = $(patsubst resource/%,$(BIN_DIR)/%.dat,$(basename $(RES_TXT)))
 
 all: $(BIN_DIR)/$(OUT_BIN)
