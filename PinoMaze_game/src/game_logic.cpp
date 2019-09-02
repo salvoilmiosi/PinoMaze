@@ -15,7 +15,7 @@ glm::mat4 camera::viewMatrix() const {
 }
 
 void gameLogic::loadMusic() {
-	static const int NUM_MUSIC = 24;
+	static const int NUM_MUSIC = 14;
 
 	static int i = rand() % NUM_MUSIC;
 	static char MUSIC_ID[16];
