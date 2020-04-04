@@ -72,24 +72,24 @@ light game::viewLight() {
 	return l;
 }
 
-static void trim(string &s) {
+static void trim(std::string &s) {
 	s.erase(s.begin(), find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace))));
 	s.erase(find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(), s.end());
 }
 
 bool game::loadMaterials() {
-	string txt = loadStringFromResource("IDM_MATERIALS");
+	std::string txt = loadStringFromResource("IDM_MATERIALS");
 	if (txt.empty()) {
 		cerr << "Could not load materials\n";
 		return false;
 	}
 
-	istringstream iss(txt);
+	istd::stringstream iss(txt);
 
-	string line;
+	std::string line;
 	int line_num = 0;
 
-	map<string, shared_ptr<texture>> tex;
+	std::map<std::string, std::shared_ptr<texture>> tex;
 
 	while (getline(iss, line)) {
 		trim(line);
@@ -99,12 +99,12 @@ bool game::loadMaterials() {
 		if (line.empty()) continue;
 		if (line.at(0) == '#') continue;
 
-		istringstream line_iss(line);
+		istd::stringstream line_iss(line);
 
-		string token;
+		std::string token;
 		line_iss >> token;
 		if (token == "texture") {
-			string tex_name, tex_id;
+			std::string tex_name, tex_id;
 			line_iss >> tex_name >> tex_id; // texture name
 			if (line_iss.fail()) {
 				cerr << "Syntax error at line #" << line_num << "\n" << line << "\n";
@@ -112,15 +112,15 @@ bool game::loadMaterials() {
 			}
 			tex[tex_name] = make_shared<texture>(loadImageFromResource(tex_id.c_str()));
 		} else if (token == "material") {
-			string mat_name;
+			std::string mat_name;
 			line_iss >> mat_name;
 			material &m = mat[mat_name];
 
-			string token;
+			std::string token;
 			while (!line_iss.eof()) {
 				line_iss >> token;
 				if (token == "texture") {
-					string tex_name;
+					std::string tex_name;
 					line_iss >> tex_name;
 					if (line_iss.fail()) {
 						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
@@ -133,7 +133,7 @@ bool game::loadMaterials() {
 						cerr << "Could not find texture " << tex_name << ", skipping\n";
 					}
 				} else if (token == "normals") {
-					string tex_name;
+					std::string tex_name;
 					line_iss >> tex_name;
 					if (line_iss.fail()) {
 						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";

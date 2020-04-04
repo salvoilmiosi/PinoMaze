@@ -5,8 +5,6 @@
 #include <GL/gl.h>
 #include <vector>
 
-using namespace std;
-
 #include "shader_world.h"
 
 class model {
@@ -25,7 +23,7 @@ protected:
     GLuint tangentBuffer = 0;
     GLuint matrixBuffer = 0;
 
-    vector<glm::mat4> matrices;
+    std::vector<glm::mat4> matrices;
 
 public:
     virtual ~model();

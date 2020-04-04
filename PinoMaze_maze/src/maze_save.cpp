@@ -4,11 +4,11 @@
 
 #include <fstream>
 
-static inline void writeToBuffer(ofstream &ofs, const char *data, int length) {
+static inline void writeToBuffer(std::ofstream &ofs, const char *data, int length) {
 	ofs.write(data, length);
 }
 
-static void writeInt(ofstream &ofs, const int num) {
+static void writeInt(std::ofstream &ofs, const int num) {
 	char str[4];
 	str[0] = (num & 0xff000000) >> (8 * 3);
 	str[1] = (num & 0x00ff0000) >> (8 * 2);
@@ -18,7 +18,7 @@ static void writeInt(ofstream &ofs, const int num) {
 	writeToBuffer(ofs, str, 4);
 }
 
-static void writeShort(ofstream &ofs, const short num) {
+static void writeShort(std::ofstream &ofs, const short num) {
 	char str[2];
 	str[0] = (num & 0xff00) >> (8 * 1);
 	str[1] = (num & 0x00ff) >> (8 * 0);
@@ -26,11 +26,11 @@ static void writeShort(ofstream &ofs, const short num) {
 	writeToBuffer(ofs, str, 2);
 }
 
-static inline void writeChar(ofstream &ofs, const char num) {
+static inline void writeChar(std::ofstream &ofs, const char num) {
 	writeToBuffer(ofs, &num, 1);
 }
 
-static void writeString(ofstream &ofs, const string &str) {
+static void writeString(std::ofstream &ofs, const std::string &str) {
 	int len = (int)str.size();
 	if (len <= 0) {
 		writeInt(ofs, 0xffffffff);
@@ -40,7 +40,7 @@ static void writeString(ofstream &ofs, const string &str) {
 	}
 }
 
-static void writeWalls(ofstream &ofs, maze *m) {
+static void writeWalls(std::ofstream &ofs, maze *m) {
 	int x = 0;
 	int y = 0;
 	int w = m->width();
@@ -69,7 +69,7 @@ static void writeWalls(ofstream &ofs, maze *m) {
 	bits.write(ofs);
 }
 
-void writeBlocks(ofstream &ofs, maze *m) {
+void writeBlocks(std::ofstream &ofs, maze *m) {
 	for (int i = 0; i < m->datasize(); ++i) {
 		tile *t = m->getTile(i);
 		if (t->state == STATE_BLOCK) {
@@ -79,7 +79,7 @@ void writeBlocks(ofstream &ofs, maze *m) {
 	}
 }
 
-void writeStartend(ofstream &ofs, maze *m) {
+void writeStartend(std::ofstream &ofs, maze *m) {
 	tile *startTile = m->startTile();
 	if (startTile != nullptr) {
 		writeToBuffer(ofs, "STRT", 4);
@@ -93,10 +93,10 @@ void writeStartend(ofstream &ofs, maze *m) {
 	}
 }
 
-void writeItems(ofstream &ofs, maze *m) {
+void writeItems(std::ofstream &ofs, maze *m) {
 	int w = m->width();
 
-	for (pair<const int, mazeItem> &p : m->items) {
+	for (std::pair<const int, mazeItem> &p : m->items) {
 		const mazeItem &item = p.second;
 		switch (item.type) {
 		case ITEM_TELEPORT:
@@ -117,12 +117,14 @@ void writeItems(ofstream &ofs, maze *m) {
 			writeToBuffer(ofs, "ARRW", 4);
 			writeInt(ofs, (item.arrow.y * w + item.arrow.x) * 4 + item.arrow.direction);
 			break;
+		default:
+			break;
 		}
 	}
 }
 
 void saveMaze(const char *filename, maze *m) {
-	ofstream ofs(filename, ofstream::out | ofstream::binary);
+	std::ofstream ofs(filename, std::ofstream::out | std::ofstream::binary);
 
 	writeInt(ofs, MAGIC_NUMBER);
 	writeInt(ofs, VERSION_NUMBER);

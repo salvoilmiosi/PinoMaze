@@ -7,8 +7,8 @@ void sphere::setSize(float r, int sh, int sv) {
 }
 
 bool sphere::init() {
-    vector<glm::vec3> normals;
-	vector<glm::vec3> tangents;
+    std::vector<glm::vec3> normals;
+	std::vector<glm::vec3> tangents;
 
     float angleX, angleY, radius;
     vertex v;

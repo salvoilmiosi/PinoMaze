@@ -3,8 +3,6 @@
 
 #include <SDL2/SDL_mixer.h>
 
-using namespace std;
-
 class sound {
 private:
 	Mix_Chunk *chunk = nullptr;

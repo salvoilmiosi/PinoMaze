@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-using namespace std;
+
 
 class bitArray {
 private:
@@ -21,8 +21,8 @@ public:
         return _length;
     }
 
-    int write(ofstream &ofs, int bytes = 0);
-    int read(ifstream &ifs, int bytes = 0);
+    int write(std::ofstream &ofs, int bytes = 0);
+    int read(std::ifstream &ifs, int bytes = 0);
 
     bool &operator [](int i) {
         return bits[i];

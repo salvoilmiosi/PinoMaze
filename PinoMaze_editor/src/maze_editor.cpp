@@ -21,14 +21,14 @@ mazeEditor::mazeEditor() {
 
     toolboxTimer = TOOLBOX_TIMER;
 
-	tools[0] = make_unique<toolSelect>(1);
-	tools[1] = make_unique<toolCrop>(9);
-	tools[2] = make_unique<toolWall>(3);
-	tools[3] = make_unique<toolBridge>(4);
-	tools[4] = make_unique<toolStartend>(5);
-	tools[5] = make_unique<toolBlock>(6);
-	tools[6] = make_unique<toolArrow>(7);
-	tools[7] = make_unique<toolTeleport>(8);
+	tools[0] = std::make_unique<toolSelect>(1);
+	tools[1] = std::make_unique<toolCrop>(9);
+	tools[2] = std::make_unique<toolWall>(3);
+	tools[3] = std::make_unique<toolBridge>(4);
+	tools[4] = std::make_unique<toolStartend>(5);
+	tools[5] = std::make_unique<toolBlock>(6);
+	tools[6] = std::make_unique<toolArrow>(7);
+	tools[7] = std::make_unique<toolTeleport>(8);
 }
 
 void mazeEditor::setMaze(maze *_m) {

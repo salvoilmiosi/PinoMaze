@@ -10,8 +10,6 @@
 
 #include "tool_base.h"
 
-using namespace std;
-
 class mazeEditor {
 private:
     static const int TOOLBOX_TIMER = 200;
@@ -20,7 +18,7 @@ private:
     maze *m;
 
     size_t currentTool;
-    array<unique_ptr<mazeEditorTool>, 8> tools;
+    std::array<std::unique_ptr<mazeEditorTool>, 8> tools;
 
     SDL_Rect clip_rect;
 

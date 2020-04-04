@@ -11,6 +11,6 @@ static const unsigned int VERSION_NUMBER = 0x01000000;
 
 void saveMaze(const char *filename, maze *m);
 
-unique_ptr<maze> openMaze(const char *filename);
+std::unique_ptr<maze> openMaze(const char *filename);
 
 #endif // __MAZE_IO_H__

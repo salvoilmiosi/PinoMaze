@@ -12,15 +12,15 @@ protected:
     GLuint arcMatrixVBO = 0;
     GLuint wallMatrixVBO = 0;
 
-    vector<glm::mat4> wallMatrices;
+    std::vector<glm::mat4> wallMatrices;
 protected:
     size_t overArc_offset = 0;
 	size_t underArc_offset = 0;
 	size_t wall_offset = 0;
 	size_t index_count = 0;
 
-    vector<vertex> vertices;
-    vector<GLuint> indices;
+    std::vector<vertex> vertices;
+    std::vector<GLuint> indices;
 
 private:
     maze *m = nullptr;

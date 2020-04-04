@@ -1,4 +1,4 @@
-template<typename T, typename F> heap<T, F>::heap(F comp, unsigned int maxSize) : comp(comp), maxSize(maxSize) {
+template<typename T, typename F> heap<T, F>::heap(F comp, size_t maxSize) : maxSize(maxSize), comp(comp) {
 	items = new T[maxSize];
 	curIndex = 0;
 }
@@ -27,7 +27,7 @@ template<typename T, typename F> void heap<T, F>::update(const T& item) {
 	// Should do sortDown
 }
 
-template<typename T, typename F> void heap<T, F>::sortUp(int index) {
+template<typename T, typename F> void heap<T, F>::sortUp(size_t index) {
     while (index > 0) {
         int parentIndex = (index - 1) / 2;
         if (comp(items[parentIndex], items[index])) {
@@ -39,12 +39,12 @@ template<typename T, typename F> void heap<T, F>::sortUp(int index) {
     }
 }
 
-template<typename T, typename F> void heap<T, F>::sortDown(int index) {
+template<typename T, typename F> void heap<T, F>::sortDown(size_t index) {
     while (true) {
-        unsigned int childIndex0 = (index * 2) + 1;
-        unsigned int childIndex1 = (index * 2) + 2;
+        size_t childIndex0 = (index * 2) + 1;
+        size_t childIndex1 = (index * 2) + 2;
 
-        unsigned int swapIndex = index;
+        size_t swapIndex = index;
         if (childIndex0 < curIndex && comp(items[index], items[childIndex0])) {
             swapIndex = childIndex0;
         }
@@ -69,8 +69,8 @@ template<typename T, typename F> bool heap<T, F>::empty() {
 	return curIndex == 0;
 }
 
-template<typename T, typename F> void heap<T, F>::swapItems(int index0, int index1) {
-    swap(items[index0], items[index1]);
+template<typename T, typename F> void heap<T, F>::swapItems(size_t index0, size_t index1) {
+    std::swap(items[index0], items[index1]);
 }
 
 template<typename T, typename F> bool heap<T, F>::contains(const T& item) {

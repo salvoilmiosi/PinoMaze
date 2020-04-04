@@ -3,16 +3,17 @@
 #include "bit_array.h"
 
 #include <fstream>
+#include <string>
 
-static inline void readData(char *out, ifstream &ifs, int length) {
+static inline void readData(char *out, std::ifstream &ifs, int length) {
 	ifs.read(out, length);
 }
 
-static inline unsigned char readChar(ifstream &ifs) {
+static inline unsigned char readChar(std::ifstream &ifs) {
 	return ifs.get();
 }
 
-static unsigned int readInt(ifstream &ifs) {
+static unsigned int readInt(std::ifstream &ifs) {
 	char data[4];
 	readData(data, ifs, 4);
     unsigned int num =
@@ -23,9 +24,9 @@ static unsigned int readInt(ifstream &ifs) {
     return num;
 }
 
-static string readString(ifstream &ifs) {
+static std::string readString(std::ifstream &ifs) {
     unsigned int length = readInt(ifs);
-	string out;
+	std::string out;
     if (length != 0xffffffff) {
 		char *data = new char[length];
 		readData(data, ifs, length);
@@ -35,7 +36,7 @@ static string readString(ifstream &ifs) {
     return out;
 }
 
-static unsigned short int readShort(ifstream &ifs) {
+static unsigned short int readShort(std::ifstream &ifs) {
 	char data[2];
 	readData(data, ifs, 2);
     unsigned short int num =
@@ -44,7 +45,7 @@ static unsigned short int readShort(ifstream &ifs) {
     return num;
 }
 
-static void readWalls(maze *m, ifstream &ifs) {
+static void readWalls(maze *m, std::ifstream &ifs) {
     bitArray bits(readInt(ifs));
     bits.read(ifs);
 
@@ -77,7 +78,7 @@ static constexpr unsigned int str2int(const char *str) {
         str[3] << (8 * 0);
 }
 
-static bool readFrame(maze *m, ifstream &ifs) {
+static bool readFrame(maze *m, std::ifstream &ifs) {
     int i = 0;
     int w = m->width();
 
@@ -149,12 +150,12 @@ static bool readFrame(maze *m, ifstream &ifs) {
     return true;
 }
 
-unique_ptr<maze> openMaze(const char *filename) {
-	ifstream ifs(filename, ifstream::in | ifstream::binary);
+std::unique_ptr<maze> openMaze(const char *filename) {
+	std::ifstream ifs(filename, std::ifstream::in | std::ifstream::binary);
 
-	ifs.seekg(0, ios::end);
+	ifs.seekg(0, std::ios::end);
 	int filesize = (int) ifs.tellg();
-	ifs.seekg(0, ios::beg);
+	ifs.seekg(0, std::ios::beg);
 
     if (readInt(ifs) != MAGIC_NUMBER)
         return nullptr;
@@ -170,7 +171,7 @@ unique_ptr<maze> openMaze(const char *filename) {
     int w = readShort(ifs);
     int h = readShort(ifs);
 
-	unique_ptr<maze> m(new maze(w, h));
+	std::unique_ptr<maze> m(new maze(w, h));
     m->version = version;
 
     while (ifs.tellg() < filesize) {

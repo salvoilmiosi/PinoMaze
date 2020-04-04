@@ -5,19 +5,21 @@ CFLAGS = -g -Wall --std=c++1z
 LDFLAGS =
 LIBS = -lSDL2 -lSDL2_image -lSDL2_mixer $(PinoMaze_maze)
 
-PinoMaze_maze_dir = ../PinoMaze_maze
+PinoMaze_maze_dir = PinoMaze_maze
 
-INCLUDE = -Iinclude -I$(PinoMaze_maze_dir)/include
-BIN_DIR = ../bin
-OBJ_DIR = obj
+INCLUDE = -I$(PinoMaze_maze_dir)/include
+
+DIR = PinoMaze_game
+SRC_DIR = $(DIR)/src
+OBJ_DIR = $(DIR)/obj
+RESOURCE_DIR = $(DIR)/resource
+BIN_DIR = bin
 
 PinoMaze_maze = $(PinoMaze_maze_dir)/lib/libmaze.a
 
-MAKE = make
-
 OUT_BIN = PinoMaze_game
 
-resource_pack_dir = ../resource_pack
+resource_pack_dir = resource_pack
 resource_pack = $(resource_pack_dir)/bin/resource_pack
 resource_load = $(resource_pack_dir)/bin/libresource_load.a
 
@@ -35,11 +37,11 @@ $(shell mkdir -p $(OBJ_DIR) >/dev/null)
 
 DEPFLAGS = -MT $@ -MMD -MP -MF $(OBJ_DIR)/$*.Td
 
-SOURCES = $(wildcard src/*.cpp)
-OBJECTS = $(patsubst src/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES))) $(resource_load)
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES))) $(resource_load)
 
-RES_TXT = resource/resource.txt resource/shaders.txt resource/music.txt
-RESOURCES = $(patsubst resource/%,$(BIN_DIR)/%.dat,$(basename $(RES_TXT)))
+RES_TXT = $(RESOURCE_DIR)/resource.txt $(RESOURCE_DIR)/shaders.txt $(RESOURCE_DIR)/music.txt
+RESOURCES = $(patsubst $(RESOURCE_DIR)/%,$(BIN_DIR)/%.dat,$(basename $(RES_TXT)))
 
 all: $(BIN_DIR)/$(OUT_BIN)
 
@@ -47,28 +49,26 @@ clean:
 	rm -f $(BIN_DIR)/$(OUT_BIN)
 	rm -f $(RESOURCES)
 	rm -rf $(OBJ_DIR)
-	$(MAKE) -C $(PinoMaze_maze_dir) clean
-	$(MAKE) -C $(resource_pack_dir) clean
 
 $(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(RESOURCES) $(PinoMaze_maze)
 	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS)
 
 $(PinoMaze_maze):
-	$(MAKE) -C $(PinoMaze_maze_dir)
+	make -C $(PinoMaze_maze_dir)
 
 $(resource_load): $(resource_pack)
 $(resource_pack):
-	$(MAKE) -C $(resource_pack_dir)
+	make -C $(resource_pack_dir)
 
-$(OBJ_DIR)/%.o : src/%.cpp
-$(OBJ_DIR)/%.o : src/%.cpp $(OBJ_DIR)/%.d
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(OBJ_DIR)/%.d
 	$(CXX) $(DEPFLAGS) $(CFLAGS) -c $(INCLUDE) -o $@ $<
 	@mv -f $(OBJ_DIR)/$*.Td $(OBJ_DIR)/$*.d
 
-$(BIN_DIR)/%.dat: resource/%.txt
+$(BIN_DIR)/%.dat: $(RESOURCE_DIR)/%.txt
 	$(resource_pack) $< $@
 
 $(OBJ_DIR)/%.d: ;
 .PRECIOUS: $(OBJ_DIR)/%.d
 
--include $(patsubst src/%,$(OBJ_DIR)/%.d,$(basename $(SOURCES)))
+-include $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.d,$(basename $(SOURCES)))

@@ -63,7 +63,7 @@ int hudRenderer::buildTextBuffer() {
 
 	unsigned int i = 0;
 
-	for (string::iterator c = text.begin(); c != text.end(); ++c) {
+	for (std::string::iterator c = text.begin(); c != text.end(); ++c) {
 		if (*c == '\0') {
 			break;
 		} else if (*c == '\n') {

@@ -34,7 +34,7 @@ public:
 	void tick();
 	void stop();
 
-	list<const node *> getPath();
+	std::list<const node *> getPath();
 
 	node *getItem(int x, int y, int z) = delete;
 	node *getItem(vector3d coords) = delete;
@@ -74,7 +74,7 @@ private:
 	bool finding = false;
 	bool found = false;
 
-	list<const node *> path;
+	std::list<const node *> path;
 
 	vector3d startCoords = { -1 };
 	vector3d endCoords = { -1 };

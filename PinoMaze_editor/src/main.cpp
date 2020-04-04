@@ -24,9 +24,9 @@ SDL_Window *window;
 namespace {
 	const float TICKRATE = 100.0;
 
-	unique_ptr<a_star> mainGrid = nullptr;
-	unique_ptr<maze> mainMaze = nullptr;
-	unique_ptr<mazeEditor> editor = nullptr;
+	std::unique_ptr<a_star> mainGrid = nullptr;
+	std::unique_ptr<maze> mainMaze = nullptr;
+	std::unique_ptr<mazeEditor> editor = nullptr;
 
 	int offsetx;
 	int offsety;
@@ -36,10 +36,10 @@ namespace {
 	const int STATUS_TIMER = 300;
 	const int STATUS_LENGTH = 128;
 
-	string statusText;
+	std::string statusText;
 	int statusTimer = STATUS_TIMER;
 
-	string lastFilename = "";
+	std::string lastFilename = "";
 }
 
 static void setStatus(const char *status) {
@@ -56,7 +56,7 @@ static void resetMaze() {
 	offsety = (windowHeight - mainMaze->height() * mainMaze->tileSize) / 2;
 }
 
-static void setMaze(unique_ptr<maze> &&m) {
+static void setMaze(std::unique_ptr<maze> &&m) {
 	if (!m) return;
 
 	mainMaze = move(m);
@@ -77,7 +77,7 @@ static bool openMazeFile() {
     const char *filename = getMazeFilename(DIALOG_OPEN);
 
     if (filename) {
-		unique_ptr<maze> m = openMaze(filename);
+		std::unique_ptr<maze> m = openMaze(filename);
         if (m == nullptr) {
             messageBox(MESSAGE_ERROR, "Cannot open this file");
             return false;
@@ -152,7 +152,7 @@ static void handleEvent(SDL_Event &e) {
             setStatus("Path finding stopped");
             break;
         case SDL_SCANCODE_N:
-            setMaze(unique_ptr<maze>(new maze(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE)));
+            setMaze(std::unique_ptr<maze>(new maze(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE)));
             setStatus("Created empty new maze");
             break;
         case SDL_SCANCODE_SPACE:
@@ -258,15 +258,15 @@ int main (int argc, char **argv) {
 		return 3;
 	}
 
-	editor = make_unique<mazeEditor>();
-	mainGrid = make_unique<a_star>();
+	editor = std::make_unique<mazeEditor>();
+	mainGrid = std::make_unique<a_star>();
 
 	if (argc > 1) {
 		setMaze(openMaze(argv[1]));
 	}
 
 	if (!mainMaze) {
-		setMaze(make_unique<maze>(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE));
+		setMaze(std::make_unique<maze>(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE));
 	}
 
     setStatus("Welcome to PinoMaze level editor");

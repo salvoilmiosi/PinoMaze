@@ -11,7 +11,7 @@ bridgeRenderer::bridgeRenderer(maze *m) : m(m) {
 	glm::mat4 identity, matrix;
 	bool wallUp, wallDown;
 
-	for (pair<const int, mazeItem> &it : m->items) {
+	for (std::pair<const int, mazeItem> &it : m->items) {
 		if (it.second.type == ITEM_BRIDGE) {
 			int x = it.second.item.x;
 			int y = it.second.item.y;

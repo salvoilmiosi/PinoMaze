@@ -6,7 +6,7 @@
 
 #include <vector>
 
-using namespace std;
+
 
 class sphere : public model {
 private:
@@ -14,8 +14,8 @@ private:
     int sphereSubsH = 16;
     int sphereSubsV = 8;
 
-    vector<vertex> vertices;
-    vector<GLuint> indices;
+    std::vector<vertex> vertices;
+    std::vector<GLuint> indices;
 
 public:
     void setSize(float r, int sh, int sv);

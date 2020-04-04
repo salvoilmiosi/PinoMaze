@@ -10,18 +10,18 @@ static void randomWall (wall &w, int probability) {
     }
 }
 
-unique_ptr<maze> generateRandomMaze(int w, int h) {
-	unique_ptr<maze> m(new maze(w, h));
+std::unique_ptr<maze> generateRandomMaze(int w, int h) {
+	std::unique_ptr<maze> m(new maze(w, h));
 
     for (int i=0; i<w*h; ++i)  {
         m->getTile(i)->state = rand() % 100 >= BLOCK_PROBABILITY ? STATE_FLOOR : STATE_BLOCK;
     }
 
-    for (vector<wall>::iterator i = m->hwalls.begin(); i != m->hwalls.end(); ++i) {
+    for (std::vector<wall>::iterator i = m->hwalls.begin(); i != m->hwalls.end(); ++i) {
         randomWall(*i, WALL_PROBABILITY_H);
     }
 
-    for (vector<wall>::iterator i = m->vwalls.begin(); i != m->vwalls.end(); ++i) {
+    for (std::vector<wall>::iterator i = m->vwalls.begin(); i != m->vwalls.end(); ++i) {
         randomWall(*i, WALL_PROBABILITY_V);
     }
 

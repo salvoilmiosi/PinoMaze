@@ -7,8 +7,6 @@
 
 #include <string>
 
-using namespace std;
-
 #include "sound.h"
 
 bool openResourceFile(const char *dir, const char *filename);

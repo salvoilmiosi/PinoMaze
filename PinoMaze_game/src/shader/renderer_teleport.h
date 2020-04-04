@@ -13,7 +13,7 @@ private:
 	maze *m = nullptr;
 
 	GLuint uvBuffer = 0;
-	vector<glm::vec2> uvOffsets;
+	std::vector<glm::vec2> uvOffsets;
 
 	texture TEX_TELEPORT_TEXTURE;
 

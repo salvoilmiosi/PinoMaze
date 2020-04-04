@@ -9,6 +9,6 @@ static const int BLOCK_PROBABILITY = 10;
 static const int WALL_PROBABILITY_H = 15;
 static const int WALL_PROBABILITY_V = 15;
 
-unique_ptr<maze> generateRandomMaze(int w, int h);
+std::unique_ptr<maze> generateRandomMaze(int w, int h);
 
 #endif // __MAZE_RANDOM_H__

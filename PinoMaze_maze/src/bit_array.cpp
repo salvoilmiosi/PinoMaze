@@ -21,7 +21,7 @@ bitArray::~bitArray() {
     delete[]bits;
 }
 
-int bitArray::write(ofstream &ofs, int bytes) {
+int bitArray::write(std::ofstream &ofs, int bytes) {
     if (bytes == 0)
         bytes = _length / 8;
 
@@ -41,14 +41,15 @@ int bitArray::write(ofstream &ofs, int bytes) {
     return bytes;
 }
 
-int bitArray::read(ifstream &ifs, int bytes) {
+int bitArray::read(std::ifstream &ifs, int bytes) {
     if (bits == nullptr)
         bits = new bool[bytes * 8];
 
     bool *curBit = bits;
 
-    if (bytes == 0)
+    if (bytes == 0) {
         bytes = _length / 8;
+    }
 
 	for (int i = 0; i < bytes; ++i) {
 		unsigned char curByte = ifs.get();

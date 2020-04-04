@@ -108,7 +108,7 @@ bool model::createBuffers(const vertex *vertices, const GLuint *indices,
 bool model::calculateNormals(const vertex *vertices, const GLuint *indices,
 	size_t vertex_count, size_t index_count) {
 
-    vector<glm::vec3> data(vertex_count);
+    std::vector<glm::vec3> data(vertex_count);
 
     for (size_t i=0; i < index_count; i+=3) {
         const vertex &v0 = vertices[indices[i]];
@@ -140,7 +140,7 @@ bool model::calculateNormals(const vertex *vertices, const GLuint *indices,
 bool model::calculateTangents(const vertex *vertices, const GLuint *indices,
 	size_t vertex_count, size_t index_count) {
 
-	vector<glm::vec3> data(vertex_count);
+	std::vector<glm::vec3> data(vertex_count);
 
     for (size_t i=0; i < index_count; i+=3) {
         const vertex &v0 = vertices[indices[i]];

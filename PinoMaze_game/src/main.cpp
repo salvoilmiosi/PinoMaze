@@ -10,9 +10,7 @@
 
 #include "maze_io.h"
 
-#include "game.h"
-
-#include "gui.h"
+#include "game/game.h"
 
 #include "resources.h"
 
@@ -44,7 +42,7 @@ int main (int argc, char **argv) {
 		return -4;
 	}
 
-	unique_ptr<maze> mainMaze = nullptr;
+	std::unique_ptr<maze> mainMaze = nullptr;
 
 	if (argc > 1) {
 		// Use command line arguments for opening a maze
@@ -99,7 +97,7 @@ int main (int argc, char **argv) {
 	srand(SDL_GetTicks());
 
 	// Create and init the game object
-	unique_ptr<game> mainGame = make_unique<game>(mainMaze.get());
+	std::unique_ptr<game> mainGame = std::make_unique<game>(mainMaze.get());
 
 	if (!mainGame->init()) {
 		fprintf(stderr, "Could not init game\n");

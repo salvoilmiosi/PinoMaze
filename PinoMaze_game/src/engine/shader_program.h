@@ -5,6 +5,18 @@
 #include <GL/gl.h>
 #include <glm/glm.hpp>
 
+enum uniform_type {
+    
+};
+
+class uniform {
+private:
+    const uniform_type type;
+    const std::string name;
+    GLuint location;
+
+};
+
 class shaderProgram {
 protected:
     GLuint programID;

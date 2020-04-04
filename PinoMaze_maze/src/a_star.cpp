@@ -4,7 +4,7 @@
 
 a_star::a_star(int w, int h) : grid3d<node>(w, h, 2), openSet(lessFunc_pt()) {}
 
-list<const node *> a_star::getPath() {
+std::list<const node *> a_star::getPath() {
     if (!found) {
         start();
         while (finding) {
@@ -166,6 +166,8 @@ void a_star::addNeighbour(node *n, int ox, int oy) {
             if (!arrowPointsTo(*it, ox, oy)) {
                 return;
             }
+            break;
+        default:
             break;
         }
     }

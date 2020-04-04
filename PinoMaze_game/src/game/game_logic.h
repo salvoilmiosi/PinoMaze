@@ -22,9 +22,9 @@ struct camera {
 class gameLogic {
 private:
     maze *m = nullptr;
-	unique_ptr<a_star> pathfinder = nullptr;
-    list<const node *> path;
-    list<const node *>::iterator stepIndex;
+	std::unique_ptr<a_star> pathfinder = nullptr;
+    std::list<const node *> path;
+    std::list<const node *>::iterator stepIndex;
 
 	sound SND_TELEPORT;
 	sound SND_HOLE;

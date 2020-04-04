@@ -1,16 +1,18 @@
-MAKE = make
-
-all: maze game editor
+all: maze editor game
 
 clean:
-	$(MAKE) -C PinoMaze_game clean
-	$(MAKE) -C PinoMaze_editor clean
+	make -f Makefile.maze clean
+	make -f Makefile.editor clean
+	make -f Makefile.game clean
 	rm -rf bin
 
-game:
-	$(MAKE) -C PinoMaze_game
+maze:
+	make -f Makefile.maze
 	
 editor:
-	$(MAKE) -C PinoMaze_editor
+	make -f Makefile.editor
+
+game:
+	make -f Makefile.game
 
 .PHONY: clean game editor

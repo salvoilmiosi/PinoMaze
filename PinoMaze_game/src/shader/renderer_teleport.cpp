@@ -13,7 +13,7 @@ teleportRenderer::teleportRenderer(maze *m) : m(m) {
 	glm::mat4 identity, matrix;
 
 	glm::vec2 uv;
-	for (pair<const int, mazeItem> &it : m->items) {
+	for (std::pair<const int, mazeItem> &it : m->items) {
 		if (it.second.type == ITEM_TELEPORT) {
 			unsigned char c = it.second.teleport.tpChar;
 			uv.x = (1.f / 16.f) * (c % 16);

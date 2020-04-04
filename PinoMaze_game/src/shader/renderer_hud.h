@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 
-using namespace std;
+
 
 #include "texture.h"
 
@@ -20,7 +20,7 @@ protected:
         float u, v;
     };
 
-    vector<vertex> vertices;
+    std::vector<vertex> vertices;
 
     GLuint vertexBuffer = 0;
     GLuint vertexArray = 0;
@@ -31,7 +31,7 @@ private:
 	static const int STATUS_LENGTH = 128;
 	static const int BUFFER_SIZE_DEFAULT = 128;
 
-	string text;
+	std::string text;
 	bool textChanged = false;
 
 	texture TEX_FONT_TEXTURE;

@@ -254,7 +254,7 @@ void worldRenderer::initItems() {
         endBox.addMatrix(matrix);
     }
 
-    for (pair<const int, mazeItem> &it : m->items) {
+    for (std::pair<const int, mazeItem> &it : m->items) {
         switch(it.second.type) {
         case ITEM_ARROW:
             x = it.second.item.x;

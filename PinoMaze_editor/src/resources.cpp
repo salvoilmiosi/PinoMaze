@@ -62,7 +62,7 @@ static SDL_Surface *loadImageFromResource(const char *RES_ID) {
 static void convertPalette(SDL_Surface *surface, const SDL_Color *convertMap, const int ncolors) {
     SDL_LockSurface(surface);
 
-	vector<Uint32> map2(ncolors * 2);
+	std::vector<Uint32> map2(ncolors * 2);
     for (int i=0; i<ncolors*2; ++i) {
         map2[i] = colorToInt(surface->format, convertMap[i]);
     }

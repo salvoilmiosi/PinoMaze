@@ -11,16 +11,16 @@
 
 #include "maze.h"
 
-#include "renderer_skybox.h"
-#include "renderer_world.h"
-#include "renderer_hole.h"
-#include "renderer_teleport.h"
-#include "renderer_particle.h"
-#include "renderer_hud.h"
+#include "shader/skybox.h"
+#include "shader/world.h"
+#include "shader/hole.h"
+#include "shader/teleport.h"
+#include "shader/particle.h"
+#include "shader/hud.h"
 
 #include "game_logic.h"
 
-using namespace std;
+
 
 static const glm::mat4 biasMatrix(
 	0.5f, 0.0f, 0.0f, 0.0f,
@@ -48,7 +48,7 @@ private:
 
 	light sun;
 
-	map<string, material> mat;
+	std::map<std::string, material> mat;
 
 public:
 	game(maze *m);

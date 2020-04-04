@@ -19,7 +19,7 @@ maze::maze(int w, int h) : grid<tile>(w, h) {
 
 void maze::addItem(const mazeItem &item) {
     getTile(item.item.x, item.item.y)->state = STATE_ITEM;
-    items.insert(pair<int, const mazeItem &>(itemIndex(item, w), item));
+    items.insert(std::pair<int, const mazeItem &>(itemIndex(item, w), item));
 }
 
 void maze::removeItem(const mazeItem &item) {
@@ -33,7 +33,7 @@ void maze::updateMoveItem(mazeItem &item, short x, short y) {
         item.bridge.upperTile.temp = TEMP_NULL;
         break;
     case ITEM_TELEPORT:
-        for (pair<const int, mazeItem> &it : items) {
+        for (std::pair<const int, mazeItem> &it : items) {
             if (it.second.type == ITEM_TELEPORT) {
                 if (it.second.teleport.warpX == item.teleport.x && it.second.teleport.warpY == item.teleport.y) {
                     it.second.teleport.warpX = x;
@@ -41,6 +41,8 @@ void maze::updateMoveItem(mazeItem &item, short x, short y) {
                 }
             }
         }
+        break;
+    default:
         break;
     }
 
@@ -111,7 +113,7 @@ void maze::clearTemp() {
         t->temp = TEMP_NULL;
     }
 
-    for (pair<const int, mazeItem> &it : items) {
+    for (std::pair<const int, mazeItem> &it : items) {
         if (it.second.type == ITEM_BRIDGE) {
             it.second.bridge.upperTile.temp = TEMP_NULL;
         }
@@ -141,11 +143,11 @@ void maze::resizeMaze(int newW, int newH) {
 
     memcpy(data, newMaze.data, w*h * sizeof *data);
 
-    map<int, mazeItem> newMap;
-    for (pair<const int, mazeItem> &it : items) {
+    std::map<int, mazeItem> newMap;
+    for (std::pair<const int, mazeItem> &it : items) {
         mazeItem &item = it.second;
         if (item.item.x < w && item.item.y < h) {
-            newMap.insert(pair<int, const mazeItem &>(itemIndex(item, w), item));
+            newMap.insert(std::pair<int, const mazeItem &>(itemIndex(item, w), item));
         }
     }
     items.clear();
@@ -196,24 +198,26 @@ void maze::moveMaze(int ox, int oy) {
 
     moveWalls(ox, oy);
 
-    map<int, mazeItem> newMap;
+    std::map<int, mazeItem> newMap;
 
-    for (pair<const int, mazeItem> &it : items) {
+    for (std::pair<const int, mazeItem> &it : items) {
         mazeItem &item = it.second;
         short x = item.item.x + ox;
         short y = item.item.y + oy;
         if (x >= 0 && x < w && y >= 0 && y < h) {
             item.item.x = x;
             item.item.y = y;
-            newMap.insert(pair<int, const mazeItem &>(itemIndex(item, w), item));
+            newMap.insert(std::pair<int, const mazeItem &>(itemIndex(item, w), item));
         }
     }
 
-    for (pair<const int, mazeItem> &it : newMap) {
+    for (std::pair<const int, mazeItem> &it : newMap) {
         switch (it.second.type) {
         case ITEM_TELEPORT:
             it.second.teleport.warpX += ox;
             it.second.teleport.warpY += oy;
+            break;
+        default:
             break;
         }
     }

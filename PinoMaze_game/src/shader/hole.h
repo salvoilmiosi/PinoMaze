@@ -1,7 +1,14 @@
-#ifndef __HOLE_SHADER_H__
-#define __HOLE_SHADER_H__
+#ifndef __SHADER_HOLE_H__
+#define __SHADER_HOLE_H__
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <vector>
+
+
 
 #include "shader_program.h"
+#include "framebuffer.h"
+#include "maze.h"
 
 class holeShader: public shaderProgram {
 public:
@@ -52,5 +59,41 @@ protected:
     void bindAddresses();
 };
 
-#endif // __HOLE_SHADER_H__
+class holeRenderer {
+protected:
+    GLuint vertexArray = 0;
+    GLuint vertexBuffer = 0;
+    GLuint matrixBuffer = 0;
 
+    holeShader shader;
+
+private:
+    maze *m = nullptr;
+
+	int tickCount = 0;
+
+    std::vector<glm::mat4> matrices;
+
+	texture TEX_WATER_DUDV;
+	texture TEX_WATER_NORMALS;
+
+	texture refraction;
+	texture refractionDepth;
+	framebuffer refractionFBO;
+
+public:
+	holeRenderer(maze *m);
+    virtual ~holeRenderer();
+
+public:
+	void bindFramebuffer() {
+		return refractionFBO.bindFramebuffer();
+	}
+
+    bool init();
+
+	void tick(class game *g);
+    void render(class game *g);
+};
+
+#endif // __SHADER_HOLE_H__

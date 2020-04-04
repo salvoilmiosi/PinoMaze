@@ -168,7 +168,7 @@ void renderMaze(maze *m, SDL_Renderer *renderer, int ox, int oy) {
         renderWall(m, renderer, it, false, i++);
     }
 
-    for (pair<const int, mazeItem> &it : m->items) {
+    for (std::pair<const int, mazeItem> &it : m->items) {
         renderItem(m, renderer, it.second);
     }
 }

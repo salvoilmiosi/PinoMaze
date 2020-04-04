@@ -1,17 +1,20 @@
 #ifndef __HEAP_H__
 #define __HEAP_H__
 
-template<typename T, typename F = less<T> >
+#include <functional>
+
+template<typename T, typename F = std::less<T> >
 class heap {
 private:
-	T *items;
-	const unsigned int maxSize;
-	unsigned int curIndex;
-
+	const size_t maxSize;
+	
     F comp;
 
+	T *items;
+	size_t curIndex;
+
 public:
-	heap(F comp = less<T>(), unsigned int maxSize = 500);
+	heap(F comp = std::less<T>(), size_t maxSize = 500);
 
 	virtual ~heap();
 
@@ -26,9 +29,9 @@ public:
 	bool empty();
 
 private:
-    void sortUp(int index);
-    void sortDown(int index);
-    void swapItems(int index0, int index1);
+    void sortUp(size_t index);
+    void sortDown(size_t index);
+    void swapItems(size_t index0, size_t index1);
 };
 
 #include "heap.inl"

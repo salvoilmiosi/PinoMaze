@@ -5,19 +5,22 @@ CFLAGS = -g -Wall --std=c++14
 LDFLAGS =
 LIBS = -lSDL2 -lSDL2_image $(PinoMaze_maze)
 
-PinoMaze_maze_dir = ../PinoMaze_maze
+PinoMaze_maze_dir = PinoMaze_maze
+DIR = PinoMaze_editor
 
-INCLUDE = -Iinclude -I$(PinoMaze_maze_dir)/include
-BIN_DIR = ../bin
-OBJ_DIR = obj
+INCLUDE = -I$(DIR)/include -I$(PinoMaze_maze_dir)/include
+
+SRC_DIR = $(DIR)/src
+RESOURCE_DIR = $(DIR)/resource
+OBJ_DIR = $(DIR)/obj
+
+BIN_DIR = bin
 
 PinoMaze_maze = $(PinoMaze_maze_dir)/lib/libmaze.a
 
-MAKE = make
-
 OUT_BIN = PinoMaze_editor
 
-resource_pack_dir = ../resource_pack
+resource_pack_dir = resource_pack
 resource_pack = $(resource_pack_dir)/bin/resource_pack
 resource_load = $(resource_pack_dir)/bin/libresource_load.a
 
@@ -33,8 +36,8 @@ $(shell mkdir -p $(OBJ_DIR) >/dev/null)
 
 DEPFLAGS = -MT $@ -MMD -MP -MF $(OBJ_DIR)/$*.Td
 
-SOURCES = $(wildcard src/*.cpp)
-OBJECTS = $(patsubst src/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES))) $(resource_load)
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES))) $(resource_load)
 
 all: $(BIN_DIR)/$(OUT_BIN)
 
@@ -42,28 +45,26 @@ clean:
 	rm -f $(BIN_DIR)/$(OUT_BIN)
 	rm -f $(BIN_DIR)/editor.dat
 	rm -rf $(OBJ_DIR)
-	$(MAKE) -C $(PinoMaze_maze_dir) clean
-	$(MAKE) -C $(resource_pack_dir) clean
 
 $(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(BIN_DIR)/editor.dat $(PinoMaze_maze)
 	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS)
 
-$(BIN_DIR)/editor.dat: resource/editor.txt $(resource_pack)
+$(BIN_DIR)/editor.dat: $(RESOURCE_DIR)/editor.txt $(resource_pack)
 	$(resource_pack) $< $@
 
 $(PinoMaze_maze):
-	$(MAKE) -C $(PinoMaze_maze_dir)
+	make -C $(PinoMaze_maze_dir)
 
 $(resource_load): $(resource_pack)
 $(resource_pack):
-	$(MAKE) -C $(resource_pack_dir)
+	make -C $(resource_pack_dir)
 
-$(OBJ_DIR)/%.o : src/%.cpp
-$(OBJ_DIR)/%.o : src/%.cpp $(OBJ_DIR)/%.d
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(OBJ_DIR)/%.d
 	$(CXX) $(DEPFLAGS) $(CFLAGS) -c $(INCLUDE) -o $@ $<
 	@mv -f $(OBJ_DIR)/$*.Td $(OBJ_DIR)/$*.d
 
 $(OBJ_DIR)/%.d: ;
 .PRECIOUS: $(OBJ_DIR)/%.d
 
--include $(patsubst src/%,$(OBJ_DIR)/%.d,$(basename $(SOURCES)))
+-include $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.d,$(basename $(SOURCES)))

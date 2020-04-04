@@ -6,7 +6,7 @@
 #include "shader_program.h"
 #include "texture.h"
 
-using namespace std;
+
 
 struct color : public glm::vec3 {
 	color() : glm::vec3() {}
@@ -30,16 +30,16 @@ struct material {
 
 	float shininess = 25.f;
 
-	shared_ptr<texture> tex = nullptr;
-	shared_ptr<texture> normals = nullptr;
+	std::shared_ptr<texture> tex = nullptr;
+	std::shared_ptr<texture> normals = nullptr;
 
 	material() {}
 
 	material(color ambient, color diffuse, color specular, color emissive,
-		shared_ptr<texture> tex = nullptr, shared_ptr<texture> normals = nullptr)
+		std::shared_ptr<texture> tex = nullptr, std::shared_ptr<texture> normals = nullptr)
 		: ambient(ambient), diffuse(diffuse), specular(specular), emissive(emissive), tex(tex), normals(normals) {}
 
-	material(shared_ptr<texture> tex, shared_ptr<texture> normals) : tex(tex), normals(normals) {}
+	material(std::shared_ptr<texture> tex, std::shared_ptr<texture> normals) : tex(tex), normals(normals) {}
 };
 
 struct light {

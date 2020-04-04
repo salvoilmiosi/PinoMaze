@@ -10,7 +10,7 @@
 #include <vector>
 #include <map>
 
-using namespace std;
+
 
 extern const int DEFAULT_TILE_SIZE;
 
@@ -23,13 +23,13 @@ struct rect {
 
 class maze: public grid<tile> {
 public:
-    vector<wall> hwalls;
-    vector<wall> vwalls;
+    std::vector<wall> hwalls;
+    std::vector<wall> vwalls;
 
-    map<int, mazeItem> items;
+    std::map<int, mazeItem> items;
 
     int version;
-    string name;
+    std::string name;
     bool renderGrid;
 
     int tileSize;
