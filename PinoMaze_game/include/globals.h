@@ -1,6 +1,14 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
+#include <cstdio>
+#include <GL/glew.h>
+#include <GL/gl.h>
+
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
 static auto MAX = [](auto a, auto b) {
 	return a > b ? a : b;
 };
@@ -9,52 +17,60 @@ static auto MIN = [](auto a, auto b) {
 	return a > b ? b : a;
 };
 
-bool checkGlError(const char *message);
+inline bool checkGlError(const char *message) {
+	GLenum error = glGetError();
+	if (error == GL_NO_ERROR) {
+		return true;
+	} else {
+		fprintf(stderr, "%s: %s\n", message, glewGetErrorString(error));
+		return false;
+	}
+}
 
-extern const int windowWidth;
-extern const int windowHeight;
-extern const bool fullscreen;
-extern const int tickrate;
+constexpr int windowWidth = 800;
+constexpr int windowHeight = 600;
+constexpr bool fullscreen = false;
+constexpr int tickrate = 60;
 
-extern const float tileSize;
-extern const float blockHeight;
+constexpr float tileSize = 1.f;
+constexpr float blockHeight = 0.15f;
 
-extern const float startBoxSize;
-extern const float startBoxHeight;
+constexpr float startBoxSize = 0.8f;
+constexpr float startBoxHeight = 0.01f;
 
-extern const float marbleRadius;
+constexpr float marbleRadius = 0.07f;
 
-extern const float pillarHeight;
-extern const float pillarSize;
+constexpr float pillarHeight = 0.54f;
+constexpr float pillarSize = 0.13f;
 
-extern const float wallHeight;
-extern const float wallThickness;
+constexpr float wallHeight = 0.5f;
+constexpr float wallThickness = 0.1f;
 
-extern const float bridgeArcHeight;
-extern const float bridgeArcThickness;
-extern const float bridgeWallHeight;
+constexpr float bridgeArcHeight = 0.4f;
+constexpr float bridgeArcThickness = 0.027f;
+constexpr float bridgeWallHeight = 0.65f;
 
-extern const int bridgeSubsH;
-extern const int bridgeSubsV;
+constexpr int bridgeSubsH = 10;
+constexpr int bridgeSubsV = 6;
 
-extern const float skyboxSize;
+constexpr float skyboxSize = 20.f;
 
-extern const int ticksPerMove;
-extern const int fallingDelay;
+constexpr int ticksPerMove = 25;
+constexpr int fallingDelay = 40;
 
-extern const float gravityAccel;
+constexpr float gravityAccel = 0.0012f;
 
-extern const float cameraHeight;
-extern const float cameraDistance;
-extern const float cameraPitch;
-extern const float cameraSpeed;
-extern const float cameraTurnSpeed;
+constexpr float cameraHeight = 0.26f;
+constexpr float cameraDistance = 0.33f;
+constexpr float cameraPitch = 15.f;
+constexpr float cameraSpeed = 0.1f;
+constexpr float cameraTurnSpeed = 0.12f;
 
-extern const float shadowArea;
+constexpr float shadowArea = 4.f;
 
-extern const float musicVolume;
+constexpr float musicVolume = 0.6f;
 
-extern const bool enableTextures;
-extern const bool enableNormalMaps;
+constexpr bool enableTextures = true;
+constexpr bool enableNormalMaps = true;
 
 #endif // __GLOBALS_H__

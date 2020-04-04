@@ -1,10 +1,6 @@
 MAKE = make
 
-ifeq ($(OS),Windows_NT)
-	MAKE := mingw32-make
-endif
-
-all: game editor
+all: maze game editor
 
 clean:
 	$(MAKE) -C PinoMaze_game clean

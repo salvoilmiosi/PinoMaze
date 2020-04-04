@@ -12,10 +12,6 @@ MAKE = make
 
 OUT_BIN = libmaze.a
 
-ifeq ($(OS),Windows_NT)
-	MAKE := mingw32-make
-endif
-
 $(shell mkdir -p $(BIN_DIR) >/dev/null)
 $(shell mkdir -p $(OBJ_DIR) >/dev/null)
 

@@ -25,8 +25,8 @@ void gameLogic::loadMusic() {
 
 	i = (++i) % NUM_MUSIC;
 
-	loadMusicFromResource(currentMusic, MUSIC_ID);
-	currentMusic.play();
+	//loadMusicFromResource(currentMusic, MUSIC_ID);
+	//currentMusic.play();
 }
 
 gameLogic::gameLogic(maze *m) : m(m) {}

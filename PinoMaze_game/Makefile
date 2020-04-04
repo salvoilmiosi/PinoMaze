@@ -26,7 +26,6 @@ ifeq ($(OS),Windows_NT)
 	LDFLAGS := -mwindows -lmingw32 -lSDL2main $(LIBS)
 	OUT_BIN := $(OUT_BIN).exe
 	resource_pack := $(resource_pack).exe
-	MAKE := mingw32-make
 else
 	LIBS += -lGLEW -lGL
 endif
