@@ -3,7 +3,7 @@ LD = clang++
 CFLAGS = -g -Wall --std=c++17
 
 LDFLAGS =
-LIBS = `pkg-config --static --libs x11 xrandr xi xxf86vm glew SDL2 SDL2_image SDL2_mixer` $(PinoMaze_maze)
+LIBS = `pkg-config --static --libs glew SDL2 SDL2_image SDL2_mixer`
 
 PinoMaze_maze_dir = PinoMaze_maze
 
@@ -16,6 +16,7 @@ RESOURCE_DIR = $(DIR)/resource
 BIN_DIR = bin
 
 PinoMaze_maze = $(PinoMaze_maze_dir)/lib/libmaze.a
+tinyfd = tinyfiledialogs/libtfd.a
 
 OUT_BIN = PinoMaze_game
 
@@ -28,6 +29,7 @@ ICON_RES = $(OBJ_DIR)/icon.res
 ifeq ($(OS),Windows_NT)
 	OUT_BIN := $(OUT_BIN).exe
 	resource_pack := $(resource_pack).exe
+	LIBS += -lopengl32
 	EXTRA_LIBS := $(ICON_RES)
 endif
 
@@ -48,14 +50,17 @@ clean:
 	rm -f $(RESOURCES)
 	rm -rf $(OBJ_DIR)
 
-$(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(RESOURCES) $(PinoMaze_maze) $(EXTRA_LIBS)
-	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS) $(EXTRA_LIBS)
+$(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(RESOURCES) $(PinoMaze_maze) $(tinyfd) $(EXTRA_LIBS)
+	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(PinoMaze_maze) $(tinyfd) $(LIBS) $(EXTRA_LIBS)
 	
 $(ICON_RES): $(RESOURCE_DIR)/icon.rc
 	windres $< -O coff -o $@
 
 $(PinoMaze_maze):
 	$(MAKE) -C $(PinoMaze_maze_dir)
+
+$(tinyfd):
+	$(MAKE) -C tinyfiledialogs
 
 $(resource_load): $(resource_pack)
 $(resource_pack):
