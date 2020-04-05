@@ -1,13 +1,11 @@
 #ifndef __RESOURCES_H__
 #define __RESOURCES_H__
 
-#include "../../resource_pack/include/resource_load.h"
-
 #include <SDL2/SDL_image.h>
-
 #include <string>
 
-#include "sound.h"
+#include "../../resource_pack/include/resource_load.h"
+#include "engine/sound.h"
 
 bool openResourceFile(const char *dir, const char *filename);
 

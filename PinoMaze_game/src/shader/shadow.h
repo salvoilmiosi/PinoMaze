@@ -1,7 +1,7 @@
 #ifndef __SHADER_SHADOW_H__
 #define __SHADER_SHADOW_H__
 
-#include "shader_program.h"
+#include "../engine/shader_program.h"
 
 class shadowShader : public shaderProgram {
 public:

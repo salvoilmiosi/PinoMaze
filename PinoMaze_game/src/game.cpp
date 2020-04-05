@@ -73,18 +73,18 @@ light game::viewLight() {
 }
 
 static void trim(std::string &s) {
-	s.erase(s.begin(), find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace))));
-	s.erase(find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(), s.end());
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(isspace))));
+	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(isspace))).base(), s.end());
 }
 
 bool game::loadMaterials() {
 	std::string txt = loadStringFromResource("IDM_MATERIALS");
 	if (txt.empty()) {
-		cerr << "Could not load materials\n";
+		std::cerr << "Could not load materials\n";
 		return false;
 	}
 
-	istd::stringstream iss(txt);
+	std::istringstream iss(txt);
 
 	std::string line;
 	int line_num = 0;
@@ -99,7 +99,7 @@ bool game::loadMaterials() {
 		if (line.empty()) continue;
 		if (line.at(0) == '#') continue;
 
-		istd::stringstream line_iss(line);
+		std::istringstream line_iss(line);
 
 		std::string token;
 		line_iss >> token;
@@ -107,10 +107,10 @@ bool game::loadMaterials() {
 			std::string tex_name, tex_id;
 			line_iss >> tex_name >> tex_id; // texture name
 			if (line_iss.fail()) {
-				cerr << "Syntax error at line #" << line_num << "\n" << line << "\n";
+				std::cerr << "Syntax error at line #" << line_num << "\n" << line << "\n";
 				return false;
 			}
-			tex[tex_name] = make_shared<texture>(loadImageFromResource(tex_id.c_str()));
+			tex[tex_name] = std::make_shared<texture>(loadImageFromResource(tex_id.c_str()));
 		} else if (token == "material") {
 			std::string mat_name;
 			line_iss >> mat_name;
@@ -123,75 +123,75 @@ bool game::loadMaterials() {
 					std::string tex_name;
 					line_iss >> tex_name;
 					if (line_iss.fail()) {
-						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
+						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
 						return false;
 					}
 					auto it = tex.find(tex_name);
 					if (it != tex.end()) {
 						m.tex = it->second;
 					} else {
-						cerr << "Could not find texture " << tex_name << ", skipping\n";
+						std::cerr << "Could not find texture " << tex_name << ", skipping\n";
 					}
 				} else if (token == "normals") {
 					std::string tex_name;
 					line_iss >> tex_name;
 					if (line_iss.fail()) {
-						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
+						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
 						return false;
 					}
 					auto it = tex.find(tex_name);
 					if (it != tex.end()) {
 						m.normals = it->second;
 					} else {
-						cerr << "Could not find texture " << tex_name << ", skipping\n";
+						std::cerr << "Could not find texture " << tex_name << ", skipping\n";
 					}
 				} else if (token == "ambient") {
 					int col;
-					line_iss >> hex >> col;
+					line_iss >> std::hex >> col;
 					if (line_iss.fail()) {
-						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
+						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
 						return false;
 					}
 					m.ambient = col;
 				} else if (token == "diffuse") {
 					int col;
-					line_iss >> hex >> col;
+					line_iss >> std::hex >> col;
 					if (line_iss.fail()) {
-						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
+						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
 						return false;
 					}
 					m.diffuse = col;
 				} else if (token == "specular") {
 					int col;
-					line_iss >> hex >> col;
+					line_iss >> std::hex >> col;
 					if (line_iss.fail()) {
-						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
+						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
 						return false;
 					}
 					m.specular = col;
 				} else if (token == "emissive") {
 					int col;
-					line_iss >> hex >> col;
+					line_iss >> std::hex >> col;
 					if (line_iss.fail()) {
-						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
+						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
 						return false;
 					}
 					m.emissive = col;
 				} else if (token == "shininess") {
 					float s;
-					line_iss >> dec >> s;
+					line_iss >> std::dec >> s;
 					if (line_iss.fail()) {
-						cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected float\n";
+						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected float\n";
 						return false;
 					}
 					m.shininess = s;
 				} else {
-					cerr << "Sintax error at line #" << line_num << ": unexpected token \"" << token << "\"\n";
+					std::cerr << "Sintax error at line #" << line_num << ": unexpected token \"" << token << "\"\n";
 					return false;
 				}
 			}
 		} else {
-			cerr << "Sintax error at line #" << line_num << ": unexpected token \"" << token << "\"\n";
+			std::cerr << "Sintax error at line #" << line_num << ": unexpected token \"" << token << "\"\n";
 			return false;
 		}
 	}

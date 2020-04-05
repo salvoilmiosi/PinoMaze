@@ -2,11 +2,8 @@
 #define __SPHERE_H__
 
 #include "model.h"
-#include "globals.h"
 
 #include <vector>
-
-
 
 class sphere : public model {
 private:

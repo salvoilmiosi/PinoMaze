@@ -1,11 +1,14 @@
-#include "renderer_bridge.h"
+#include "bridge.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <cmath>
 #include <cstdio>
 
-#include "game.h"
+#include "../globals.h"
+#include "../game.h"
+
+#include "world.h"
 
 bridgeRenderer::bridgeRenderer(maze *m) : m(m) {
 	glm::mat4 identity, matrix;

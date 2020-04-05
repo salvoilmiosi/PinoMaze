@@ -1,6 +1,6 @@
 #include "particle_system.h"
 
-#include "game.h"
+#include "../globals.h"
 
 particleSystem::particleSystem() {
 	vertexArray = 0;
@@ -74,7 +74,7 @@ void particleSystem::removeDeadParticles() {
 			if (iA <= iD) goto endOfLoop;
 			--iA;
 		}
-		swap(*iD, *iA);
+		std::swap(*iD, *iA);
 
 		++iD;
 		--iA;

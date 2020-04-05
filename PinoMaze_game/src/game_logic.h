@@ -8,7 +8,8 @@
 
 #include "maze.h"
 #include "a_star.h"
-#include "sound.h"
+
+#include "engine/sound.h"
 
 struct camera {
 	float yaw;

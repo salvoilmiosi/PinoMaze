@@ -8,11 +8,12 @@
 #include <cstdio>
 #include <memory>
 
+#include "gui.h"
 #include "maze_io.h"
 
-#include "game/game.h"
-
+#include "game.h"
 #include "resources.h"
+#include "globals.h"
 
 int main (int argc, char **argv) {
 	// Init SDL2 libraries

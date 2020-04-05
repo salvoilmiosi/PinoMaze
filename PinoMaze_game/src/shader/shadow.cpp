@@ -1,6 +1,6 @@
-#include "shader_shadow.h"
+#include "shadow.h"
 
-#include "resources.h"
+#include "../resources.h"
 
 bool shadowShader::init() {
     return shaderProgram::loadProgramFromResource("IDS_SHADOW_VERTEX", "IDS_SHADOW_FRAGMENT");

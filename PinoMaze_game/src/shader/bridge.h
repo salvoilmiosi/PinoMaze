@@ -1,7 +1,7 @@
 #ifndef __MODEL_BRIDGE_H__
 #define __MODEL_BRIDGE_H__
 
-#include "model.h"
+#include "../engine/model.h"
 #include "maze.h"
 
 class bridgeRenderer: public model {
@@ -34,7 +34,7 @@ public:
 
     void render();
 
-    void renderShader(class game *g, worldShader &shader);
+    void renderShader(class game *g, class worldShader &shader);
 
 private:
 	void drawArc(float z1, float z2, float w, float h, float texSize, bool ext);

@@ -3,9 +3,9 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <vector>
+#include <glm/glm.hpp>
 
-#include "shader_world.h"
+#include <vector>
 
 class model {
 protected:

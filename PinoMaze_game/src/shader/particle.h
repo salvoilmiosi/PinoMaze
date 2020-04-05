@@ -1,7 +1,9 @@
 #ifndef __SHADER_PARTICLE_H__
 #define __SHADER_PARTICLE_H__
 
-#include "shader_program.h"
+#include "../engine/shader_program.h"
+#include "../engine/particle_system.h"
+#include "../engine/texture.h"
 
 class particleShader : public shaderProgram {
 public:
@@ -36,6 +38,21 @@ private:
 
 protected:
 	void bindAddresses();
+};
+
+class particleRenderer {
+protected:
+	particleShader shader;
+
+private:
+	particleSystem system;
+	texture TEX_PARTICLE_TEXTURE;
+
+public:
+	bool init();
+
+	void tick(class game *g);
+	void render(class game *g);
 };
 
 #endif

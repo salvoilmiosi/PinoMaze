@@ -1,9 +1,9 @@
 #include "shader_program.h"
 
-#include "resources.h"
-
 #include <glm/gtc/type_ptr.hpp>
 #include <cstdio>
+
+#include "../resources.h"
 
 shaderProgram::shaderProgram(const char *name) : programName(name) {
 	programID = 0;

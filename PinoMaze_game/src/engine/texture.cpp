@@ -1,7 +1,7 @@
 #include "texture.h"
 
-#include "resources.h"
-#include "globals.h"
+#include "../resources.h"
+#include "../globals.h"
 
 texture::~texture() {
 	glDeleteTextures(1, &texID);

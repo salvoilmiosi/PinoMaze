@@ -1,7 +1,42 @@
-#include "renderer_particle.h"
+#include "particle.h"
 
-#include "resources.h"
-#include "game.h"
+#include "../resources.h"
+#include "../game.h"
+#include "../globals.h"
+
+bool particleShader::init() {
+	return shaderProgram::loadProgramFromResource("IDS_PARTICLE_VERTEX", "IDS_PARTICLE_FRAGMENT");
+}
+
+bool particleShader::bindProgram() {
+	if (!shaderProgram::bindProgram()) return false;
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
+
+	return true;
+}
+
+void particleShader::unbindProgram() {
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	glDisableVertexAttribArray(4);
+
+	shaderProgram::unbindProgram();
+}
+
+void particleShader::bindAddresses() {
+	projectionMatrix = glGetUniformLocation(programID, "projectionMatrix");
+	viewMatrix = glGetUniformLocation(programID, "viewMatrix");
+
+	texSize = glGetUniformLocation(programID, "texSize");
+	particleTexture = glGetUniformLocation(programID, "particleTexture");
+}
 
 bool particleRenderer::init() {
 	if (!shader.init()) return false;

@@ -4,11 +4,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
-
-
-#include "shader_program.h"
-#include "framebuffer.h"
 #include "maze.h"
+
+#include "../engine/shader_program.h"
+#include "../engine/framebuffer.h"
 
 class holeShader: public shaderProgram {
 public:

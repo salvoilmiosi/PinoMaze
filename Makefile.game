@@ -23,17 +23,19 @@ resource_pack_dir = resource_pack
 resource_pack = $(resource_pack_dir)/bin/resource_pack
 resource_load = $(resource_pack_dir)/bin/libresource_load.a
 
+ICON_RES = $(OBJ_DIR)/icon.res
+
 ifeq ($(OS),Windows_NT)
 	OUT_BIN := $(OUT_BIN).exe
 	resource_pack := $(resource_pack).exe
+	EXTRA_LIBS := $(ICON_RES)
 endif
 
 $(shell mkdir -p $(BIN_DIR) >/dev/null)
-$(shell mkdir -p $(OBJ_DIR) >/dev/null)
 
 DEPFLAGS = -MT $@ -MMD -MP -MF $(OBJ_DIR)/$*.Td
 
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp $(SRC_DIR)/**/*.cpp)
 OBJECTS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES))) $(resource_load)
 
 RES_TXT = $(RESOURCE_DIR)/resource.txt $(RESOURCE_DIR)/shaders.txt $(RESOURCE_DIR)/music.txt
@@ -46,8 +48,11 @@ clean:
 	rm -f $(RESOURCES)
 	rm -rf $(OBJ_DIR)
 
-$(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(RESOURCES) $(PinoMaze_maze)
-	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS)
+$(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(RESOURCES) $(PinoMaze_maze) $(EXTRA_LIBS)
+	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS) $(EXTRA_LIBS)
+	
+$(ICON_RES): $(RESOURCE_DIR)/icon.rc
+	windres $< -O coff -o $@
 
 $(PinoMaze_maze):
 	$(MAKE) -C $(PinoMaze_maze_dir)
@@ -58,6 +63,7 @@ $(resource_pack):
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(OBJ_DIR)/%.d
+	@mkdir -p $(dir $@)
 	$(CXX) $(DEPFLAGS) $(CFLAGS) -c $(INCLUDE) -o $@ $<
 	@mv -f $(OBJ_DIR)/$*.Td $(OBJ_DIR)/$*.d
 

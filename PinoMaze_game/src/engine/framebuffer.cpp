@@ -1,5 +1,6 @@
 #include "framebuffer.h"
-#include "globals.h"
+
+#include "../globals.h"
 
 framebuffer::~framebuffer() {
 	glDeleteFramebuffers(1, &fboID);

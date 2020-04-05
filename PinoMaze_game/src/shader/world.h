@@ -1,12 +1,19 @@
-#ifndef __SIMPLE_SHADER_H__
-#define __SIMPLE_SHADER_H__
+#ifndef __SHADER_WORLD_H__
+#define __SHADER_WORLD_H__
 
 #include <memory>
 
-#include "shader_program.h"
-#include "texture.h"
+#include "maze.h"
 
+#include "../engine/shader_program.h"
+#include "../engine/texture.h"
+#include "../engine/box.h"
+#include "../engine/sphere.h"
+#include "../engine/framebuffer.h"
 
+#include "shadow.h"
+
+#include "bridge.h"
 
 struct color : public glm::vec3 {
 	color() : glm::vec3() {}
@@ -130,4 +137,48 @@ protected:
     void bindAddresses();
 };
 
-#endif // __SIMPLE_SHADER_H__
+class worldRenderer {
+private:
+    box pillarBox;
+    box groundBox;
+    box wallBox;
+    box startBox;
+    box endBox;
+    box arrowBox;
+	sphere marble;
+
+	bridgeRenderer bridge;
+
+    maze *m = nullptr;
+
+    int width;
+    int height;
+
+	int teleportTimer = 0;
+
+    worldShader shader;
+    shadowShader shadows;
+    framebuffer shadowBuffer;
+	texture shadowMap;
+
+public:
+    worldRenderer(maze *m);
+
+public:
+    bool init();
+
+	void tick(class game *g);
+
+    void render(class game *g);
+	void renderRefraction(class game *g);
+
+private:
+    void renderShadowmap(class game *g);
+
+    void initPillars();
+    void initGround();
+    void initWalls();
+    void initItems();
+};
+
+#endif // __SHADER_WORLD_H__

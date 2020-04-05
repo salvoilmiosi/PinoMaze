@@ -1,10 +1,101 @@
-#include "renderer_world.h"
+#include "world.h"
 
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
 
-#include "resources.h"
-#include "game.h"
-#include "globals.h"
+#include "../resources.h"
+#include "../globals.h"
+#include "../game.h"
+
+const material material::MAT_DEFAULT;
+
+bool worldShader::init() {
+    return shaderProgram::loadProgramFromResource("IDS_WORLD_VERTEX", "IDS_WORLD_FRAGMENT");
+}
+
+bool worldShader::bindProgram() {
+	if (!shaderProgram::bindProgram()) return false;
+	
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+    glEnableVertexAttribArray(4);
+    glEnableVertexAttribArray(5);
+    glEnableVertexAttribArray(6);
+    glEnableVertexAttribArray(7);
+
+	return true;
+}
+
+void worldShader::unbindProgram() {
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(3);
+    glDisableVertexAttribArray(4);
+    glDisableVertexAttribArray(5);
+    glDisableVertexAttribArray(6);
+    glDisableVertexAttribArray(7);
+	
+	shaderProgram::unbindProgram();
+}
+
+void worldShader::setLight(const light &l) {
+    setUniform(sunAmbient, l.ambient);
+    setUniform(sunDiffuse, l.diffuse);
+    setUniform(sunSpecular, l.specular);
+    setUniform(sunDirection, l.direction);
+}
+
+void worldShader::setMaterial(const material &m) {
+    setUniform(matAmbient, m.ambient);
+    setUniform(matDiffuse, m.diffuse);
+    setUniform(matSpecular, m.specular);
+    setUniform(matEmissive, m.emissive);
+    setUniform(matShininess, m.shininess);
+    if (enableTextures && m.tex) {
+        m.tex->bindTexture(diffuseSampler);
+        setUniform(enableTexture, true);
+    } else {
+        setUniform(enableTexture, false);
+    }
+    if (enableNormalMaps && m.normals) {
+        m.normals->bindTexture(normalSampler);
+        setUniform(enableNormalMap, true);
+    } else {
+        setUniform(enableNormalMap, false);
+    }
+}
+
+void worldShader::bindAddresses() {
+    projectionMatrix = glGetUniformLocation(programID, "projectionMatrix");
+    viewMatrix = glGetUniformLocation(programID, "viewMatrix");
+
+    lightMatrix = glGetUniformLocation(programID, "lightMatrix");
+
+    diffuseTexture = glGetUniformLocation(programID, "diffuseTexture");
+    normalTexture = glGetUniformLocation(programID, "normalTexture");
+    shadowMap = glGetUniformLocation(programID, "shadowMap");
+    enableTexture = glGetUniformLocation(programID, "enableTexture");
+    enableNormalMap = glGetUniformLocation(programID, "enableNormalMap");
+
+    sunAmbient = glGetUniformLocation(programID, "sun.ambient");
+    sunDiffuse = glGetUniformLocation(programID, "sun.diffuse");
+    sunSpecular = glGetUniformLocation(programID, "sun.specular");
+    sunDirection = glGetUniformLocation(programID, "sun.direction");
+
+    matAmbient = glGetUniformLocation(programID, "mat.ambient");
+    matDiffuse = glGetUniformLocation(programID, "mat.diffuse");
+    matSpecular = glGetUniformLocation(programID, "mat.specular");
+    matEmissive = glGetUniformLocation(programID, "mat.emissive");
+    matShininess = glGetUniformLocation(programID, "mat.shininess");
+
+    shadowBias = glGetUniformLocation(programID, "shadowBias");
+    shadowTexelSize = glGetUniformLocation(programID, "shadowTexelSize");
+
+	refractionHeight = glGetUniformLocation(programID, "refractionHeight");
+}
+
 
 worldRenderer::worldRenderer(maze *m) : m(m), bridge(m) {
 	pillarBox.setSize(pillarSize, pillarHeight, pillarSize, pillarHeight);
@@ -262,6 +353,8 @@ void worldRenderer::initItems() {
             matrix = glm::translate(identity, glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
             matrix = glm::rotate(matrix, glm::radians(90.f) * (it.second.arrow.direction + 1), glm::vec3(0.f, 1.f, 0.f));
             arrowBox.addMatrix(matrix);
+            break;
+        default:
             break;
         }
     }

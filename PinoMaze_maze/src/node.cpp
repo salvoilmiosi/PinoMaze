@@ -23,7 +23,7 @@ void node::reset() {
 }
 
 void node::addLink(node *neighbour, int distance) {
-    if (neighbour != nullptr && links != nullptr) {
+    if (neighbour) {
         links[linkCount].neighbour = neighbour;
         links[linkCount].distance = 1;
         ++linkCount;

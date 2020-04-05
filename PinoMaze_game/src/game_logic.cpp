@@ -134,6 +134,8 @@ bool gameLogic::canMove(int moveAngle, bool checkBlocks) {
 					return false;
 				}
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -375,6 +377,8 @@ bool gameLogic::useItem() {
 					return true;
 				}
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -394,6 +398,8 @@ void gameLogic::endMove() {
 				won = true;
 				SND_WIN.play();
 			}
+			break;
+		default:
 			break;
 		}
 	}

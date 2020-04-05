@@ -1,7 +1,11 @@
 #ifndef __SHADER_SKYBOX_H__
 #define __SHADER_SKYBOX_H__
 
-#include "shader_program.h"
+#include <GL/glew.h>
+#include <GL/gl.h>
+
+#include "../engine/cubemap.h"
+#include "../engine/shader_program.h"
 
 class skyboxShader: public shaderProgram {
 public:
@@ -32,6 +36,27 @@ private:
 
 protected:
     void bindAddresses();
+};
+
+class skyboxRenderer {
+protected:
+    GLuint vertexArray = 0;
+	
+    GLuint vertexBuffer = 0;
+    GLuint indexBuffer = 0;
+
+    skyboxShader shader;
+
+private:
+	cubemap CUB_SKYBOX;
+
+public:
+    virtual ~skyboxRenderer();
+
+public:
+    bool init();
+
+    void render(class game *g);
 };
 
 #endif // __SHADER_SKYBOX_H__

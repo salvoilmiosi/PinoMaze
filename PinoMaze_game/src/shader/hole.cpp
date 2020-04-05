@@ -1,7 +1,8 @@
 #include "hole.h"
 
-#include "globals.h"
-#include "resources.h"
+#include "../game.h"
+#include "../globals.h"
+#include "../resources.h"
 
 bool holeShader::init() {
     return shaderProgram::loadProgramFromResource("IDS_HOLE_VERTEX", "IDS_HOLE_FRAGMENT");

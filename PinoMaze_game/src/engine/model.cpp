@@ -1,9 +1,9 @@
 #include "model.h"
 
-#include "globals.h"
-
 #include <cstdio>
 #include <vector>
+
+#include "../globals.h"
 
 using namespace std;
 

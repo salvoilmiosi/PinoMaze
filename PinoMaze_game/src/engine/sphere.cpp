@@ -1,5 +1,7 @@
 #include "sphere.h"
 
+#include "../globals.h"
+
 void sphere::setSize(float r, int sh, int sv) {
     sphereRadius = r;
     sphereSubsH = sh;
