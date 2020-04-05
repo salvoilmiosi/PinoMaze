@@ -33,7 +33,6 @@ public:
 
     virtual void bindModel();
     virtual void unbindModel();
-    virtual void render() = 0;
 
 public:
     void addMatrix(const glm::mat4 &matrix);

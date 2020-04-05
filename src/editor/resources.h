@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "../../resource_pack/include/resource_load.h"
+#include "resource_load.h"
 
 extern SDL_Texture *RES_TILES;
 extern const int RES_TILES_NUM;

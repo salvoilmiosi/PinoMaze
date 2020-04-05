@@ -4,46 +4,8 @@
 #include "../globals.h"
 #include "../resources.h"
 
-bool holeShader::init() {
-    return shaderProgram::loadProgramFromResource("IDS_HOLE_VERTEX", "IDS_HOLE_FRAGMENT");
-}
 
-bool holeShader::bindProgram() {
-	if (!shaderProgram::bindProgram()) return false;
-	
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glEnableVertexAttribArray(4);
-
-	return true;
-}
-
-void holeShader::unbindProgram() {
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(3);
-	glDisableVertexAttribArray(4);
-	
-	shaderProgram::unbindProgram();
-}
-
-void holeShader::bindAddresses() {
-    projectionMatrix = glGetUniformLocation(programID, "projectionMatrix");
-    viewMatrix = glGetUniformLocation(programID, "viewMatrix");
-
-	lightDirection = glGetUniformLocation(programID, "lightDirection");
-
-    refractionTexture = glGetUniformLocation(programID, "refractionTexture");
-    dudvTexture = glGetUniformLocation(programID, "dudvTexture");
-	normalTexture = glGetUniformLocation(programID, "normalTexture");
-
-    tickCount = glGetUniformLocation(programID, "tickCount");
-}
-
-holeRenderer::holeRenderer(maze *m) : m(m) {
+holeRenderer::holeRenderer(maze *m) : shaderProgram("hole"), m(m) {
     glm::mat4 matrix, identity;
 
     for (int i=0; i<m->datasize(); ++i) {
@@ -86,7 +48,7 @@ bool holeRenderer::init() {
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
 
-	if (!shader.init()) return false;
+    if (!loadProgramFromResource("IDS_HOLE_VERTEX", "IDS_HOLE_FRAGMENT")) return false;
 
 	TEX_WATER_DUDV.loadSurface(loadImageFromResource("IDT_WATER_DUDV"));
 	TEX_WATER_NORMALS.loadSurface(loadImageFromResource("IDT_WATER_NORMALS"));
@@ -124,11 +86,11 @@ bool holeRenderer::init() {
     glVertexAttribPointer(3, 4, GL_FLOAT, false, sizeof(glm::mat4), (void*)(8*sizeof(float)));
     glVertexAttribPointer(4, 4, GL_FLOAT, false, sizeof(glm::mat4), (void*)(12*sizeof(float)));
 
-	if (shader.bindProgram()) {
-		shader.setRefractionTexture(0);
-		shader.setDudvTexture(1);
-		shader.setNormalTexture(2);
-		shader.unbindProgram();
+	if (bindProgram()) {
+		setRefractionTexture(0);
+		setDudvTexture(1);
+		setNormalTexture(2);
+		unbindProgram();
 	} else {
 		return false;
 	}
@@ -142,22 +104,55 @@ void holeRenderer::tick(game *g) {
 
 void holeRenderer::render(game *g) {
 	glBindVertexArray(vertexArray);
-	if (shader.bindProgram()) {
-		shader.setProjectionMatrix(g->projectionMatrix());
-		shader.setViewMatrix(g->viewMatrix());
-		shader.setTickCount(tickCount);
+	if (bindProgram()) {
+		setProjectionMatrix(g->projectionMatrix());
+		setViewMatrix(g->viewMatrix());
+		setTickCount(tickCount);
 
 		refraction.bindTexture(0);
 		TEX_WATER_DUDV.bindTexture(1);
 		TEX_WATER_NORMALS.bindTexture(2);
 
-		shader.setLightDirection(g->worldLight().direction);
+		setLightDirection(g->worldLight().direction);
 
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, (int)matrices.size());
 
-		shader.unbindProgram();
+		unbindProgram();
 	}
 	glBindVertexArray(0);
 }
 
+bool holeRenderer::bindProgram() {
+	if (!shaderProgram::bindProgram()) return false;
+	
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
 
+	return true;
+}
+
+void holeRenderer::unbindProgram() {
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
+	glDisableVertexAttribArray(4);
+	
+	shaderProgram::unbindProgram();
+}
+
+void holeRenderer::bindAddresses() {
+    loc_projectionMatrix = glGetUniformLocation(programID, "projectionMatrix");
+    loc_viewMatrix = glGetUniformLocation(programID, "viewMatrix");
+
+	loc_lightDirection = glGetUniformLocation(programID, "lightDirection");
+
+    loc_refractionTexture = glGetUniformLocation(programID, "refractionTexture");
+    loc_dudvTexture = glGetUniformLocation(programID, "dudvTexture");
+	loc_normalTexture = glGetUniformLocation(programID, "normalTexture");
+
+    tickCount = glGetUniformLocation(programID, "tickCount");
+}

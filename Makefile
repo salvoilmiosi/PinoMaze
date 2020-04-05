@@ -42,8 +42,8 @@ ifeq ($(OS),Windows_NT)
 
 	LIBS_GAME += -lopengl32
 
-	RESOURCES_EDITOR += $(OBJ_DIR)/editor.res
-	RESOURCES_GAME += $(OBJ_DIR)/game.res
+	ICON_EDITOR := $(OBJ_DIR)/editor.res
+	ICON_GAME := $(OBJ_DIR)/game.res
 endif
 
 all: editor game
@@ -62,11 +62,11 @@ $(resource_pack):
 $(shell mkdir -p $(BIN_DIR) >/dev/null)
 
 editor: $(BIN_DIR)/$(BIN_EDITOR)
-$(BIN_DIR)/$(BIN_EDITOR): $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(RESOURCES_EDITOR)
+$(BIN_DIR)/$(BIN_EDITOR): $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(RESOURCES_EDITOR) $(ICON_EDITOR)
 	$(LD) -o $(BIN_DIR)/$(BIN_EDITOR) $(LDFLAGS) $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(LIBS_EDITOR) $(ICON_EDITOR)
 
 game: $(BIN_DIR)/$(BIN_GAME)
-$(BIN_DIR)/$(BIN_GAME): $(OBJECTS_GAME) $(OBJECTS_SHARED) $(RESOURCES_GAME)
+$(BIN_DIR)/$(BIN_GAME): $(OBJECTS_GAME) $(OBJECTS_SHARED) $(RESOURCES_GAME) $(ICON_GAME)
 	$(LD) -o $(BIN_DIR)/$(BIN_GAME) $(LDFLAGS) $(OBJECTS_GAME) $(OBJECTS_SHARED) $(LIBS_GAME) $(ICON_GAME)
 
 $(OBJ_DIR)/%.res: $(RESOURCE_DIR)/%.rc
@@ -86,4 +86,4 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(OBJ_DIR)/%.d
 $(OBJ_DIR)/%.d: ;
 .PRECIOUS: $(OBJ_DIR)/%.d
 
--include $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.d,$(basename $(SOURCES)))
+include $(wildcard $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.d,$(basename $(SOURCES_EDITOR) $(SOURCES_GAME) $(SOURCES_SHARED))))

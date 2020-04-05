@@ -135,7 +135,6 @@ bool skyboxRenderer::init() {
 void skyboxRenderer::render(game *g) {
 	glBindVertexArray(vertexArray);
 	if (shader.bindProgram()) {
-
 		CUB_SKYBOX.bindTexture(0);
 		shader.setCubeMap(0);
 

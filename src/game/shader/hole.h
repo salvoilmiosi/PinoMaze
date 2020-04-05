@@ -9,62 +9,11 @@
 #include "../engine/shader_program.h"
 #include "../engine/framebuffer.h"
 
-class holeShader: public shaderProgram {
-public:
-    holeShader() : shaderProgram("hole") {}
-
-public:
-    bool init();
-	
-	bool bindProgram();
-	void unbindProgram();
-
-public:
-    void setProjectionMatrix(const glm::mat4 &m) {
-        setUniform(projectionMatrix, m);
-    }
-    void setViewMatrix(const glm::mat4 &m) {
-        setUniform(viewMatrix, m);
-    }
-	void setLightDirection(const glm::vec3 &v) {
-		setUniform(lightDirection, v);
-	}
-    void setRefractionTexture(const unsigned int &i) {
-        setUniform(refractionTexture, i);
-    }
-    void setDudvTexture(const unsigned int &i) {
-        setUniform(dudvTexture, i);
-    }
-	void setNormalTexture(const unsigned int &i) {
-		setUniform(normalTexture, i);
-	}
-    void setTickCount(const int &i) {
-        setUniform(tickCount, i);
-    }
-
-private:
-    GLint projectionMatrix;
-    GLint viewMatrix;
-
-	GLint lightDirection;
-
-    GLint refractionTexture;
-    GLint dudvTexture;
-	GLint normalTexture;
-
-    GLint tickCount;
-
-protected:
-    void bindAddresses();
-};
-
-class holeRenderer {
+class holeRenderer: public shaderProgram {
 protected:
     GLuint vertexArray = 0;
     GLuint vertexBuffer = 0;
     GLuint matrixBuffer = 0;
-
-    holeShader shader;
 
 private:
     maze *m = nullptr;
@@ -93,6 +42,46 @@ public:
 
 	void tick(class game *g);
     void render(class game *g);
+
+private:
+    bool bindProgram();
+    void unbindProgram();
+
+    virtual void bindAddresses();
+
+    void setProjectionMatrix(const glm::mat4 &m) {
+        setUniform(loc_projectionMatrix, m);
+    }
+    void setViewMatrix(const glm::mat4 &m) {
+        setUniform(loc_viewMatrix, m);
+    }
+	void setLightDirection(const glm::vec3 &v) {
+		setUniform(loc_lightDirection, v);
+	}
+    void setRefractionTexture(const unsigned int &i) {
+        setUniform(loc_refractionTexture, i);
+    }
+    void setDudvTexture(const unsigned int &i) {
+        setUniform(loc_dudvTexture, i);
+    }
+	void setNormalTexture(const unsigned int &i) {
+		setUniform(loc_normalTexture, i);
+	}
+    void setTickCount(const int &i) {
+        setUniform(loc_tickCount, i);
+    }
+    
+private:
+    GLint loc_projectionMatrix;
+    GLint loc_viewMatrix;
+
+	GLint loc_lightDirection;
+
+    GLint loc_refractionTexture;
+    GLint loc_dudvTexture;
+	GLint loc_normalTexture;
+
+    GLint loc_tickCount;
 };
 
 #endif // __SHADER_HOLE_H__
