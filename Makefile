@@ -46,7 +46,7 @@ OBJECTS_GAME = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES_GAME)
 SOURCES_MAZE = $(wildcard $(SRC_DIR)/maze/*.cpp $(SRC_DIR)/maze/**/*.cpp)
 OBJECTS_MAZE = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES_MAZE))) $(resource_load)
 
-RES_TXT = $(wildcard $(RESOURCE_DIR)/*.txt)
+RES_TXT = $(RESOURCE_DIR)/editor.txt $(RESOURCE_DIR)/resource.txt $(RESOURCE_DIR)/shaders.txt $(RESOURCE_DIR)/music.txt
 RESOURCES = $(patsubst $(RESOURCE_DIR)/%,$(BIN_DIR)/%.dat,$(basename $(RES_TXT)))
 
 all: maze editor game
