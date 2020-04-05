@@ -1,14 +1,14 @@
-CXX = g++
-LD = g++
-CFLAGS = -g -Wall --std=c++14
+CXX = clang++
+LD = clang++
+CFLAGS = -g -Wall --std=c++17
 
 LDFLAGS =
-LIBS = -lSDL2 -lSDL2_image $(PinoMaze_maze)
+LIBS = `pkg-config --static --libs SDL2 SDL2_image`
 
 PinoMaze_maze_dir = PinoMaze_maze
 DIR = PinoMaze_editor
 
-INCLUDE = -I$(DIR)/include -I$(PinoMaze_maze_dir)/include
+INCLUDE = -I$(PinoMaze_maze_dir)/include
 
 SRC_DIR = $(DIR)/src
 RESOURCE_DIR = $(DIR)/resource
@@ -17,6 +17,7 @@ OBJ_DIR = $(DIR)/obj
 BIN_DIR = bin
 
 PinoMaze_maze = $(PinoMaze_maze_dir)/lib/libmaze.a
+tinyfd = tinyfiledialogs/libtfd.a
 
 OUT_BIN = PinoMaze_editor
 
@@ -25,8 +26,6 @@ resource_pack = $(resource_pack_dir)/bin/resource_pack
 resource_load = $(resource_pack_dir)/bin/libresource_load.a
 
 ifeq ($(OS),Windows_NT)
-	LIBS += -lole32
-	LDFLAGS += -mwindows -lmingw32 -lSDL2main
 	OUT_BIN := $(OUT_BIN).exe
 	resource_pack := $(resource_pack).exe
 endif
@@ -46,14 +45,17 @@ clean:
 	rm -f $(BIN_DIR)/editor.dat
 	rm -rf $(OBJ_DIR)
 
-$(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(BIN_DIR)/editor.dat $(PinoMaze_maze)
-	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS)
+$(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(BIN_DIR)/editor.dat $(PinoMaze_maze) $(tinyfd)
+	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(PinoMaze_maze) $(tinyfd) $(LIBS)
 
 $(BIN_DIR)/editor.dat: $(RESOURCE_DIR)/editor.txt $(resource_pack)
 	$(resource_pack) $< $@
 
 $(PinoMaze_maze):
-	make -C $(PinoMaze_maze_dir)
+	$(MAKE) -f Makefile.maze
+
+$(tinyfd):
+	$(MAKE) -C tinyfiledialogs
 
 $(resource_load): $(resource_pack)
 $(resource_pack):

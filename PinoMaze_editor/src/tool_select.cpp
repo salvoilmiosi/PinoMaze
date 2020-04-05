@@ -29,6 +29,8 @@ void toolSelect::handleEvent(SDL_Event &e) {
             state = EDIT_MOVING_ITEM;
             selectedTile = currentTile;
             break;
+        default:
+            break;
         }
         break;
     case SDL_MOUSEBUTTONUP:

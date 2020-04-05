@@ -1,6 +1,11 @@
-CXX = g++
+CXX = clang++
 AR = ar
-CFLAGS = -g -Wall --std=c++14
+MAKE = make
+CFLAGS = -g -Wall --std=c++17
+
+ifeq ($(OS),Windows_NT)
+	MAKE := mingw32-make
+endif
 
 tfd = tinyfiledialogs
 
@@ -26,13 +31,13 @@ all: $(BIN_DIR)/$(OUT_BIN)
 clean:
 	rm -f $(BIN_DIR)/$(OUT_BIN)
 	rm -rf $(OBJ_DIR)
-	make -C $(tfd) clean
+	$(MAKE) -C $(tfd) clean
 
 $(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(tfd)/libtfd.a
 	$(AR) rvs $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(tfd)/tinyfiledialogs.o
 
 $(tfd)/libtfd.a:
-	make -C $(tfd)
+	$(MAKE) -C $(tfd)
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(OBJ_DIR)/%.d

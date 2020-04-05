@@ -1,9 +1,9 @@
-CXX = g++
-LD = g++
-CFLAGS = -g -Wall --std=c++1z
+CXX = clang++
+LD = clang++
+CFLAGS = -g -Wall --std=c++17
 
 LDFLAGS =
-LIBS = -lSDL2 -lSDL2_image -lSDL2_mixer $(PinoMaze_maze)
+LIBS = `pkg-config --static --libs x11 xrandr xi xxf86vm glew SDL2 SDL2_image SDL2_mixer` $(PinoMaze_maze)
 
 PinoMaze_maze_dir = PinoMaze_maze
 
@@ -24,12 +24,8 @@ resource_pack = $(resource_pack_dir)/bin/resource_pack
 resource_load = $(resource_pack_dir)/bin/libresource_load.a
 
 ifeq ($(OS),Windows_NT)
-	LIBS += -lglew32 -lopengl32 -lole32
-	LDFLAGS := -mwindows -lmingw32 -lSDL2main $(LIBS)
 	OUT_BIN := $(OUT_BIN).exe
 	resource_pack := $(resource_pack).exe
-else
-	LIBS += -lGLEW -lGL
 endif
 
 $(shell mkdir -p $(BIN_DIR) >/dev/null)
@@ -54,11 +50,11 @@ $(BIN_DIR)/$(OUT_BIN): $(OBJECTS) $(RESOURCES) $(PinoMaze_maze)
 	$(LD) -o $(BIN_DIR)/$(OUT_BIN) $(OBJECTS) $(LDFLAGS) $(LIBS)
 
 $(PinoMaze_maze):
-	make -C $(PinoMaze_maze_dir)
+	$(MAKE) -C $(PinoMaze_maze_dir)
 
 $(resource_load): $(resource_pack)
 $(resource_pack):
-	make -C $(resource_pack_dir)
+	$(MAKE) -C $(resource_pack_dir)
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(OBJ_DIR)/%.d

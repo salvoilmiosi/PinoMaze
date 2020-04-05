@@ -117,6 +117,8 @@ static void renderItem(maze *m, SDL_Renderer *renderer, const mazeItem &item) {
 
         SDL_RenderCopy(renderer, RES_TILES, &srcrect, &dstrect);
         break;
+    default:
+        break;
     }
 }
 

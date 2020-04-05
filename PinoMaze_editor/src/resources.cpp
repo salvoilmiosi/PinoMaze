@@ -12,45 +12,20 @@ using namespace std;
 
 SDL_Texture *RES_TILES = nullptr;
 const int RES_TILES_NUM = 8;
-int RES_TILES_SIZE;
+int RES_TILES_SIZE = 0;
 
 SDL_Texture *RES_TP_FONT = nullptr;
 const int RES_TP_FONT_NUM = 16;
-int RES_TP_FONT_SIZE;
+int RES_TP_FONT_SIZE = 0;
 
 SDL_Texture *RES_TOOLS = nullptr;
 const int RES_TOOLS_NUM = 4;
-int RES_TOOLS_SIZE;
+int RES_TOOLS_SIZE = 0;
 
 SDL_Texture *RES_TEXT = nullptr;
 const int RES_TEXT_NUM = 16;
-int RES_TEXT_W;
-int RES_TEXT_H;
-
-const SDL_Color COLOR_FLOOR =        {0x00, 0x00, 0x00, 0xff};
-const SDL_Color COLOR_FLOOR_BLEND =  {0x00, 0x00, 0x00, 0xaa};
-const SDL_Color COLOR_NODE_CLOSED =  {0x22, 0x22, 0x00, 0xaa};
-const SDL_Color COLOR_NODE_OPEN =    {0x44, 0x44, 0x00, 0xaa};
-const SDL_Color COLOR_PATH =         {0x00, 0xff, 0x00, 0xff};
-const SDL_Color COLOR_PATH_OLD =     {0x00, 0x80, 0x00, 0xff};
-const SDL_Color COLOR_START =        {0xff, 0x00, 0x00, 0xff};
-const SDL_Color COLOR_START_TEMP =   {0x66, 0x00, 0x00, 0xff};
-const SDL_Color COLOR_END =          {0xff, 0x00, 0xff, 0xff};
-const SDL_Color COLOR_END_TEMP =     {0x66, 0x00, 0x66, 0xff};
-const SDL_Color COLOR_GRID =         {0xff, 0xff, 0xff, 0x11};
-const SDL_Color COLOR_BLOCK =        {0x66, 0x66, 0x66, 0xff};
-const SDL_Color COLOR_WALL =         {0x99, 0x99, 0x99, 0xff};
-const SDL_Color COLOR_WALL_BUILD   = {0xff, 0xff, 0xff, 0x99};
-const SDL_Color COLOR_WALL_DESTROY = {0xff, 0x00, 0x00, 0x99};
-const SDL_Color COLOR_ARROW =        {0x00, 0x00, 0xff, 0xff};
-const SDL_Color COLOR_SELECTION =    {0xff, 0xff, 0xff, 0xff};
-const SDL_Color COLOR_TELEPORT =     {0xff, 0xff, 0x00, 0xff};
-const SDL_Color COLOR_TPTEXT =       {0x00, 0x33, 0xff, 0xff};
-const SDL_Color COLOR_TPDEST =       {0xff, 0x00, 0x00, 0xff};
-const SDL_Color COLOR_BG =           {0x0a, 0x00, 0x00, 0xff};
-const SDL_Color COLOR_CROP_RECT =    {0xff, 0xff, 0xff, 0xff};
-const SDL_Color COLOR_CROP_BLINK =   {0xff, 0xff, 0xff, 0x80};
-const SDL_Color COLOR_TEXT =         {0xff, 0x00, 0x00, 0xff};
+int RES_TEXT_W = 0;
+int RES_TEXT_H = 0;
 
 static SDL_Surface *loadImageFromResource(const char *RES_ID) {
     SDL_RWops *rw = getResourceRW(RES_ID);

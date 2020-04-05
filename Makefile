@@ -1,18 +1,18 @@
 all: maze editor game
 
 clean:
-	make -f Makefile.maze clean
-	make -f Makefile.editor clean
-	make -f Makefile.game clean
+	$(MAKE) -f Makefile.maze clean
+	$(MAKE) -f Makefile.editor clean
+	$(MAKE) -f Makefile.game clean
 	rm -rf bin
 
 maze:
-	make -f Makefile.maze
+	$(MAKE) -f Makefile.maze
 	
 editor:
-	make -f Makefile.editor
+	$(MAKE) -f Makefile.editor
 
 game:
-	make -f Makefile.game
+	$(MAKE) -f Makefile.game
 
 .PHONY: clean game editor
