@@ -1,11 +1,10 @@
+.vscode/*
+bin/*
 *.exe
 *.a
 *.dll
 *.dat
+*.res
 *.so
-bin/PinoMaze_game
-bin/PinoMaze_editor
-resource_pack/bin
 *.o
 *.d
-.vscode/*
