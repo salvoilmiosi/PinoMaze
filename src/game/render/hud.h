@@ -10,37 +10,7 @@
 #include "../engine/shader_program.h"
 #include "../engine/texture.h"
 
-class hudShader : public shaderProgram {
-public:
-    hudShader() : shaderProgram("hud") {}
-
-public:
-    bool init();
-
-	bool bindProgram();
-	void unbindProgram();
-
-public:
-    void setOffset(const glm::vec2 &v) {
-        setUniform(offset, v);
-    }
-    void setDiffuseTexture(const unsigned int &i) {
-        setUniform(diffuseTexture, i);
-    }
-    void setDiffuseColor(const glm::vec3 &v) {
-        setUniform(diffuseColor, v);
-    }
-
-private:
-    GLint offset;
-    GLint diffuseTexture;
-    GLint diffuseColor;
-
-protected:
-    void bindAddresses();
-};
-
-class hudRenderer {
+class hudRenderer : public shaderProgram {
 protected:
     struct vertex {
         float x, y;
@@ -48,11 +18,6 @@ protected:
     };
 
     std::vector<vertex> vertices;
-
-    GLuint vertexBuffer = 0;
-    GLuint vertexArray = 0;
-
-    hudShader shader;
 
 private:
 	static const int STATUS_LENGTH = 128;
@@ -64,6 +29,7 @@ private:
 	texture TEX_FONT_TEXTURE;
 
 public:
+    hudRenderer() : shaderProgram("hud") {}
     virtual ~hudRenderer();
 
 public:
@@ -71,6 +37,28 @@ public:
 
 	void setStatus(const char *str);
     void render();
+
+private:
+    void setOffset(const glm::vec2 &v) {
+        setUniform(offset, v);
+    }
+    void setDiffuseTexture(const unsigned int &i) {
+        setUniform(diffuseTexture, i);
+    }
+    void setDiffuseColor(const glm::vec3 &v) {
+        setUniform(diffuseColor, v);
+    }
+
+private:
+    GLuint vertexBuffer = 0;
+    GLuint vertexArray = 0;
+
+    GLint offset;
+    GLint diffuseTexture;
+    GLint diffuseColor;
+
+protected:
+    void bindAddresses();
 
 private:
 	int buildTextBuffer();

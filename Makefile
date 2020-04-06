@@ -1,5 +1,4 @@
 CXX = clang++
-LD = clang++
 CFLAGS = -g -Wall --std=c++17
 
 LIBS_EDITOR = `pkg-config --static --libs SDL2 SDL2_image`
@@ -26,13 +25,18 @@ OBJECTS_EDITOR = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES_EDI
 SOURCES_GAME = $(wildcard $(SRC_DIR)/game/*.cpp $(SRC_DIR)/game/**/*.cpp)
 OBJECTS_GAME = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES_GAME)))
 
+SHADERS_GLSL = $(wildcard $(SRC_DIR)/game/**/*.glsl)
+SHADERS_OBJS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SHADERS_GLSL)))
+
 SOURCES_SHARED = $(wildcard $(SRC_DIR)/shared/*.cpp $(SRC_DIR)/shared/**/*.cpp)
-OBJECTS_SHARED = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES_SHARED))) $(resource_load) $(libtfd)
+OBJECTS_SHARED = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES_SHARED)))
+
+LIBS_SHARED = $(resource_load) $(libtfd)
 
 RES_TXT_EDITOR = $(RESOURCE_DIR)/editor.txt
 RESOURCES_EDITOR = $(patsubst $(RESOURCE_DIR)/%,$(BIN_DIR)/%.dat,$(basename $(RES_TXT_EDITOR)))
 
-RES_TXT_GAME = $(RESOURCE_DIR)/resource.txt $(RESOURCE_DIR)/shaders.txt $(RESOURCE_DIR)/music.txt
+RES_TXT_GAME = $(RESOURCE_DIR)/resource.txt $(RESOURCE_DIR)/music.txt
 RESOURCES_GAME = $(patsubst $(RESOURCE_DIR)/%,$(BIN_DIR)/%.dat,$(basename $(RES_TXT_GAME)))
 
 ifeq ($(OS),Windows_NT)
@@ -48,9 +52,16 @@ endif
 
 all: editor game
 
-clean:
-	rm -rf $(BIN_DIR)
-	rm -rf $(OBJ_DIR)
+clean: clean_editor clean_game clean_shared
+
+clean_editor:
+	rm -f $(BIN_DIR)/$(BIN_EDITOR) $(RESOURCES_EDITOR) $(ICON_EDITOR) $(OBJECTS_EDITOR) $(OBJECTS_EDITOR:.o=.d)
+
+clean_game:
+	rm -f $(BIN_DIR)/$(BIN_GAME) $(RESOURCES_GAME) $(SHADERS_OBJS) $(ICON_GAME) $(OBJECTS_GAME) $(OBJECTS_GAME:.o=.d)
+
+clean_shared:
+	rm -f $(OBJECTS_SHARED) $(OBJECTS_SHARED:.o=.d)
 
 $(libtfd):
 	$(MAKE) -C tinyfiledialogs
@@ -62,18 +73,22 @@ $(resource_pack):
 $(shell mkdir -p $(BIN_DIR) >/dev/null)
 
 editor: $(BIN_DIR)/$(BIN_EDITOR)
-$(BIN_DIR)/$(BIN_EDITOR): $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(RESOURCES_EDITOR) $(ICON_EDITOR)
-	$(LD) -o $(BIN_DIR)/$(BIN_EDITOR) $(LDFLAGS) $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(LIBS_EDITOR) $(ICON_EDITOR)
+$(BIN_DIR)/$(BIN_EDITOR): $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(LIBS_SHARED) $(RESOURCES_EDITOR) $(ICON_EDITOR)
+	$(CXX) -o $(BIN_DIR)/$(BIN_EDITOR) $(LDFLAGS) $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(LIBS_SHARED) $(LIBS_EDITOR) $(ICON_EDITOR)
 
 game: $(BIN_DIR)/$(BIN_GAME)
-$(BIN_DIR)/$(BIN_GAME): $(OBJECTS_GAME) $(OBJECTS_SHARED) $(RESOURCES_GAME) $(ICON_GAME)
-	$(LD) -o $(BIN_DIR)/$(BIN_GAME) $(LDFLAGS) $(OBJECTS_GAME) $(OBJECTS_SHARED) $(LIBS_GAME) $(ICON_GAME)
+$(BIN_DIR)/$(BIN_GAME): $(OBJECTS_GAME) $(OBJECTS_SHARED) $(LIBS_SHARED) $(SHADERS_OBJS) $(RESOURCES_GAME) $(ICON_GAME)
+	$(CXX) -o $(BIN_DIR)/$(BIN_GAME) $(LDFLAGS) $(OBJECTS_GAME) $(OBJECTS_SHARED) $(LIBS_SHARED) $(SHADERS_OBJS) $(LIBS_GAME) $(ICON_GAME)
 
 $(OBJ_DIR)/%.res: $(RESOURCE_DIR)/%.rc
 	windres $< -O coff -o $@
 
 $(BIN_DIR)/%.dat: $(RESOURCE_DIR)/%.txt $(resource_pack)
 	$(resource_pack) $< $@
+
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.glsl
+	@mkdir -p $(dir $@)
+	$(LD) -r -b binary -o $@ $<
 
 DEPFLAGS = -MT $@ -MMD -MP -MF $(OBJ_DIR)/$*.Td
 

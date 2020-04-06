@@ -7,15 +7,24 @@
 #include "../engine/cubemap.h"
 #include "../engine/shader_program.h"
 
-class skyboxShader: public shaderProgram {
+class skyboxRenderer : public shaderProgram {
+protected:
+    GLuint vertexArray = 0;
+	
+    GLuint vertexBuffer = 0;
+    GLuint indexBuffer = 0;
+
+private:
+	cubemap CUB_SKYBOX;
+
 public:
-    skyboxShader() : shaderProgram("skybox") {}
+    skyboxRenderer() : shaderProgram("skybox") {}
+    virtual ~skyboxRenderer();
 
 public:
     bool init();
-	
-	bool bindProgram();
-	void unbindProgram();
+
+    void render(class game *g);
 
 public:
     void setProjectionMatrix(const glm::mat4 &m) {
@@ -36,27 +45,6 @@ private:
 
 protected:
     void bindAddresses();
-};
-
-class skyboxRenderer {
-protected:
-    GLuint vertexArray = 0;
-	
-    GLuint vertexBuffer = 0;
-    GLuint indexBuffer = 0;
-
-    skyboxShader shader;
-
-private:
-	cubemap CUB_SKYBOX;
-
-public:
-    virtual ~skyboxRenderer();
-
-public:
-    bool init();
-
-    void render(class game *g);
 };
 
 #endif // __SHADER_SKYBOX_H__

@@ -6,11 +6,12 @@ cubemap::~cubemap() {
 	}
 }
 
-bool cubemap::loadSurfaces(SDL_Surface **surfaces) {
+bool cubemap::loadSurfaces(SDL_Surface **surfs) {
     glGenTextures(1, &texID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
 
     for (int i=0; i<6; ++i) {
+		surfaces[i] = surfs[i];
         unsigned char bpp = surfaces[i]->format->BytesPerPixel;
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, bpp, surfaces[i]->w, surfaces[i]->h, 0,
                      bpp == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, surfaces[i]->pixels);

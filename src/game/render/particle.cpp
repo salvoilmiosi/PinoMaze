@@ -1,6 +1,75 @@
-#include "particle_system.h"
+#include "particle.h"
 
+#include "../resources.h"
+#include "../game.h"
 #include "../globals.h"
+
+void particleRenderer::bindAddresses() {
+	projectionMatrix = glGetUniformLocation(programID, "projectionMatrix");
+	viewMatrix = glGetUniformLocation(programID, "viewMatrix");
+
+	texSize = glGetUniformLocation(programID, "texSize");
+	particleTexture = glGetUniformLocation(programID, "particleTexture");
+}
+
+bool particleRenderer::init() {
+	if (!shaderProgram::loadProgramFromResource(SHADER_RESOURCE(s_particle_v), SHADER_RESOURCE(s_particle_f))) return false;
+
+	if (!system.init()) return false;
+
+	TEX_PARTICLE_TEXTURE.loadSurface(loadImageFromResource("IDT_PARTICLE_TEXTURE"));
+
+	if (bindProgram()) {
+		setTexSize(0.5f);
+		setParticleTexture(0);
+		unbindProgram();
+	} else {
+		return false;
+	}
+
+	return checkGlError("Failed to init particle system renderer");
+}
+
+void particleRenderer::tick(game *g) {
+	glm::mat4 matrix = g->marbleMatrix();
+	glm::vec3 position(matrix[3][0], matrix[3][1], matrix[3][2]);
+	static glm::vec3 lastPosition = position;
+	system.setPosition(position);
+	system.setVelocity(position - lastPosition);
+	lastPosition = position;
+	static int enableTimer = 0;
+
+	if (g->hasTeleported()) {
+		system.setVelocity(glm::vec3(0.f));
+		system.addParticles(600, 1.5f);
+		enableTimer = 20;
+	}
+
+	if (enableTimer > 0) --enableTimer;
+
+	system.setEnabled(g->hasWon() || enableTimer > 0);
+
+	system.tick();
+}
+
+void particleRenderer::render(game *g) {
+	if (bindProgram()) {
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		glDepthMask(false);
+
+		setProjectionMatrix(g->projectionMatrix());
+		setViewMatrix(g->viewMatrix());
+
+		TEX_PARTICLE_TEXTURE.bindTexture(0);
+
+		system.render();
+
+		glDepthMask(true);
+		glDisable(GL_BLEND);
+		unbindProgram();
+	}
+}
 
 particleSystem::particleSystem() {
 	vertexArray = 0;
@@ -141,10 +210,10 @@ void particleSystem::tick() {
 void particleSystem::render() {
 	if (numAlive <= 0) return;
 
+	glBindVertexArray(vertexArray);
 	glBindBuffer(GL_ARRAY_BUFFER, particleBuffer);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(particle) * numAlive, particles);
 
-	glBindVertexArray(vertexArray);
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, (GLsizei)numAlive);
 	glBindVertexArray(0);
 }

@@ -38,7 +38,7 @@ int main (int argc, char **argv) {
 	}
 
 	// Load resources
-	if (openResourceFiles(argv[0], "resource.dat", "music.dat", "shaders.dat") != 3) {
+	if (openResourceFiles(argv[0], "resource.dat", "music.dat") != 2) {
 		fprintf(stderr, "Could not load resources\n");
 		return -4;
 	}

@@ -6,10 +6,8 @@
 #include "../globals.h"
 #include "../game.h"
 
-const material material::MAT_DEFAULT;
-
 bool worldShader::init() {
-    return shaderProgram::loadProgramFromResource("IDS_WORLD_VERTEX", "IDS_WORLD_FRAGMENT");
+    return shaderProgram::loadProgramFromResource(SHADER_RESOURCE(s_world_v), SHADER_RESOURCE(s_world_f));
 }
 
 bool worldShader::bindProgram() {
@@ -204,28 +202,28 @@ void worldRenderer::render(game *g) {
 
 		shadowMap.bindTexture(2);
 
-		shader.setMaterial(g->getMaterial("MAT_FLOOR"));
+		shader.setMaterial(material::get("MAT_FLOOR"));
 		groundBox.render();
 
-		shader.setMaterial(g->getMaterial("MAT_PILLAR"));
+		shader.setMaterial(material::get("MAT_PILLAR"));
 		pillarBox.render();
 
-		shader.setMaterial(g->getMaterial("MAT_BRICKS"));
+		shader.setMaterial(material::get("MAT_BRICKS"));
 		wallBox.render();
 
 		bridge.renderShader(g, shader);
 
-		shader.setMaterial(g->getMaterial("MAT_START"));
+		shader.setMaterial(material::get("MAT_START"));
 		startBox.render();
 
-		shader.setMaterial(g->getMaterial("MAT_END"));
+		shader.setMaterial(material::get("MAT_END"));
 		endBox.render();
 
-		shader.setMaterial(g->getMaterial("MAT_ARROW"));
+		shader.setMaterial(material::get("MAT_ARROW"));
 		arrowBox.render();
 
 		if (teleportTimer % 18 < 9) {
-			shader.setMaterial(g->getMaterial("MAT_MARBLE"));
+			shader.setMaterial(material::get("MAT_MARBLE"));
 			marble.render();
 		}
 
@@ -240,10 +238,10 @@ void worldRenderer::renderRefraction(game *g) {
 
 		shader.setRefractionHeight(-blockHeight);
 
-		shader.setMaterial(g->getMaterial("MAT_FLOOR"));
+		shader.setMaterial(material::get("MAT_FLOOR"));
 		groundBox.render();
 
-		shader.setMaterial(g->getMaterial("MAT_MARBLE"));
+		shader.setMaterial(material::get("MAT_MARBLE"));
 		marble.render();
 
 		shader.setRefractionHeight(999.f);

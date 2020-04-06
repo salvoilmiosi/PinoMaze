@@ -4,45 +4,13 @@
 #include "../game.h"
 #include "../globals.h"
 
-void skyboxShader::setViewMatrix(glm::mat4 m) {
-    m[3][0] = 0.f;
-    m[3][1] = 0.f;
-    m[3][2] = 0.f;
-    setUniform(viewMatrix, m);
-}
-
-bool skyboxShader::init() {
-    return shaderProgram::loadProgramFromResource("IDS_SKYBOX_VERTEX", "IDS_SKYBOX_FRAGMENT");
-}
-
-bool skyboxShader::bindProgram() {
-	if (!shaderProgram::bindProgram()) return false;
-	
-	glEnableVertexAttribArray(0);
-
-	return true;
-}
-
-void skyboxShader::unbindProgram() {
-	glDisableVertexAttribArray(0);
-	
-	shaderProgram::unbindProgram();
-}
-
-void skyboxShader::bindAddresses() {
-    projectionMatrix = glGetUniformLocation(programID, "projectionMatrix");
-    viewMatrix = glGetUniformLocation(programID, "viewMatrix");
-    cubeMap = glGetUniformLocation(programID, "cubeMap");
-}
-
-
 skyboxRenderer::~skyboxRenderer() {
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteBuffers(1, &indexBuffer);
 }
 
 bool skyboxRenderer::init() {
-    if (!shader.init()) return false;
+    if (!shaderProgram::loadProgramFromResource(SHADER_RESOURCE(s_skybox_v), SHADER_RESOURCE(s_skybox_f))) return false;
 
 	SDL_Surface *skyboxSurfaces[] = {
 		loadImageFromResource("IDC_SKYBOX_LEFT"),
@@ -126,6 +94,7 @@ bool skyboxRenderer::init() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+	glEnableVertexAttribArray(0);
 
     glBindVertexArray(0);
 
@@ -133,16 +102,30 @@ bool skyboxRenderer::init() {
 }
 
 void skyboxRenderer::render(game *g) {
-	glBindVertexArray(vertexArray);
-	if (shader.bindProgram()) {
+	if (bindProgram()) {
+	    glBindVertexArray(vertexArray);
 		CUB_SKYBOX.bindTexture(0);
-		shader.setCubeMap(0);
+		setCubeMap(0);
 
-		shader.setProjectionMatrix(g->projectionMatrix());
-		shader.setViewMatrix(g->viewMatrix());
+		setProjectionMatrix(g->projectionMatrix());
+		setViewMatrix(g->viewMatrix());
 
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-		shader.unbindProgram();
+
+        glBindVertexArray(0);
+		unbindProgram();
 	}
-	glBindVertexArray(0);
+}
+
+void skyboxRenderer::setViewMatrix(glm::mat4 m) {
+    m[3][0] = 0.f;
+    m[3][1] = 0.f;
+    m[3][2] = 0.f;
+    setUniform(viewMatrix, m);
+}
+
+void skyboxRenderer::bindAddresses() {
+    projectionMatrix = glGetUniformLocation(programID, "projectionMatrix");
+    viewMatrix = glGetUniformLocation(programID, "viewMatrix");
+    cubeMap = glGetUniformLocation(programID, "cubeMap");
 }

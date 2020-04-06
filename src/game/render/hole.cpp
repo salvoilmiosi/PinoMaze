@@ -48,7 +48,7 @@ bool holeRenderer::init() {
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
 
-    if (!loadProgramFromResource("IDS_HOLE_VERTEX", "IDS_HOLE_FRAGMENT")) return false;
+    if (!loadProgramFromResource(SHADER_RESOURCE(s_hole_v), SHADER_RESOURCE(s_hole_f))) return false;
 
 	TEX_WATER_DUDV.loadSurface(loadImageFromResource("IDT_WATER_DUDV"));
 	TEX_WATER_NORMALS.loadSurface(loadImageFromResource("IDT_WATER_NORMALS"));

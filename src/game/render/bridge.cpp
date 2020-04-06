@@ -110,12 +110,12 @@ void bridgeRenderer::renderShader(game *g, worldShader &shader) {
         vertexArray = arcVAO;
         bindModel();
 
-        shader.setMaterial(g->getMaterial("MAT_TILES"));
+        shader.setMaterial(material::get("MAT_TILES"));
 
         glDrawElementsInstanced(GL_TRIANGLES, GLsizei(underArc_offset - overArc_offset), GL_UNSIGNED_INT,
                                 (void*)(overArc_offset * sizeof(GLuint)), (GLsizei)matrices.size());
 
-        shader.setMaterial(g->getMaterial("MAT_CEILING"));
+        shader.setMaterial(material::get("MAT_CEILING"));
 
         glDrawElementsInstanced(GL_TRIANGLES, GLsizei(wall_offset - underArc_offset), GL_UNSIGNED_INT,
                                 (void*)(underArc_offset * sizeof(GLuint)), (GLsizei)matrices.size());
@@ -124,7 +124,7 @@ void bridgeRenderer::renderShader(game *g, worldShader &shader) {
     }
 
     if (!wallMatrices.empty()) {
-        shader.setMaterial(g->getMaterial("MAT_BRICKS"));
+        shader.setMaterial(material::get("MAT_BRICKS"));
 
         vertexArray = wallVAO;
         bindModel();

@@ -11,12 +11,12 @@
 
 #include "maze.h"
 
-#include "shader/skybox.h"
-#include "shader/world.h"
-#include "shader/hole.h"
-#include "shader/teleport.h"
-#include "shader/particle.h"
-#include "shader/hud.h"
+#include "render/skybox.h"
+#include "render/world.h"
+#include "render/hole.h"
+#include "render/teleport.h"
+#include "render/particle.h"
+#include "render/hud.h"
 
 #include "game_logic.h"
 
@@ -47,8 +47,6 @@ private:
 	glm::mat4 m_light;
 
 	light sun;
-
-	std::map<std::string, material> mat;
 
 public:
 	game(maze *m);
@@ -94,10 +92,6 @@ public:
 	glm::mat4 &lightMatrix() {
 		return m_light;
 	}
-
-	bool loadMaterials();
-
-	const material &getMaterial(const char *name);
 };
 
 #endif // __GAME_H__

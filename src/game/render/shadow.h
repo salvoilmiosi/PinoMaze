@@ -6,6 +6,7 @@
 class shadowShader : public shaderProgram {
 public:
     shadowShader() : shaderProgram("shadow") {}
+    ~shadowShader();
 
 public:
     bool init();
@@ -20,6 +21,7 @@ public:
 
 private:
     GLint lightMatrix;
+    GLuint vao;
 
 protected:
     void bindAddresses();

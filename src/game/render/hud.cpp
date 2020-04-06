@@ -3,38 +3,8 @@
 #include "../resources.h"
 #include "../globals.h"
 
-bool hudShader::init() {
-    return shaderProgram::loadProgramFromResource("IDS_HUD_VERTEX", "IDS_HUD_FRAGMENT");
-}
-
-bool hudShader::bindProgram() {
-	if (!shaderProgram::bindProgram()) return false;
-	
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-
-	return true;
-}
-
-void hudShader::unbindProgram() {
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	
-	shaderProgram::unbindProgram();
-}
-
-void hudShader::bindAddresses() {
-    offset = glGetUniformLocation(programID, "offset");
-    diffuseTexture = glGetUniformLocation(programID, "diffuseTexture");
-    diffuseColor = glGetUniformLocation(programID, "diffuseColor");
-}
-
 hudRenderer::~hudRenderer() {
-	glBindVertexArray(vertexArray);
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
 	glDeleteVertexArrays(1, &vertexArray);
-
 	glDeleteBuffers(1, &vertexBuffer);
 }
 
@@ -47,7 +17,7 @@ glm::vec2 hudRenderer::toWorldVector(int x, int y) {
 }
 
 bool hudRenderer::init() {
-    if (!shader.init()) return false;
+    if (!shaderProgram::loadProgramFromResource(SHADER_RESOURCE(s_hud_v), SHADER_RESOURCE(s_hud_f))) return false;
 
 	TEX_FONT_TEXTURE.loadSurface(loadImageFromResource("IDT_FONT_TEXTURE"));
 	TEX_FONT_TEXTURE.setFilter(GL_NEAREST);
@@ -139,7 +109,7 @@ int hudRenderer::buildTextBuffer() {
 }
 
 void hudRenderer::render() {
-	if (shader.bindProgram()) {
+	if (bindProgram()) {
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -152,18 +122,24 @@ void hudRenderer::render() {
 
 		glBindVertexArray(vertexArray);
 		TEX_FONT_TEXTURE.bindTexture(0);
-		shader.setDiffuseColor(glm::vec3(0.f, 0.f, 0.f));
-		shader.setOffset(toWorldVector(1, 1));
+		setDiffuseColor(glm::vec3(0.f, 0.f, 0.f));
+		setOffset(toWorldVector(1, 1));
 		glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
-		shader.setDiffuseColor(glm::vec3(1.f, 0.f, 0.f));
-		shader.setOffset(glm::vec2(0.f, 0.f));
+		setDiffuseColor(glm::vec3(1.f, 0.f, 0.f));
+		setOffset(glm::vec2(0.f, 0.f));
 		glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
 		glDisable(GL_BLEND);
 		glBindVertexArray(0);
 
 		glEnable(GL_DEPTH_TEST);
-		shader.unbindProgram();
+		unbindProgram();
 	}
+}
+
+void hudRenderer::bindAddresses() {
+    offset = glGetUniformLocation(programID, "offset");
+    diffuseTexture = glGetUniformLocation(programID, "diffuseTexture");
+    diffuseColor = glGetUniformLocation(programID, "diffuseColor");
 }

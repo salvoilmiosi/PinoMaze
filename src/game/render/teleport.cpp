@@ -7,7 +7,7 @@
 #include "../game.h"
 
 bool teleportShader::init() {
-	return loadProgramFromResource("IDS_TELEPORT_VERTEX", "IDS_TELEPORT_FRAGMENT");
+	return loadProgramFromResource(SHADER_RESOURCE(s_teleport_v), SHADER_RESOURCE(s_teleport_f));
 }
 
 bool teleportShader::bindProgram() {
@@ -100,7 +100,7 @@ void teleportRenderer::render(game *g) {
 
 		shader.setLight(g->viewLight());
 
-		shader.setMaterial(g->getMaterial("MAT_RUST"));
+		shader.setMaterial(material::get("MAT_RUST"));
 		TEX_TELEPORT_TEXTURE.bindTexture(3);
 		box::render();
 

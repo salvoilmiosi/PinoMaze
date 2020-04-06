@@ -5,6 +5,8 @@
 #include <GL/gl.h>
 #include <glm/glm.hpp>
 
+#include "../resources.h"
+
 // enum uniform_type {
     
 // };
@@ -35,7 +37,7 @@ protected:
 	bool loadProgramFromSource(const char *vertexSource, const char *fragmentSource);
 
     bool loadProgramFromFile(const char *vertexFilename, const char *fragmentFilename);
-    bool loadProgramFromResource(const char *ID_VERTEX, const char *ID_FRAGMENT);
+    bool loadProgramFromResource(const resource &vertex, const resource &fragment);
 
 public:
     virtual bool init() = 0;
