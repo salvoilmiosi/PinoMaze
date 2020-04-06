@@ -1,6 +1,6 @@
 # Editor
 
-IDB_TILES               "tiles_10x10.png"
-IDB_TP_FONT             "potash_10x10.png"
-IDB_TOOLS               "tools.png"
-IDB_TEXT                "MDA_8x14.png"
+IDB_TILES               "editor/tiles_10x10.png"
+IDB_TP_FONT             "editor/potash_10x10.png"
+IDB_TOOLS               "editor/tools.png"
+IDB_TEXT                "editor/MDA_8x14.png"
