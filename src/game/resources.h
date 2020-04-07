@@ -1,30 +1,13 @@
 #ifndef __RESOURCES_H__
 #define __RESOURCES_H__
 
-#include <SDL2/SDL_image.h>
-#include <string>
-
 #include "resource_load.h"
 
-#include "engine/sound.h"
-
-bool openResourceFile(const char *dir, const char *filename);
-
-template<typename ... T>
-inline int openResourceFiles(const char *dir, T ... filenames) {
-	return (openResourceFile(dir, filenames) + ...);
-}
-
-SDL_Surface *loadImageFromResource(const char *RES_ID);
-bool loadWaveFromResource(sound &snd, const char *RES_ID);
-bool loadMusicFromResource(music &mus, const char *RES_ID);
-
-struct resource {
+#include <string>
+struct resource : public std::string {
     const char *name;
-    const char *data;
-    const size_t size;
 
-    resource(const char *name, const char *data, const size_t size) : name(name), data(data), size(size) {}
+    resource(const char *name, const char *data, const size_t size) : std::string(data, size), name(name) {}
 };
 
 #define BINARY_START(name) _binary_##name##_start
@@ -40,20 +23,5 @@ struct resource {
 #define SHADER_NAME(name) src_game_shader_##name##_glsl
 #define DECLARE_SHADER(name) DECLARE_BINARY(SHADER_NAME(name))
 #define SHADER_RESOURCE(name) BINARY_RESOURCE(SHADER_NAME(name))
-
-DECLARE_SHADER(s_hole_f)
-DECLARE_SHADER(s_hole_v)
-DECLARE_SHADER(s_hud_f)
-DECLARE_SHADER(s_hud_v)
-DECLARE_SHADER(s_particle_f)
-DECLARE_SHADER(s_particle_v)
-DECLARE_SHADER(s_shadow_f)
-DECLARE_SHADER(s_shadow_v)
-DECLARE_SHADER(s_skybox_f)
-DECLARE_SHADER(s_skybox_v)
-DECLARE_SHADER(s_teleport_f)
-DECLARE_SHADER(s_teleport_v)
-DECLARE_SHADER(s_world_f)
-DECLARE_SHADER(s_world_v)
 
 #endif // __RESOURCES_H__
