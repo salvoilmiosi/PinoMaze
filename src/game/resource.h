@@ -10,7 +10,7 @@
 #define BINARY_DECLARE(name) extern char BINARY_START(name)[]; extern char BINARY_END(name)[];
 #define BINARY_STRING(name) std::string(BINARY_START(name), BINARY_SIZE(name))
 
-#define SHADER_NAME(name) src_shader_##name##_glsl
+#define SHADER_NAME(name) src_game_shader_##name##_glsl
 #define DECLARE_SHADER(name) BINARY_DECLARE(SHADER_NAME(name))
 #define SHADER_STRING(name) BINARY_STRING(SHADER_NAME(name))
 
