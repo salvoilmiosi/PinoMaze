@@ -3,16 +3,34 @@
 
 #include <SDL2/SDL.h>
 
+#include <set>
+
+#include "context.h"
+#include "entity.h"
+
 class engine {
 public:
-    engine();
+    engine(context *con);
     ~engine();
 
 public:
+    void mainLoop();
+
     void tick();
     void render();
-    void handleEvent(const SDL_Event &e);
-    void setStatus(const char *status);
+
+    void add_entity(entity *ent) {
+        entities.insert(ent);
+    }
+
+    void remove_entity(entity *ent) {
+        entities.erase(ent);
+    }
+
+private:
+    context *con;
+
+    std::set<entity *> entities;
 };
 
 #endif // __ENGINE_H__

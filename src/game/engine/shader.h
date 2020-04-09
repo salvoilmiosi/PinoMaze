@@ -3,105 +3,74 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <string>
 #include <vector>
+#include <tuple>
+
+#include "mpl.h"
+
+template<typename T>
+struct uniform {
+	GLint location;
+	const char *name;
+	T *data;
+
+	uniform(GLint location, const char *name, T *data) : location(location), name(name), data(data) {}
+};
+
+inline void updateValue(const uniform<int> &uni) {
+	glUniform1i(uni.location, *uni.data);
+}
+inline void updateValue(const uniform<float> &uni) {
+	glUniform1f(uni.location, *uni.data);
+}
+inline void updateValue(const uniform<glm::vec2> &uni) {
+	glUniform2fv(uni.location, 1, glm::value_ptr(*uni.data));
+}
+inline void updateValue(const uniform<glm::vec3> &uni) {
+	glUniform3fv(uni.location, 1, glm::value_ptr(*uni.data));
+}
+inline void updateValue(const uniform<glm::vec4> &uni) {
+	glUniform4fv(uni.location, 1, glm::value_ptr(*uni.data));
+}
+inline void updateValue(const uniform<glm::mat4> &uni) {
+	glUniformMatrix4fv(uni.location, 1, false, glm::value_ptr(*uni.data));
+}
+
+using uniform_types = mpl::TypeList<int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
 
 class shader {
 private:
-	GLuint gl_shaderid = 0;
-	
 	const char *name;
-	const GLenum type;
 
-	GLint compiled = GL_FALSE;
+	GLuint gl_programid = 0;
+	GLuint gl_vertexid = 0;
+	GLuint gl_fragmentid = 0;
+
+	template<typename ... Ts>
+	using uniform_list = std::tuple<std::vector<uniform<Ts>>...>;
+
+	mpl::Rename<uniform_list, uniform_types> p_uniforms;
 
 public:
-	shader(const char *name, const GLenum type, const std::string &source);
-
+	shader(const char *name, const std::string &vertex_src, const std::string &fragment_src);
 	~shader();
 
-	bool compile_status() {
-		return compiled;
-	}
-
-private:
-	friend class shader_program;
-};
-
-struct uniform {
-	const char *name;
-	enum {
-		TYPE_INT,
-		TYPE_FLOAT,
-		TYPE_VEC2,
-		TYPE_VEC3,
-		TYPE_MAT4
-	} type;
-
-	union {
-		int value_int;
-		float value_float;
-		glm::vec2 value_vec2;
-		glm::vec3 value_vec3;
-		glm::mat4 value_mat4;
-	};
-};
-
-class shader_program {
-private:
-	GLuint gl_programid = 0;
-
-	struct uniform_location {
-		int location;
-		uniform *uni;
-
-		uniform_location(int location, uniform *uni) : location(location), uni(uni) {}
-	};
-
-	std::vector<shader *> shaders;
-	std::vector<uniform_location> uniforms;
-
 public:
-	template <typename ... Ts>
-	shader_program(Ts &... shaders) : shaders {&shaders ...} {
-		gl_programid = glCreateProgram();
-
-		for (shader *i : shaders) {
-			glAttachShader(gl_programid, i->gl_shaderid);
-		}
-
-		glLinkProgram(gl_programid);
+	template<typename T>
+	void add_uniform(const char *name, T *data) {
+		int location = glGetUniformLocation(gl_programid, name);
+		std::get<std::vector<uniform<T>>>(p_uniforms).emplace_back(location, name, data);
 	}
 
-	~shader_program() {
-		if (gl_programid) {
-			for (shader *i : shaders) {
-				glDetachShader(gl_programid, i->gl_shaderid);
-			}
-			glDeleteProgram(gl_programid);
-		}
-	}
-
-	void add_uniform(uniform &uni) {
-		int location = glGetUniformLocation(gl_programid, uni.name);
-		uniforms.emplace_back(location, &uni);
-	}
-
-	void add_uniforms() {}
-
-	template <typename ... Ts>
-	void add_uniforms(uniform &first, Ts &...unis) {
-		add_uniform(first);
-		add_uniforms(unis...);
-	}
-
-	void use_program() {
-		glUseProgram(gl_programid);
-		update_uniforms();
-	}
+	void use_program();
 
 	void update_uniforms();
+
+private:
+	void compile(GLuint gl_shaderid, const std::string &source);
 };
 
 #endif

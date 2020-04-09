@@ -2,11 +2,42 @@
 
 #include <iostream>
 
-#include <glm/gtc/type_ptr.hpp>
+shader::shader(const char *name, const std::string &vertex_src, const std::string &fragment_src) : name(name) {
+	gl_programid = glCreateProgram();
 
-shader::shader(const char *name, const GLenum type, const std::string &source) {
-	gl_shaderid = glCreateShader(type);
+	gl_vertexid = glCreateShader(GL_VERTEX_SHADER);
+	compile(gl_vertexid, vertex_src);
+	glAttachShader(gl_programid, gl_vertexid);
 
+	gl_fragmentid = glCreateShader(GL_FRAGMENT_SHADER);
+	compile(gl_fragmentid, fragment_src);
+	glAttachShader(gl_programid, gl_fragmentid);
+
+	glLinkProgram(gl_programid);
+}
+
+shader::~shader() {
+	glDetachShader(gl_programid, gl_vertexid);
+	glDetachShader(gl_programid, gl_fragmentid);
+	glDeleteShader(gl_vertexid);
+	glDeleteShader(gl_fragmentid);
+	glDeleteProgram(gl_programid);
+}
+
+void shader::use_program() {
+	glUseProgram(gl_programid);
+	update_uniforms();
+}
+
+void shader::update_uniforms() {
+	mpl::for_each_in_tuple(p_uniforms, [&](auto &uni_vector) {
+		for (auto &uni : uni_vector) {
+			updateValue(uni);
+		}
+	});
+}
+
+void shader::compile(GLuint gl_shaderid, const std::string &source) {
     const GLchar *source_cstr = source.c_str();
     const GLsizei source_size = source.size(); 
 
@@ -18,40 +49,16 @@ shader::shader(const char *name, const GLenum type, const std::string &source) {
 
 	glGetShaderiv(gl_shaderid, GL_INFO_LOG_LENGTH, &max_length);
 
-	char *info_log = (char *) malloc(max_length);
+	std::string info_log(max_length, '\0');
 
-	glGetShaderInfoLog(gl_shaderid, max_length, &length, info_log);
-	if (length > 0) {
-		std::cout << "Compile error in shader " << name << ":" << std::endl << info_log << std::endl;
-	}
+	glGetShaderInfoLog(gl_shaderid, max_length, &length, info_log.data());
 
-	free(info_log);
+	std::cout << "In shader " << name << ":" << std::endl << info_log << std::endl;
 
+	GLint compiled = GL_FALSE;
 	glGetShaderiv(gl_shaderid, GL_COMPILE_STATUS, &compiled);
-}
 
-shader::~shader() {
-    glDeleteShader(gl_shaderid);
-}
-
-void shader_program::update_uniforms() {
-    for (uniform_location &i : uniforms) {
-		switch(i.uni->type) {
-		case uniform::TYPE_INT:
-			glUniform1i(i.location, i.uni->value_int);
-			break;
-		case uniform::TYPE_FLOAT:
-			glUniform1f(i.location, i.uni->value_float);
-			break;
-		case uniform::TYPE_VEC2:
-			glUniform2fv(i.location, 1, glm::value_ptr(i.uni->value_vec2));
-			break;
-        case uniform::TYPE_VEC3:
-            glUniform3fv(i.location, 1, glm::value_ptr(i.uni->value_vec3));
-            break;
-        case uniform::TYPE_MAT4:
-            glUniformMatrix4fv(i.location, 1, false, glm::value_ptr(i.uni->value_mat4));
-            break;
-		}
+	if (!compiled) {
+		throw std::string("Failed to compile shader ") + name + "\n" + info_log;
 	}
 }
