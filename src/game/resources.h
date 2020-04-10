@@ -19,18 +19,10 @@ SDL_Surface *loadImageFromResource(const char *RES_ID);
 bool loadWaveFromResource(sound &snd, const char *RES_ID);
 bool loadMusicFromResource(music &mus, const char *RES_ID);
 
-struct resource {
-    const char *name;
-    const char *data;
-    const size_t size;
-
-    resource(const char *name, const char *data, const size_t size) : name(name), data(data), size(size) {}
-};
-
 #define BINARY_START(name) _binary_##name##_start
 #define BINARY_END(name) _binary_##name##_end
 #define BINARY_SIZE(name) (BINARY_END(name) - BINARY_START(name))
-#define BINARY_RESOURCE(name) resource(#name, BINARY_START(name), BINARY_SIZE(name))
+#define BINARY_RESOURCE(name) std::string(BINARY_START(name), BINARY_SIZE(name))
 
 #define DECLARE_BINARY(name) extern char BINARY_START(name)[]; extern char BINARY_END(name)[];
 

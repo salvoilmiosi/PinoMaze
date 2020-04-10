@@ -10,6 +10,7 @@
 #include <tuple>
 
 #include "mpl.h"
+#include "texture.h"
 
 template<typename T>
 struct uniform {
@@ -20,6 +21,9 @@ struct uniform {
 	uniform(GLint location, const char *name, T *data) : location(location), name(name), data(data) {}
 };
 
+inline void updateValue(const uniform<bool> &uni) {
+	glUniform1i(uni.location, *uni.data);
+}
 inline void updateValue(const uniform<int> &uni) {
 	glUniform1i(uni.location, *uni.data);
 }
@@ -39,7 +43,7 @@ inline void updateValue(const uniform<glm::mat4> &uni) {
 	glUniformMatrix4fv(uni.location, 1, false, glm::value_ptr(*uni.data));
 }
 
-using uniform_types = mpl::TypeList<int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
+using uniform_types = mpl::TypeList<bool, int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
 
 class shader {
 private:

@@ -42,10 +42,19 @@ public:
     void setFilter(GLenum filter);
     void setWrapParam(GLenum wrapParam);
 
-    void bindTexture(unsigned int sampler);
-	void bindTexture();
+	void bindTexture() const;
 
     friend class framebuffer;
+};
+
+class sampler {
+public:
+    int gl_samplerid;
+
+public:
+    sampler(int gl_samplerid) : gl_samplerid(gl_samplerid) {}
+
+    void bindTexture(const texture &t);
 };
 
 #endif // __TEXTURE_H__

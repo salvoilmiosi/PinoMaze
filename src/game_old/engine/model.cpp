@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <vector>
 
-#include "../globals.h"
+#include ".h"
 
 using namespace std;
 

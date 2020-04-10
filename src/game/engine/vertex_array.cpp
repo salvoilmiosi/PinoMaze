@@ -110,3 +110,20 @@ void vertex_array::draw() {
         }
     }
 }
+
+void vertex_array::draw(size_t count, size_t offset) {
+    if (index_count > 0) {
+        if (count == 0) {
+            count = index_count - offset;
+        }
+        if (matrix_count > 0) {
+            glBindVertexArray(gl_vao);
+            glDrawElementsInstanced(gl_draw_mode, count, GL_UNSIGNED_INT, (void *)(offset * sizeof(GLuint)), matrix_count);
+            glBindVertexArray(0);
+        } else {
+            glBindVertexArray(gl_vao);
+            glDrawElements(gl_draw_mode, count, GL_UNSIGNED_INT, (void *)(offset * sizeof(GLuint)));
+            glBindVertexArray(0);
+        }
+    }
+}

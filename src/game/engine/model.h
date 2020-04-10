@@ -23,11 +23,14 @@ public:
         vao.draw();
     }
 
+    void draw(size_t count, size_t offset) {
+        vao.draw(count, offset);
+    }
+
     void update_matrices(const glm::mat4 *matrices, const size_t size, int location, bool dynamic = false) {
         vao.update_matrices(matrices, size, location, dynamic);
     }
 
-protected:
     void calculate_buffers(const vertex *vertices, const size_t vertex_count, const GLuint *indices, const size_t index_count);
 
 protected:

@@ -46,6 +46,7 @@ public:
     void update_matrices(const glm::mat4 *data, const size_t size, int location, bool dynamic = false);
 
     void draw();
+    void draw(size_t count, size_t offset);
 
 private:
     const size_t num_vbos;

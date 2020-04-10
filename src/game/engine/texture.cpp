@@ -74,11 +74,11 @@ void texture::setWrapParam(GLenum p) {
 	}
 }
 
-void texture::bindTexture(unsigned int sampler) {
-    glActiveTexture(GL_TEXTURE0 + sampler);
-	bindTexture();
+void texture::bindTexture() const {
+	glBindTexture(GL_TEXTURE_2D, texID);
 }
 
-void texture::bindTexture() {
-	glBindTexture(GL_TEXTURE_2D, texID);
+void sampler::bindTexture(const texture &t) {
+    glActiveTexture(GL_TEXTURE0 + gl_samplerid);
+	t.bindTexture();
 }
