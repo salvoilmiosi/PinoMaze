@@ -36,7 +36,7 @@ SDL_Surface *cubemap::getSurface(unsigned int i) {
     return nullptr;
 }
 
-void cubemap::bindTexture(int sampler) {
+void cubemap::bind(int sampler) {
     glActiveTexture(GL_TEXTURE0 + sampler);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
 }

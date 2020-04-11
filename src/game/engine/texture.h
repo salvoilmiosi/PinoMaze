@@ -11,13 +11,14 @@ protected:
     GLenum filter = GL_LINEAR;
     GLenum wrapParam = GL_REPEAT;
 
-    SDL_Surface *surface = nullptr;
+    SDL_Surface *m_surface = nullptr;
 
 	int w = 0;
 	int h = 0;
 
 public:
     texture(SDL_Surface *surface = nullptr);
+    texture(int width, int height, bool isDepth = false);
 
     texture(texture &&old);
 
@@ -27,20 +28,19 @@ public:
     int width() const {
         return w;
     }
+
     int height() const {
         return h;
     }
 
-    void loadSurface(SDL_Surface *surface);
-
-    void createEmpty(int width, int height, bool isDepth = false);
-
-    SDL_Surface *getSurface();
+    SDL_Surface *surface() const {
+        return m_surface;
+    }
 
     void setFilter(GLenum filter);
     void setWrapParam(GLenum wrapParam);
 
-	void bindTexture() const;
+	void bind() const;
 
     friend class framebuffer;
 };
@@ -52,7 +52,7 @@ public:
 public:
     sampler(int gl_samplerid) : gl_samplerid(gl_samplerid) {}
 
-    void bindTexture(const texture &t);
+    void bind(const texture &t);
 };
 
 #endif // __TEXTURE_H__

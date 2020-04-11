@@ -4,8 +4,8 @@
 #include "../game.h"
 #include "../options.h"
 
-particle_system::particle_system(game *m_game) :
-	model(DRAW_TRIANGLE_STRIP), m_game(m_game),
+particle_system::particle_system(game *m_game) : model(DRAW_TRIANGLE_STRIP),
+	m_game(m_game),
 	m_shader("particle", SHADER_RESOURCE(s_particle_v), SHADER_RESOURCE(s_particle_f))
 {
 	m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
@@ -22,7 +22,7 @@ particle_system::particle_system(game *m_game) :
 		glm::vec2( 1.f, -1.f),
 	};
 
-	update_buffer(0, vertices, 4 * sizeof(glm::vec2), {{0, ATTR_VEC2}});
+	update_vertices(0, vertices, 4 * sizeof(glm::vec2), {{0, ATTR_VEC2}});
 
 	checkGlError("Failed to init particle system");
 }
@@ -72,10 +72,10 @@ void particle_system::draw() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	glDepthMask(false);
 
-	particleSampler.bindTexture(material::getTexture("TEX_PARTICLE_TEXTURE"));
+	particleSampler.bind(material::getTexture("TEX_PARTICLE_TEXTURE"));
 
 	update_instances(1, particles, sizeof(particle) * numAlive,
-		{{1, ATTR_VEC3}, {2, ATTR_VEC3}, {3, ATTR_VEC2}, {4, ATTR_FLOAT}, {5, ATTR_VEC3}, {6, ATTR_INT}});
+		{{1, ATTR_VEC3}, {2, ATTR_VEC3}, {3, ATTR_VEC2}, {4, ATTR_FLOAT}, {5, ATTR_VEC3}, {6, ATTR_INT}}, true);
 
 	model::draw();
 

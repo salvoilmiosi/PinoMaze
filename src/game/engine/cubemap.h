@@ -14,7 +14,7 @@ public:
     void loadSurfaces(SDL_Surface **surfaces);
     SDL_Surface *getSurface(unsigned int i);
 
-    void bindTexture(int sampler);
+    void bind(int sampler);
 
 public:
     void loadSurface(SDL_Surface *surface) = delete;

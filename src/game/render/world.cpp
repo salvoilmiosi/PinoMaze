@@ -67,7 +67,7 @@ void world::renderShadowmap() {
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
 
-    m_shader.shadowSampler.bindTexture(m_shader.shadowMap);
+    m_shader.shadowSampler.bind(m_shader.shadowMap);
 }
 
 void world::tick() {
@@ -76,6 +76,7 @@ void world::tick() {
 }
 
 void world::render() {
+	glClear(GL_DEPTH_BUFFER_BIT);
     m_skybox.draw();
 
     static const glm::mat4 biasMatrix(
@@ -112,7 +113,7 @@ void world::render() {
     m_bridge.draw(m_shader);
 
     m_shader.enableTpTiles = true;
-    m_shader.tpTileSampler.bindTexture(material::getTexture("TEX_TELEPORT_TILES"));
+    m_shader.tpTileSampler.bind(material::getTexture("TEX_TELEPORT_TILES"));
     m_shader.apply_material("MAT_RUST");
     box_teleport.draw();
     m_shader.enableTpTiles = false;

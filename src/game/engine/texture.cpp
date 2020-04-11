@@ -4,40 +4,19 @@
 
 #include <iostream>
 
-texture::texture(SDL_Surface *surface) {
-    loadSurface(surface);
-}
+texture::texture(SDL_Surface *m_surface) : m_surface(m_surface) {
+    if (m_surface == nullptr) return;
 
-texture::texture(texture &&old) {
-    texID = old.texID;
-    old.texID = 0;
-    filter = old.filter;
-    wrapParam = old.wrapParam;
-    surface = old.surface;
-    old.surface = nullptr;
-    w = old.w;
-    h = old.h;
-}
-
-texture::~texture() {
-	if (texID) glDeleteTextures(1, &texID);
-	if (surface) SDL_FreeSurface(surface);
-}
-
-void texture::loadSurface(SDL_Surface *_surface) {
-    if (_surface == nullptr) return;
-    surface = _surface;
-
-    unsigned char bpp = surface->format->BytesPerPixel;
+    unsigned char bpp = m_surface->format->BytesPerPixel;
     if (bpp != 3 && bpp != 4) return;
 
-    w = surface->w;
-    h = surface->h;
+    w = m_surface->w;
+    h = m_surface->h;
 
     glGenTextures(1, &texID);
     glBindTexture(GL_TEXTURE_2D, texID);
-    glTexImage2D(GL_TEXTURE_2D, 0, bpp, surface->w, surface->h, 0,
-                 bpp == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, surface->pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, bpp, m_surface->w, m_surface->h, 0,
+                 bpp == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, m_surface->pixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapParam);
@@ -46,7 +25,7 @@ void texture::loadSurface(SDL_Surface *_surface) {
 	checkGlError("Failed to load texture");
 }
 
-void texture::createEmpty(int width, int height, bool isDepth) {
+texture::texture(int width, int height, bool isDepth) {
     w = width;
     h = height;
 
@@ -65,8 +44,20 @@ void texture::createEmpty(int width, int height, bool isDepth) {
 	checkGlError("Failed to create texture");
 }
 
-SDL_Surface *texture::getSurface() {
-    return surface;
+texture::texture(texture &&old) {
+    texID = old.texID;
+    old.texID = 0;
+    filter = old.filter;
+    wrapParam = old.wrapParam;
+    m_surface = old.m_surface;
+    old.m_surface = nullptr;
+    w = old.w;
+    h = old.h;
+}
+
+texture::~texture() {
+	if (texID) glDeleteTextures(1, &texID);
+	if (m_surface) SDL_FreeSurface(m_surface);
 }
 
 void texture::setFilter(GLenum f) {
@@ -89,11 +80,11 @@ void texture::setWrapParam(GLenum p) {
 	}
 }
 
-void texture::bindTexture() const {
+void texture::bind() const {
 	glBindTexture(GL_TEXTURE_2D, texID);
 }
 
-void sampler::bindTexture(const texture &t) {
+void sampler::bind(const texture &t) {
     glActiveTexture(GL_TEXTURE0 + gl_samplerid);
-	t.bindTexture();
+	t.bind();
 }

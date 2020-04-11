@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <string>
 
 #include "context.h"
 #include "entity.h"
@@ -19,6 +20,7 @@ public:
 
     void tick();
     void render();
+    void setStatus(const std::string &status);
 
     void add_entity(entity *ent) {
         entities.push_back(ent);

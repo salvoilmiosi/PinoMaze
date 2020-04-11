@@ -11,6 +11,7 @@
 #include "engine/engine.h"
 
 #include "render/world.h"
+#include "render/hud.h"
 
 #include "maze_io.h"
 #include "gui.h"
@@ -63,15 +64,18 @@ int main (int argc, char **argv) {
 	}
 
     context con;
+	con.window_title = "PinoMaze";
 
     try {
 	    engine m_engine(&con);
 
 		game m_game(&con, m_maze.get());
 		world m_world(&con, &m_game);
+		hud m_hud(&con);
 
 		m_engine.add_entity(&m_game);
 		m_engine.add_entity(&m_world);
+		m_engine.add_entity(&m_hud);
 		
         m_engine.mainLoop();
     } catch (const std::string &error) {

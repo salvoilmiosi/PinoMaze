@@ -7,7 +7,9 @@
 #include "maze.h"
 
 hole::hole(context *con, game *m_game) : model(DRAW_TRIANGLE_STRIP),
-	m_shader("hole", SHADER_RESOURCE(s_hole_v), SHADER_RESOURCE(s_hole_f))
+	m_shader("hole", SHADER_RESOURCE(s_hole_v), SHADER_RESOURCE(s_hole_f)),
+	refraction(con->window_width, con->window_height),
+	refractionDepth(con->window_width, con->window_height, true)
 {
 	m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
 	m_shader.add_uniform("viewMatrix", &m_game->m_view);
@@ -20,11 +22,9 @@ hole::hole(context *con, game *m_game) : model(DRAW_TRIANGLE_STRIP),
 	
 	refraction.setFilter(GL_NEAREST);
 	refraction.setWrapParam(GL_CLAMP_TO_EDGE);
-	refraction.createEmpty(con->window_width, con->window_height);
 
 	refractionDepth.setFilter(GL_NEAREST);
 	refractionDepth.setWrapParam(GL_CLAMP_TO_EDGE);
-	refractionDepth.createEmpty(con->window_width, con->window_height, true);
 
 	refractionFBO.attachTexture(refraction);
 	refractionFBO.attachDepthMap(refractionDepth);
@@ -36,7 +36,7 @@ hole::hole(context *con, game *m_game) : model(DRAW_TRIANGLE_STRIP),
         glm::vec3(tileSize, 0.f, tileSize),
     };
 
-	update_buffer(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
+	update_vertices(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
 
 	checkGlError("Failed to init hole model");
 }
@@ -61,9 +61,9 @@ void hole::tick() {
 }
 
 void hole::draw() {
-	refractionSampler.bindTexture(refraction);
-	dudvSampler.bindTexture(material::getTexture("TEX_WATER_DUDV"));
-	normalSampler.bindTexture(material::getTexture("TEX_WATER_NORMALS"));
+	refractionSampler.bind(refraction);
+	dudvSampler.bind(material::getTexture("TEX_WATER_DUDV"));
+	normalSampler.bind(material::getTexture("TEX_WATER_NORMALS"));
 	m_shader.use_program();
 
 	model::draw();

@@ -82,7 +82,7 @@ skybox::skybox(game *m_game) :
         22, 21, 23,
 	};
 
-    update_buffer(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
+    update_vertices(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
     update_indices(indices, sizeof(indices)/sizeof(GLuint));
 
 	checkGlError("Failed to init skybox");
@@ -94,7 +94,7 @@ void skybox::draw() {
     m_view_zeroed[3][1] = 0.f;
     m_view_zeroed[3][2] = 0.f;
 
-	CUB_SKYBOX.bindTexture(0);
+	CUB_SKYBOX.bind(0);
     m_shader.use_program();
     model::draw();
 }

@@ -4,7 +4,8 @@
 #include "../game.h"
 
 world_shader::world_shader(game *m_game) :
-    shader("world", SHADER_RESOURCE(s_world_v), SHADER_RESOURCE(s_world_f))
+    shader("world", SHADER_RESOURCE(s_world_v), SHADER_RESOURCE(s_world_f)),
+    shadowMap(4096, 4096, true)
 {
     add_uniform("projectionMatrix", &m_game->m_proj);
     add_uniform("viewMatrix", &m_game->m_view);
@@ -38,7 +39,6 @@ world_shader::world_shader(game *m_game) :
 
     shadowMap.setFilter(GL_NEAREST);
     shadowMap.setWrapParam(GL_CLAMP_TO_EDGE);
-    shadowMap.createEmpty(4096, 4096, true);
     shadowBuffer.attachDepthMap(shadowMap);
     
     shadowBias = 0.003f;
@@ -47,7 +47,7 @@ world_shader::world_shader(game *m_game) :
 
 void world_shader::apply_material(const char *mat_name) {
     m_material = material::get(mat_name);
-    diffuseSampler.bindTexture(material::getTexture(m_material.tex));
-    normalSampler.bindTexture(material::getTexture(m_material.normals));
+    diffuseSampler.bind(material::getTexture(m_material.tex));
+    normalSampler.bind(material::getTexture(m_material.normals));
     update_uniforms();
 }

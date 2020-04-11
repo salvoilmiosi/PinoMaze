@@ -22,6 +22,8 @@ engine::engine(context *con) : con(con) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
+	SDL_GL_SetSwapInterval(0);
+
 	glewExperimental = true;
 	GLenum error = glewInit();
 	if (error != GLEW_OK) {
@@ -39,8 +41,6 @@ engine::~engine() {
 
 void engine::mainLoop() {
 	SDL_Event event;
-
-	std::string fpsCounter;
 
 	int lastTime = SDL_GetTicks();
 	float unprocessed = 0;
@@ -86,8 +86,7 @@ void engine::mainLoop() {
 
 		if (SDL_GetTicks() - secondsTimer > 1000) {
 			secondsTimer += 1000;
-			fpsCounter = std::string(con->window_title) + " Frames: " + std::to_string(frames) + " Ticks: " + std::to_string(ticks);
-			SDL_SetWindowTitle(con->window, fpsCounter.c_str());
+			setStatus("Frames: " + std::to_string(frames) + "\nTicks: " + std::to_string(ticks));
 			frames = 0;
 			ticks = 0;
 		}
@@ -101,8 +100,13 @@ void engine::tick() {
 }
 
 void engine::render() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (entity *ent : entities) {
 		ent->render();
+	}
+}
+
+void engine::setStatus(const std::string &status) {
+	for (entity *ent : entities) {
+		ent->setStatus(status);
 	}
 }

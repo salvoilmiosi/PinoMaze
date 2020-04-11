@@ -39,16 +39,15 @@ vertex_array::~vertex_array() {
     if (gl_ebo) glDeleteBuffers(1, &gl_ebo);
 }
 
-void vertex_array::update_buffer(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic) {
+void vertex_array::update_vertices(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic) {
     if (size == 0) return;
+    bool created = false;
+
     if (vbo_index >= num_vbos) {
         glGenBuffers(1, gl_vbo + vbo_index);
         num_vbos = vbo_index+1;
+        created = true;
     }
-
-    glBindVertexArray(gl_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
-    glBufferData(GL_ARRAY_BUFFER, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 
     GLsizei stride = 0;
     for (auto &a : attribs) {
@@ -57,24 +56,30 @@ void vertex_array::update_buffer(size_t vbo_index, const void *data, const size_
 
     num_vertices = size / stride;
 
-    size_t start = 0;
-    for (auto &a : attribs) {
-        if (a.type == ATTR_MAT4) {
-            glEnableVertexAttribArray(a.location);
-            glEnableVertexAttribArray(a.location + 1);
-            glEnableVertexAttribArray(a.location + 2);
-            glEnableVertexAttribArray(a.location + 3);
+    glBindVertexArray(gl_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
+    glBufferData(GL_ARRAY_BUFFER, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 
-            glVertexAttribPointer(a.location,     4, GL_FLOAT, GL_FALSE, stride, (void *)(start));
-            glVertexAttribPointer(a.location + 1, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start +     sizeof(glm::vec4)));
-            glVertexAttribPointer(a.location + 2, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start + 2 * sizeof(glm::vec4)));
-            glVertexAttribPointer(a.location + 3, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start + 3 * sizeof(glm::vec4)));
-        } else {
-            glEnableVertexAttribArray(a.location);
-            glVertexAttribPointer(a.location, attrib_gl_info[a.type].num, attrib_gl_info[a.type].type, GL_FALSE, stride, (void *)start);
+    if (created) {
+        size_t start = 0;
+        for (auto &a : attribs) {
+            if (a.type == ATTR_MAT4) {
+                glEnableVertexAttribArray(a.location);
+                glEnableVertexAttribArray(a.location + 1);
+                glEnableVertexAttribArray(a.location + 2);
+                glEnableVertexAttribArray(a.location + 3);
+
+                glVertexAttribPointer(a.location,     4, GL_FLOAT, GL_FALSE, stride, (void *)(start));
+                glVertexAttribPointer(a.location + 1, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start +     sizeof(glm::vec4)));
+                glVertexAttribPointer(a.location + 2, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start + 2 * sizeof(glm::vec4)));
+                glVertexAttribPointer(a.location + 3, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start + 3 * sizeof(glm::vec4)));
+            } else {
+                glEnableVertexAttribArray(a.location);
+                glVertexAttribPointer(a.location, attrib_gl_info[a.type].num, attrib_gl_info[a.type].type, GL_FALSE, stride, (void *)start);
+            }
+            
+            start += attrib_gl_info[a.type].size;
         }
-        
-        start += attrib_gl_info[a.type].size;
     }
 
     glBindVertexArray(0);
@@ -82,14 +87,13 @@ void vertex_array::update_buffer(size_t vbo_index, const void *data, const size_
 
 void vertex_array::update_instances(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic) {
     if (size == 0) return;
+    bool created = false;
+
     if (vbo_index >= num_vbos) {
         glGenBuffers(1, gl_vbo + vbo_index);
         num_vbos = vbo_index+1;
+        created = true;
     }
-
-    glBindVertexArray(gl_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
-    glBufferData(GL_ARRAY_BUFFER, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 
     GLsizei stride = 0;
     for (auto &a : attribs) {
@@ -98,30 +102,36 @@ void vertex_array::update_instances(size_t vbo_index, const void *data, const si
 
     num_instances = size / stride;
 
-    size_t start = 0;
-    for (auto &a : attribs) {
-        if (a.type == ATTR_MAT4) {
-            glEnableVertexAttribArray(a.location);
-            glEnableVertexAttribArray(a.location + 1);
-            glEnableVertexAttribArray(a.location + 2);
-            glEnableVertexAttribArray(a.location + 3);
+    glBindVertexArray(gl_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
+    glBufferData(GL_ARRAY_BUFFER, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 
-            glVertexAttribDivisor(a.location,     1);
-            glVertexAttribDivisor(a.location + 1, 1);
-            glVertexAttribDivisor(a.location + 2, 1);
-            glVertexAttribDivisor(a.location + 3, 1);
+    if (created) {
+        size_t start = 0;
+        for (auto &a : attribs) {
+            if (a.type == ATTR_MAT4) {
+                glEnableVertexAttribArray(a.location);
+                glEnableVertexAttribArray(a.location + 1);
+                glEnableVertexAttribArray(a.location + 2);
+                glEnableVertexAttribArray(a.location + 3);
 
-            glVertexAttribPointer(a.location,     4, GL_FLOAT, GL_FALSE, stride, (void *)(start));
-            glVertexAttribPointer(a.location + 1, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start +     sizeof(glm::vec4)));
-            glVertexAttribPointer(a.location + 2, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start + 2 * sizeof(glm::vec4)));
-            glVertexAttribPointer(a.location + 3, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start + 3 * sizeof(glm::vec4)));
-        } else {
-            glEnableVertexAttribArray(a.location);
-            glVertexAttribDivisor(a.location, 1);
-            glVertexAttribPointer(a.location, attrib_gl_info[a.type].num, attrib_gl_info[a.type].type, GL_FALSE, stride, (void *)start);
+                glVertexAttribDivisor(a.location,     1);
+                glVertexAttribDivisor(a.location + 1, 1);
+                glVertexAttribDivisor(a.location + 2, 1);
+                glVertexAttribDivisor(a.location + 3, 1);
+
+                glVertexAttribPointer(a.location,     4, GL_FLOAT, GL_FALSE, stride, (void *)(start));
+                glVertexAttribPointer(a.location + 1, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start +     sizeof(glm::vec4)));
+                glVertexAttribPointer(a.location + 2, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start + 2 * sizeof(glm::vec4)));
+                glVertexAttribPointer(a.location + 3, 4, GL_FLOAT, GL_FALSE, stride, (void *)(start + 3 * sizeof(glm::vec4)));
+            } else {
+                glEnableVertexAttribArray(a.location);
+                glVertexAttribDivisor(a.location, 1);
+                glVertexAttribPointer(a.location, attrib_gl_info[a.type].num, attrib_gl_info[a.type].type, GL_FALSE, stride, (void *)start);
+            }
+            
+            start += attrib_gl_info[a.type].size;
         }
-        
-        start += attrib_gl_info[a.type].size;
     }
 
     glBindVertexArray(0);
@@ -133,9 +143,9 @@ void vertex_array::update_indices(const unsigned int *data, const size_t size, b
         glGenBuffers(1, &gl_ebo);
     }
 
-    glBindVertexArray(gl_vao);
     num_indices = size;
-    
+
+    glBindVertexArray(gl_vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
     glBindVertexArray(0);
