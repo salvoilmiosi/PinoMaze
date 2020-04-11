@@ -79,10 +79,10 @@ void bridge::drawFlat() {
 
 void bridge::draw(material_fun apply_material) {
     apply_material("MAT_TILES");
-    m_arc.draw(underArc_offset - overArc_offset, overArc_offset);
+    m_arc.draw(overArc_offset, underArc_offset - overArc_offset);
 
     apply_material("MAT_CEILING");
-    m_arc.draw(0, underArc_offset);
+    m_arc.draw(underArc_offset);
     
     apply_material("MAT_BRICKS");
     m_wall.draw();

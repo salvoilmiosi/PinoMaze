@@ -1,9 +1,5 @@
 #include "model.h"
 
-model::model() : vao(DRAW_TRIANGLES, 2) {
-
-}
-
 void model::calculate_buffers(const vertex *vertices, const size_t vertex_count, const GLuint *indices, const size_t index_count) {
     normal_and_tangent data[vertex_count];
 

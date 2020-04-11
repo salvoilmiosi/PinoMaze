@@ -17,18 +17,12 @@ struct normal_and_tangent {
 
 class model {
 public:
-    model();
-
-    void draw() {
-        vao.draw();
-    }
-
-    void draw(size_t count, size_t offset) {
-        vao.draw(count, offset);
+    void draw(size_t first = 0, size_t count = 0) {
+        vao.draw(first, count);
     }
 
     void update_matrices(const glm::mat4 *matrices, const size_t size, int location, bool dynamic = false) {
-        vao.update_matrices(matrices, size, location, dynamic);
+        vao.update_instances(2, matrices, size * sizeof(glm::mat4), {{4, ATTR_MAT4}}, dynamic);
     }
 
     void calculate_buffers(const vertex *vertices, const size_t vertex_count, const GLuint *indices, const size_t index_count);

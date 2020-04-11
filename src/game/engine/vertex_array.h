@@ -18,7 +18,8 @@ enum attrib_type {
     ATTR_DOUBLE,
     ATTR_VEC2,
     ATTR_VEC3,
-    ATTR_VEC4
+    ATTR_VEC4,
+    ATTR_MAT4
 };
 
 enum draw_mode {
@@ -38,28 +39,27 @@ constexpr size_t MAX_VBOS = 5;
 
 class vertex_array {
 public:
-    vertex_array(draw_mode mode, size_t num_vbos = 1);
+    vertex_array(draw_mode mode = DRAW_TRIANGLES);
     ~vertex_array();
 
     void update_buffer(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic = false);
+    void update_instances(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic = false);
     void update_indices(const unsigned int *data, const size_t size, bool dynamic = false);
-    void update_matrices(const glm::mat4 *data, const size_t size, int location, bool dynamic = false);
 
-    void draw();
-    void draw(size_t count, size_t offset);
+    void draw(size_t first = 0, size_t count = 0);
 
 private:
-    const size_t num_vbos;
+    size_t num_vbos = 0;
     
-    GLuint gl_vao;
+    GLuint gl_vao = 0;
     GLuint gl_vbo[MAX_VBOS];
-    GLuint gl_mat_vbo;
-    GLuint gl_ebo;
+    GLuint gl_ebo = 0;
 
     GLenum gl_draw_mode;
 
-    size_t index_count = 0;
-    size_t matrix_count = 0;
+    size_t num_vertices = 0;
+    size_t num_indices = 0;
+    size_t num_instances = 0;
 };
 
 #endif // __VERTEX_ARRAY_H__

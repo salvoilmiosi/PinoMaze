@@ -275,7 +275,7 @@ void world::initItems() {
             x = it.second.item.x;
             y = it.second.item.y;
             matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
-            matrix = glm::rotate(glm::mat4(1.f), glm::radians(90.f) * (it.second.arrow.direction + 1), glm::vec3(0.f, 1.f, 0.f)) * matrix;
+            matrix = matrix * glm::rotate(glm::mat4(1.f), glm::radians(90.f) * (it.second.arrow.direction + 1), glm::vec3(0.f, 1.f, 0.f));
             arrowMatrices.push_back(matrix);
             break;
         default:
