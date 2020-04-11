@@ -5,8 +5,10 @@ layout (location = 1) in vec2 uv;
 layout (location = 2) in vec3 normal;
 layout (location = 3) in vec3 tangent;
 layout (location = 4) in mat4 modelMatrix;
+layout (location = 8) in vec2 tpUvOffset;
 
 out vec2 texCoords;
+out vec2 tpTileCoords;
 out vec3 worldNormal;
 out vec3 toCamera;
 out vec4 shadowCoords;
@@ -14,11 +16,15 @@ out vec4 shadowCoords;
 out vec3 tangentLight;
 out vec3 tangentCamera;
 
+uniform float tpTileSize;
+
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 lightMatrix;
 
 uniform float refractionHeight;
+
+uniform bool enableTpTiles;
 
 struct light {
     vec3 ambient;
@@ -31,6 +37,8 @@ uniform light sun;
 
 void main() {
     texCoords = uv;
+
+	tpTileCoords = enableTpTiles ? (tpUvOffset + tpTileSize * uv) : vec2(0.0);
 
     mat4 modelViewMatrix = viewMatrix * modelMatrix;
 

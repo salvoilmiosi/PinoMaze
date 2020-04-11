@@ -5,10 +5,14 @@
 #include <cmath>
 #include <cstdio>
 
+#include "maze.h"
+
 #include "../options.h"
 #include "../engine/material.h"
 #include "../engine/shader.h"
 #include "../engine/context.h"
+
+#include "world_shader.h"
 
 bridge::bridge() {
     float l = tileSize - wallThickness;
@@ -18,22 +22,23 @@ bridge::bridge() {
     std::vector<vertex> vertices;
     std::vector<GLuint> indices;
 
-    overArc_offset = 0;
-    drawArc(vertices, indices, -l/2.f, l/2.f, l2, h2, tileSize / 1.5f, true);
+    // Over arc
+    addArcVerts(vertices, indices, -l/2.f, l/2.f, l2, h2, tileSize / 1.5f, true);
 
+    // Under arc
     underArc_offset = indices.size();
-    drawArc(vertices, indices, -l/2.f, l/2.f, l, bridgeArcHeight, l, false);
+    addArcVerts(vertices, indices, -l/2.f, l/2.f, l, bridgeArcHeight, l, false);
 
     m_arc.calculate_buffers(vertices.data(), vertices.size(), indices.data(), indices.size());
 
     vertices.clear();
     indices.clear();
 
-	drawArc(vertices, indices, wallThickness / 2.f, -wallThickness / 2.f, l, bridgeArcHeight, tileSize / 1.5f, false);
-    drawTopWall(vertices, indices, wallThickness / 2.f, -wallThickness /2.f, l, l / 1.5f);
+	addArcVerts(vertices, indices, wallThickness / 2.f, -wallThickness / 2.f, l, bridgeArcHeight, tileSize / 1.5f, false);
+    addTopWallVerts(vertices, indices, wallThickness / 2.f, -wallThickness /2.f, l, l / 1.5f);
 
-    drawArcWall(vertices, indices, -wallThickness / 2.f, -l, tileSize * 0.5f);
-    drawArcWall(vertices, indices, wallThickness / 2.f, l, tileSize * 0.5f);
+    addArcWallVerts(vertices, indices, -wallThickness / 2.f, -l, tileSize * 0.5f);
+    addArcWallVerts(vertices, indices, wallThickness / 2.f, l, tileSize * 0.5f);
 
     m_wall.calculate_buffers(vertices.data(), vertices.size(), indices.data(), indices.size());
 
@@ -77,18 +82,18 @@ void bridge::drawFlat() {
     m_wall.draw();
 }
 
-void bridge::draw(material_fun apply_material) {
-    apply_material("MAT_TILES");
-    m_arc.draw(overArc_offset, underArc_offset - overArc_offset);
+void bridge::draw(world_shader &m_shader) {
+    m_shader.apply_material("MAT_TILES");
+    m_arc.draw(0, underArc_offset);
 
-    apply_material("MAT_CEILING");
+    m_shader.apply_material("MAT_CEILING");
     m_arc.draw(underArc_offset);
     
-    apply_material("MAT_BRICKS");
+    m_shader.apply_material("MAT_BRICKS");
     m_wall.draw();
 }
 
-void bridge::drawArc(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext) {
+void bridge::addArcVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext) {
     GLuint startIndex = (GLuint)vertices.size();
 
     glm::vec3 position;
@@ -114,7 +119,7 @@ void bridge::drawArc(std::vector<vertex> &vertices, std::vector<GLuint> &indices
 	addIndices(vertices, indices, startIndex, ext);
 }
 
-void bridge::drawArcWall(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z, float w, float texSize) {
+void bridge::addArcWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z, float w, float texSize) {
     float a = bridgeWallHeight / bridgeArcHeight * abs(w / 2.f);
     float b = bridgeWallHeight;
 
@@ -162,7 +167,7 @@ void bridge::drawArcWall(std::vector<vertex> &vertices, std::vector<GLuint> &ind
     }
 }
 
-void bridge::drawTopWall(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float texSize) {
+void bridge::addTopWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float texSize) {
     GLuint startIndex = (GLuint)vertices.size();
 
     glm::vec3 position;

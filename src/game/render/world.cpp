@@ -10,60 +10,25 @@
 world::world(context *m_context, game *m_game) :
     entity(m_context), m_game(m_game),
 
-    m_shader("world", SHADER_RESOURCE(s_world_v), SHADER_RESOURCE(s_world_f)),
+    m_shader(m_game),
     m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f)),
 
-	pillarBox(pillarSize, pillarHeight, pillarSize, pillarHeight),
-    groundBox(tileSize, blockHeight * 2.f, tileSize, tileSize),
-    wallBox(tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f),
-    startBox(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
-    endBox(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
-    arrowBox(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
-    marble(marbleRadius, 16, 16),
-
-    diffuseSampler(0),
-    normalSampler(1),
-    shadowSampler(2)
+	box_pillar(pillarSize, pillarHeight, pillarSize, pillarHeight),
+    box_ground(tileSize, blockHeight * 2.f, tileSize, tileSize),
+    box_wall(tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f),
+    box_start(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
+    box_end(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
+    box_arrow(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
+    marble(marbleRadius, 16, 16)
 {
-    m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
-    m_shader.add_uniform("viewMatrix", &m_game->m_view);
-    m_shader.add_uniform("lightMatrix", &m_light_biased);
-    m_shader.add_uniform("diffuseTexture", &diffuseSampler.gl_samplerid);
-    m_shader.add_uniform("normalTexture", &normalSampler.gl_samplerid);
-    m_shader.add_uniform("shadowMap", &shadowSampler.gl_samplerid);
-    m_shader.add_uniform("enableTexture", &enableTexture);
-    m_shader.add_uniform("enableNormalMap", &enableNormalMap);
-
-    m_shader.add_uniform("sun.ambient", (glm::vec3 *) &m_sun.ambient);
-    m_shader.add_uniform("sun.diffuse", (glm::vec3 *) &m_sun.diffuse);
-    m_shader.add_uniform("sun.specular", (glm::vec3 *) &m_sun.specular);
-    m_shader.add_uniform("sun.direction", &m_sun.direction);
-
-    m_shader.add_uniform("mat.ambient", (glm::vec3 *) &m_material.ambient);
-    m_shader.add_uniform("mat.diffuse", (glm::vec3 *) &m_material.diffuse);
-    m_shader.add_uniform("mat.specular", (glm::vec3 *) &m_material.specular);
-    m_shader.add_uniform("mat.emissive", (glm::vec3 *) &m_material.emissive);
-    m_shader.add_uniform("mat.shininess", &m_material.shininess);
-
-    m_shader.add_uniform("shadowBias", &shadowBias);
-    m_shader.add_uniform("shadowTexelSize", &shadowTexelSize);
-    m_shader.add_uniform("refractionHeight", &refractionHeight);
-    
-    m_shadow.add_uniform("lightMatrix", &m_light);
-
-    shadowMap.setFilter(GL_NEAREST);
-    shadowMap.setWrapParam(GL_CLAMP_TO_EDGE);
-    shadowMap.createEmpty(4096, 4096, true);
-    shadowBuffer.attachDepthMap(shadowMap);
-
-    shadowBias = 0.003f;
-    shadowTexelSize = glm::vec2(1.f / shadowMap.width());
+    m_shadow.add_uniform("lightMatrix", &m_shader.m_light);
 
     initPillars();
     initGround();
     initWalls();
     initItems();
     m_bridge.init(m_game->m_maze);
+    box_teleport.init(m_game->m_maze);
 
 	checkGlError("Failed to init world renderer");
 }
@@ -73,20 +38,20 @@ void world::renderShadowmap() {
 	float marbleZ = m_game->m_marble[3][2];
 
     static const glm::mat4 lightProjection = glm::ortho(-shadowArea, shadowArea, -shadowArea, shadowArea, -shadowArea, shadowArea);
-	static const float texelSize = shadowArea * 2.f / shadowMap.width();
+	static const float texelSize = shadowArea * 2.f / m_shader.shadowMap.width();
 
     glm::vec3 center(marbleX, 0, marbleZ);
 	center = glm::floor(center / texelSize) * texelSize;
 
     glm::mat4 lightView = glm::lookAt(m_game->sun.direction + center, center, glm::vec3(0.f, 1.f, 0.f));
-    m_light = lightProjection * lightView;
+    m_shader.m_light = lightProjection * lightView;
 
-	shadowBuffer.bind();
+	m_shader.shadowBuffer.bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
     m_shadow.use_program();
-    wallBox.draw();
-    pillarBox.draw();
+    box_wall.draw();
+    box_pillar.draw();
     m_bridge.drawFlat();
 
     if (m_game->teleportTimer % 18 < 9) {
@@ -95,13 +60,6 @@ void world::renderShadowmap() {
 
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
-}
-
-void world::apply_material(const char *mat_name) {
-    m_material = material::get(mat_name);
-    diffuseSampler.bindTexture(*m_material.tex);
-    normalSampler.bindTexture(*m_material.normals);
-    m_shader.update_uniforms();
 }
 
 void world::render() {
@@ -114,33 +72,40 @@ void world::render() {
     renderShadowmap();
 	m_shader.use_program();
     
-    m_sun = m_game->sun;
-    m_sun.direction = glm::vec3(m_game->m_view * glm::vec4(m_game->sun.direction, 0.0));
-    m_light_biased = biasMatrix * m_light;
+    m_shader.m_sun = m_game->sun;
+    m_shader.m_sun.direction = glm::vec3(m_game->m_view * glm::vec4(m_game->sun.direction, 0.0));
+    m_shader.m_light_biased = biasMatrix * m_shader.m_light;
     
-    shadowSampler.bindTexture(shadowMap);
-    apply_material("MAT_FLOOR");
-    groundBox.draw();
+    m_shader.shadowSampler.bindTexture(m_shader.shadowMap);
 
-    apply_material("MAT_PILLAR");
-    pillarBox.draw();
+    m_shader.apply_material("MAT_FLOOR");
+    box_ground.draw();
 
-    apply_material("MAT_BRICKS");
-    wallBox.draw();
+    m_shader.apply_material("MAT_PILLAR");
+    box_pillar.draw();
 
-    m_bridge.draw([&](const char *mat_name){apply_material(mat_name);});
+    m_shader.apply_material("MAT_BRICKS");
+    box_wall.draw();
 
-    apply_material("MAT_START");
-    startBox.draw();
+    m_shader.apply_material("MAT_START");
+    box_start.draw();
 
-    apply_material("MAT_END");
-    endBox.draw();
+    m_shader.apply_material("MAT_END");
+    box_end.draw();
 
-    apply_material("MAT_ARROW");
-    arrowBox.draw();
+    m_shader.apply_material("MAT_ARROW");
+    box_arrow.draw();
+
+    m_bridge.draw(m_shader);
+
+    m_shader.enableTpTiles = true;
+    m_shader.tpTileSampler.bindTexture(box_teleport.tex);
+    m_shader.apply_material("MAT_RUST");
+    box_teleport.draw();
+    m_shader.enableTpTiles = false;
 
     if (m_game->teleportTimer % 18 < 9) {
-        apply_material("MAT_MARBLE");
+        m_shader.apply_material("MAT_MARBLE");
 	    marble.update_matrices(&m_game->m_marble, 1, 4);
         marble.draw();
     }
@@ -152,16 +117,14 @@ void world::renderRefraction() {
     glEnable(GL_CLIP_DISTANCE0);
     glDisable(GL_CULL_FACE);
 
-    refractionHeight = -blockHeight;
-    m_material = material::get("MAT_FLOOR");
-    m_shader.update_uniforms();
-    groundBox.draw();
+    m_shader.refractionHeight = -blockHeight;
+    m_shader.apply_material("MAT_FLOOR");
+    box_ground.draw();
 
-    m_material = material::get("MAT_MARBLE");
-    m_shader.update_uniforms();
+    m_shader.apply_material("MAT_MARBLE");
     marble.draw();
 
-    refractionHeight = 999.f;
+    m_shader.refractionHeight = 999.f;
     glEnable(GL_CULL_FACE);
     glDisable(GL_CLIP_DISTANCE0);
 }
@@ -194,7 +157,7 @@ void world::initPillars() {
         }
 	}
 
-    pillarBox.update_matrices(matrices.data(), matrices.size(), 4);
+    box_pillar.update_matrices(matrices.data(), matrices.size(), 4);
 }
 
 void world::initGround() {
@@ -208,7 +171,7 @@ void world::initGround() {
         }
     }
 
-    groundBox.update_matrices(matrices.data(), matrices.size(), 4);
+    box_ground.update_matrices(matrices.data(), matrices.size(), 4);
 }
 
 void world::initWalls() {
@@ -241,7 +204,7 @@ void world::initWalls() {
         ++x;
     }
 
-    wallBox.update_matrices(matrices.data(), matrices.size(), 4);
+    box_wall.update_matrices(matrices.data(), matrices.size(), 4);
 }
 
 void world::initItems() {
@@ -256,7 +219,7 @@ void world::initItems() {
         x = index % m->width();
         y = index / m->width();
         matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
-        startBox.update_matrices(&matrix, 1, 4);
+        box_start.update_matrices(&matrix, 1, 4);
     }
 
     if ((t = m->endTile()) != nullptr) {
@@ -264,7 +227,7 @@ void world::initItems() {
         x = index % m->width();
         y = index / m->width();
         matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
-        endBox.update_matrices(&matrix, 1, 4);
+        box_end.update_matrices(&matrix, 1, 4);
     }
 
     std::vector<glm::mat4> arrowMatrices;
@@ -283,5 +246,5 @@ void world::initItems() {
         }
     }
 
-    arrowBox.update_matrices(arrowMatrices.data(), arrowMatrices.size(), 4);
+    box_arrow.update_matrices(arrowMatrices.data(), arrowMatrices.size(), 4);
 }

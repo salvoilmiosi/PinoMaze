@@ -12,7 +12,9 @@
 
 #include "../game.h"
 
+#include "world_shader.h"
 #include "bridge.h"
+#include "teleport.h"
 
 class world : public entity {
 public:
@@ -30,41 +32,17 @@ private:
     void initWalls();
     void initItems();
 
-    void apply_material(const char *mat_name);
-
 private:
     game *m_game;
 
-    shader m_shader;
+    world_shader m_shader;
     shader m_shadow;
 
-    box pillarBox;
-    box groundBox;
-    box wallBox;
-    box startBox;
-    box endBox;
-    box arrowBox;
-	sphere marble;
+    box box_pillar, box_ground, box_wall;
+    box box_start, box_end, box_arrow;
     bridge m_bridge;
-
-    framebuffer shadowBuffer;
-
-    glm::mat4 m_light;
-    glm::mat4 m_light_biased;
-
-    sampler diffuseSampler;
-    sampler normalSampler;
-    sampler shadowSampler;
-	texture shadowMap;
-
-    bool enableTexture = true;
-    bool enableNormalMap = true;
-    float shadowBias = 0.003f;
-    glm::vec2 shadowTexelSize;
-    float refractionHeight;
-
-    light m_sun;
-    material m_material;
+    teleport box_teleport;
+	sphere marble;
 };
 
 #endif // __SHADER_WORLD_H__

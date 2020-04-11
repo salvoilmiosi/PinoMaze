@@ -1,32 +1,28 @@
 #ifndef __MODEL_BRIDGE_H__
 #define __MODEL_BRIDGE_H__
 
+#include <vector>
+
 #include "../engine/model.h"
-#include "maze.h"
-
-#include <functional>
-
-typedef std::function<void(const char *)> material_fun;
 
 class bridge {
 public:
 	bridge();
 
 public:
-    void init(maze *m_maze);
+    void init(class maze *m_maze);
 
     void drawFlat();
 
-    void draw(material_fun apply_material);
+    void draw(class world_shader &m_shader);
 
 private:
-	void drawArc(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext);
-	void drawArcWall(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z, float w, float texSize);
-	void drawTopWall(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float texSize);
+	void addArcVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext);
+	void addArcWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z, float w, float texSize);
+	void addTopWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float texSize);
 	void addIndices(std::vector<vertex> &vertices, std::vector<GLuint> &indices, GLuint startIndex, bool ext);
 
 protected:
-    size_t overArc_offset = 0;
 	size_t underArc_offset = 0;
 	
 	model m_arc;

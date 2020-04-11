@@ -1,6 +1,7 @@
 #version 330 core
 
 in vec2 texCoords;
+in vec2 tpTileCoords;
 in vec3 worldNormal;
 in vec3 toCamera;
 in vec4 shadowCoords;
@@ -15,12 +16,16 @@ uniform mat4 lightMatrix;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D shadowMap;
+uniform sampler2D tpTileTexture;
+
+const float tpTextAlpha = 0.4;
+const vec4 tileDiffuse = vec4(1.0, 1.0, 0.0, 0.5);
 
 uniform bool enableTexture = false;
 uniform bool enableNormalMap = false;
-
-const bool enableShadow = true;
-const bool enableSpecular = true;
+uniform bool enableTpTiles = false;
+uniform bool enableShadow = true;
+uniform bool enableSpecular = true;
 
 struct light {
     vec3 ambient;
@@ -68,6 +73,11 @@ float shadowLinear(sampler2D tex, vec2 uv, float compare) {
 
 void main() {
     vec4 baseColor = enableTexture ? texture2D(diffuseTexture, texCoords) : vec4(1.0);
+    if (enableTpTiles) {
+        vec4 tpTileColor = texture2D(tpTileTexture, tpTileCoords);
+        tpTileColor *= tileDiffuse;
+        baseColor = mix(baseColor, tpTileColor, tpTileColor.w);
+    }
 
     vec3 normal, lightVec, cameraVec;
     if (enableNormalMap) {
