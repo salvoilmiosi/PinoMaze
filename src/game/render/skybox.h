@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
-#include "../engine/model.h"
 #include "../engine/vertex_array.h"
 #include "../engine/cubemap.h"
 #include "../engine/shader.h"

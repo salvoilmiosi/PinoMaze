@@ -1,9 +1,9 @@
 #ifndef __BOX_H__
 #define __BOX_H__
 
-#include "model.h"
+#include "base_model.h"
 
-class box: public model {
+class box: public base_model {
 public:
     box(float w = 1.f, float h = 1.f, float l = 1.f, float uv = 1.f);
 

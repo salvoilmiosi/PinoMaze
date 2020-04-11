@@ -3,7 +3,7 @@
 box::box(float w, float h, float l, float uv) :
     width(w), height(h), length(l), texSize(uv)
 {
-    const vertex vertices[] = {
+    const base_vertex vertices[] = {
         // Front face
         {{-width / 2.f, height / 2.f, length / 2.f}, {0.f,             0.f}},
         {{ width / 2.f, height / 2.f, length / 2.f}, {width / texSize, 0.f}},

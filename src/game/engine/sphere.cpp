@@ -1,4 +1,5 @@
 #include "sphere.h"
+#include "base_model.h"
 
 #include <cmath>
 
@@ -11,12 +12,12 @@ sphere::sphere(float r, int sh, int sv) :
     sphereSubsH(sh),
     sphereSubsV(sv)
 {
-    std::vector<vertex> vertices;
+    std::vector<base_vertex> vertices;
     std::vector<normal_and_tangent> normal_tangents;
     std::vector<GLuint> indices;
 
     float angleX, angleY, radius;
-    vertex v;
+    base_vertex v;
     normal_and_tangent nt;
     for (int i=0; i <= sphereSubsV; ++i) {
         v.texcoords.y = 1.f - (float) i / sphereSubsV;
@@ -67,7 +68,7 @@ sphere::sphere(float r, int sh, int sv) :
         }
     }
 
-    update_vertices(0, vertices.data(), vertices.size() * sizeof(vertex), {{0, ATTR_VEC3}, {1, ATTR_VEC2}});
+    update_vertices(0, vertices.data(), vertices.size() * sizeof(base_vertex), {{0, ATTR_VEC3}, {1, ATTR_VEC2}});
     update_vertices(1, normal_tangents.data(), normal_tangents.size() * sizeof(normal_and_tangent), {{2, ATTR_VEC3}, {3, ATTR_VEC3}});
     update_indices(indices.data(), indices.size());
 }

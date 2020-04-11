@@ -3,7 +3,7 @@
 
 #include "../engine/shader.h"
 #include "../engine/texture.h"
-#include "../engine/model.h"
+#include "../engine/vertex_array.h"
 
 struct particle {
 	glm::vec3 position;

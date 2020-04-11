@@ -1,12 +1,12 @@
-#include "model.h"
+#include "base_model.h"
 
-void model::calculate_buffers(const vertex *vertices, const size_t vertex_count, const GLuint *indices, const size_t index_count) {
+void base_model::calculate_buffers(const base_vertex *vertices, const size_t vertex_count, const GLuint *indices, const size_t index_count) {
     normal_and_tangent data[vertex_count];
 
     for (size_t i=0; i < index_count; i+=3) {
-        const vertex &v0 = vertices[indices[i]];
-        const vertex &v1 = vertices[indices[i+1]];
-        const vertex &v2 = vertices[indices[i+2]];
+        const base_vertex &v0 = vertices[indices[i]];
+        const base_vertex &v1 = vertices[indices[i+1]];
+        const base_vertex &v2 = vertices[indices[i+2]];
 
         glm::vec3 deltaPos1(v1.position.x-v0.position.x, v1.position.y-v0.position.y, v1.position.z-v0.position.z);
         glm::vec3 deltaPos2(v2.position.x-v0.position.x, v2.position.y-v0.position.y, v2.position.z-v0.position.z);
@@ -26,7 +26,7 @@ void model::calculate_buffers(const vertex *vertices, const size_t vertex_count,
         data[indices[i+2]].tangent = tangent;
     }
 
-    update_vertices(0, vertices, sizeof(vertex) * vertex_count, {{0, ATTR_VEC3}, {1, ATTR_VEC2}});
+    update_vertices(0, vertices, sizeof(base_vertex) * vertex_count, {{0, ATTR_VEC3}, {1, ATTR_VEC2}});
     update_vertices(1, data, sizeof(normal_and_tangent) * vertex_count, {{2, ATTR_VEC3}, {3, ATTR_VEC3}});
     update_indices(indices, index_count);
 }

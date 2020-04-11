@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../engine/shader.h"
-#include "../engine/model.h"
+#include "../engine/vertex_array.h"
 #include "../engine/framebuffer.h"
 
 class hole {

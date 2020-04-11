@@ -19,7 +19,7 @@ bridge::bridge() {
     float l2 = l + bridgeArcThickness;
     float h2 = l2 / l * bridgeArcHeight;
 
-    std::vector<vertex> vertices;
+    std::vector<base_vertex> vertices;
     std::vector<GLuint> indices;
 
     // Over arc
@@ -93,7 +93,7 @@ void bridge::render(world_shader &m_shader) {
     m_wall.draw_instances();
 }
 
-void bridge::addArcVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext) {
+void bridge::addArcVerts(std::vector<base_vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext) {
     GLuint startIndex = (GLuint)vertices.size();
 
     glm::vec3 position;
@@ -109,8 +109,8 @@ void bridge::addArcVerts(std::vector<vertex> &vertices, std::vector<GLuint> &ind
 
         float u = angle * bridgeArcHeight / texSize;
 
-        vertex v1 = {{position.x, position.y, MAX(z1, z2)}, {u, 0}};
-        vertex v2 = {{position.x, position.y, MIN(z1, z2)}, {u, maxV}};
+        base_vertex v1 = {{position.x, position.y, MAX(z1, z2)}, {u, 0}};
+        base_vertex v2 = {{position.x, position.y, MIN(z1, z2)}, {u, maxV}};
 
         vertices.push_back(v1);
         vertices.push_back(v2);
@@ -119,11 +119,11 @@ void bridge::addArcVerts(std::vector<vertex> &vertices, std::vector<GLuint> &ind
 	addIndices(vertices, indices, startIndex, ext);
 }
 
-void bridge::addArcWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z, float w, float texSize) {
+void bridge::addArcWallVerts(std::vector<base_vertex> &vertices, std::vector<GLuint> &indices, float z, float w, float texSize) {
     float a = bridgeWallHeight / bridgeArcHeight * abs(w / 2.f);
     float b = bridgeWallHeight;
 
-    vertex v1, v2;
+    base_vertex v1, v2;
     for (int i=0; i<bridgeSubsV; ++i) {
         GLuint startIndex = (GLuint)vertices.size();
         for (int j=0; j<=bridgeSubsH; ++j) {
@@ -167,7 +167,7 @@ void bridge::addArcWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> 
     }
 }
 
-void bridge::addTopWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float texSize) {
+void bridge::addTopWallVerts(std::vector<base_vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float texSize) {
     GLuint startIndex = (GLuint)vertices.size();
 
     glm::vec3 position;
@@ -187,8 +187,8 @@ void bridge::addTopWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> 
 
         float u = angle * bridgeArcHeight / texSize;
 
-        vertex v1 = {{position.x, position.y, MAX(z1, z2)}, {u, 0}};
-        vertex v2 = {{position.x, position.y, MIN(z1, z2)}, {u, maxV}};
+        base_vertex v1 = {{position.x, position.y, MAX(z1, z2)}, {u, 0}};
+        base_vertex v2 = {{position.x, position.y, MIN(z1, z2)}, {u, maxV}};
 
         vertices.push_back(v1);
         vertices.push_back(v2);
@@ -197,7 +197,7 @@ void bridge::addTopWallVerts(std::vector<vertex> &vertices, std::vector<GLuint> 
 	addIndices(vertices, indices, startIndex, true);
 }
 
-void bridge::addIndices(std::vector<vertex> &vertices, std::vector<GLuint> &indices, GLuint startIndex, bool ext) {
+void bridge::addIndices(std::vector<base_vertex> &vertices, std::vector<GLuint> &indices, GLuint startIndex, bool ext) {
 	for (GLuint i = startIndex; i < vertices.size() - 2; i += 2) {
         if (ext) {
             indices.push_back(i);
