@@ -16,10 +16,10 @@ private:
     glm::mat4 m_light;
     glm::mat4 m_light_biased;
 
-    sampler diffuseSampler;
-    sampler normalSampler;
-    sampler shadowSampler;
-    sampler tpTileSampler;
+    sampler diffuseSampler{0};
+    sampler normalSampler{1};
+    sampler shadowSampler{2};
+    sampler tpTileSampler{3};
     
     framebuffer shadowBuffer;
 	texture shadowMap;

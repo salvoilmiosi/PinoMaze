@@ -17,11 +17,6 @@ static auto MIN = [](auto a, auto b) {
 	return a > b ? b : a;
 };
 
-constexpr int windowWidth = 800;
-constexpr int windowHeight = 600;
-constexpr bool fullscreen = false;
-constexpr int tickrate = 60;
-
 constexpr float tileSize = 1.f;
 constexpr float blockHeight = 0.15f;
 
@@ -59,8 +54,5 @@ constexpr float cameraTurnSpeed = 0.12f;
 constexpr float shadowArea = 4.f;
 
 constexpr float musicVolume = 0.6f;
-
-constexpr bool enableTextures = true;
-constexpr bool enableNormalMaps = true;
 
 #endif // __OPTIONS_H__

@@ -14,12 +14,14 @@
 
 #include "world_shader.h"
 #include "bridge.h"
+#include "hole.h"
 
 class world : public entity {
 public:
     world(context *m_context, game *m_game);
 
 public:
+    void tick();
     void render();
 	void renderRefraction();
 
@@ -40,6 +42,7 @@ private:
     box box_pillar, box_ground, box_wall;
     box box_start, box_end, box_arrow, box_teleport;
     bridge m_bridge;
+    hole m_hole;
 	sphere marble;
 };
 

@@ -29,6 +29,7 @@ world::world(context *m_context, game *m_game) :
     initWalls();
     initItems();
     m_bridge.init(m_game->m_maze);
+    m_hole.init(m_game->m_maze);
 
 	checkGlError("Failed to init world renderer");
 }
@@ -60,6 +61,10 @@ void world::renderShadowmap() {
 
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
+}
+
+void world::tick() {
+    m_hole.tick();
 }
 
 void world::render() {
@@ -103,6 +108,12 @@ void world::render() {
     m_shader.apply_material("MAT_RUST");
     box_teleport.draw();
     m_shader.enableTpTiles = false;
+
+    m_hole.bindRefraction();
+    renderRefraction();
+    framebuffer::unbind();
+    glViewport(0, 0, m_context->window_width, m_context->window_height);
+    m_hole.render();
 
     if (m_game->teleportTimer % 18 < 9) {
         m_shader.apply_material("MAT_MARBLE");

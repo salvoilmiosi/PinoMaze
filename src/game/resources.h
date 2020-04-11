@@ -43,8 +43,6 @@ DECLARE_SHADER(s_shadow_f)
 DECLARE_SHADER(s_shadow_v)
 DECLARE_SHADER(s_skybox_f)
 DECLARE_SHADER(s_skybox_v)
-DECLARE_SHADER(s_teleport_f)
-DECLARE_SHADER(s_teleport_v)
 DECLARE_SHADER(s_world_f)
 DECLARE_SHADER(s_world_v)
 
