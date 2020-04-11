@@ -79,7 +79,7 @@ int main (int argc, char **argv) {
         std::cerr << error << std::endl;
         return -2;
     } catch (...) {
-		std::cerr << "Generic error?" << std::endl;
+		std::cerr << "Generic error" << std::endl;
 		return -3;
 	}
 

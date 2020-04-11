@@ -15,6 +15,7 @@ world::world(context *m_context, game *m_game) :
 
     m_skybox(m_game),
     m_hole(m_context, m_game),
+    m_particles(m_game),
 
 	box_pillar(pillarSize, pillarHeight, pillarSize, pillarHeight),
     box_ground(tileSize, blockHeight * 2.f, tileSize, tileSize),
@@ -71,6 +72,7 @@ void world::renderShadowmap() {
 
 void world::tick() {
     m_hole.tick();
+    m_particles.tick();
 }
 
 void world::render() {
@@ -119,7 +121,7 @@ void world::render() {
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
     m_hole.draw();
-    
+
     m_shader.use_program();
 
     if (m_game->teleportTimer % 18 < 9) {
@@ -127,6 +129,8 @@ void world::render() {
 	    marble.update_matrices(2, &m_game->m_marble, 1, 4);
         marble.draw();
     }
+
+    m_particles.draw();
 }
 
 void world::renderRefraction() {

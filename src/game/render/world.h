@@ -16,6 +16,7 @@
 #include "bridge.h"
 #include "hole.h"
 #include "skybox.h"
+#include "particle.h"
 
 class world : public entity {
 public:
@@ -40,11 +41,12 @@ private:
     world_shader m_shader;
     shader m_shadow;
 
+    skybox m_skybox;
+    hole m_hole;
+    particle_system m_particles;
     box box_pillar, box_ground, box_wall;
     box box_start, box_end, box_arrow, box_teleport;
     bridge m_bridge;
-    hole m_hole;
-    skybox m_skybox;
 	sphere marble;
 };
 

@@ -9,7 +9,7 @@ private:
 	int channel;
 
 public:
-	virtual ~sound() {
+	~sound() {
 		if (chunk != nullptr) {
 			Mix_FreeChunk(chunk);
 		}
@@ -59,7 +59,7 @@ private:
 	SDL_RWops *rw_buf = nullptr;
 
 public:
-	virtual ~music() {
+	~music() {
 		if (mus) {
 			Mix_FreeMusic(mus);
 		}
