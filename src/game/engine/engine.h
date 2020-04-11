@@ -3,7 +3,8 @@
 
 #include <SDL2/SDL.h>
 
-#include <set>
+#include <vector>
+#include <algorithm>
 
 #include "context.h"
 #include "entity.h"
@@ -20,17 +21,17 @@ public:
     void render();
 
     void add_entity(entity *ent) {
-        entities.insert(ent);
+        entities.push_back(ent);
     }
 
     void remove_entity(entity *ent) {
-        entities.erase(ent);
+        entities.erase(std::find(entities.begin(), entities.end(), ent));
     }
 
 private:
     context *con;
 
-    std::set<entity *> entities;
+    std::vector<entity *> entities;
 };
 
 #endif // __ENGINE_H__

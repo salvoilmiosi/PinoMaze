@@ -36,7 +36,7 @@ void particle_system::tick() {
 	lastPosition = position;
 	static int enableTimer = 0;
 
-	if (m_game->teleportTimer >= 60) {
+	if (m_game->teleportTimer >= 72) {
 		setVelocity(glm::vec3(0.f));
 		addParticles(600, 1.5f);
 		enableTimer = 20;
