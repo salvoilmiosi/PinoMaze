@@ -40,27 +40,22 @@ vertex_array::~vertex_array() {
 }
 
 void vertex_array::update_vertices(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic) {
-    if (size == 0) return;
-    bool created = false;
-
-    if (vbo_index >= num_vbos) {
-        glGenBuffers(1, gl_vbo + vbo_index);
-        num_vbos = vbo_index+1;
-        created = true;
-    }
-
     GLsizei stride = 0;
     for (auto &a : attribs) {
         stride += attrib_gl_info[a.type].size;
     }
-
+    
     num_vertices = size / stride;
-
+    if (num_vertices == 0) return;
+    
     glBindVertexArray(gl_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
-    glBufferData(GL_ARRAY_BUFFER, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 
-    if (created) {
+    if (vbo_index >= num_vbos) {
+        num_vbos = vbo_index+1;
+
+        glGenBuffers(1, gl_vbo + vbo_index);
+        glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
+        
         size_t start = 0;
         for (auto &a : attribs) {
             if (a.type == ATTR_MAT4) {
@@ -82,31 +77,28 @@ void vertex_array::update_vertices(size_t vbo_index, const void *data, const siz
         }
     }
 
+    glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
+    glBufferData(GL_ARRAY_BUFFER, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
     glBindVertexArray(0);
 }
 
 void vertex_array::update_instances(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic) {
-    if (size == 0) return;
-    bool created = false;
-
-    if (vbo_index >= num_vbos) {
-        glGenBuffers(1, gl_vbo + vbo_index);
-        num_vbos = vbo_index+1;
-        created = true;
-    }
-
     GLsizei stride = 0;
     for (auto &a : attribs) {
         stride += attrib_gl_info[a.type].size;
     }
 
     num_instances = size / stride;
+    if (num_instances == 0) return;
 
     glBindVertexArray(gl_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
-    glBufferData(GL_ARRAY_BUFFER, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 
-    if (created) {
+    if (vbo_index >= num_vbos) {
+        num_vbos = vbo_index+1;
+
+        glGenBuffers(1, gl_vbo + vbo_index);
+        glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
+
         size_t start = 0;
         for (auto &a : attribs) {
             if (a.type == ATTR_MAT4) {
@@ -134,6 +126,8 @@ void vertex_array::update_instances(size_t vbo_index, const void *data, const si
         }
     }
 
+    glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[vbo_index]);
+    glBufferData(GL_ARRAY_BUFFER, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
     glBindVertexArray(0);
 }
 
@@ -168,12 +162,15 @@ void vertex_array::draw(size_t first, size_t count) {
 }
 
 void vertex_array::draw_instances(size_t first, size_t count) {
+    if (num_instances == 0) {
+        return;
+    }
     glBindVertexArray(gl_vao);
     if (num_indices > 0) {
         if (count == 0) {
             count = num_indices - first;
         }
-         glDrawElementsInstanced(gl_draw_mode, count, GL_UNSIGNED_INT, (void *)(first * sizeof(GLuint)), num_instances);
+        glDrawElementsInstanced(gl_draw_mode, count, GL_UNSIGNED_INT, (void *)(first * sizeof(GLuint)), num_instances);
     } else if (num_vertices > 0) {
         if (count == 0) {
             count = num_vertices - first;
