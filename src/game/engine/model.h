@@ -22,7 +22,7 @@ public:
     }
 
     void update_matrices(const glm::mat4 *matrices, const size_t size, int location, bool dynamic = false) {
-        vao.update_instances(2, matrices, size * sizeof(glm::mat4), {{4, ATTR_MAT4}}, dynamic);
+        vao.update_instances(2, matrices, size * sizeof(glm::mat4), {{location, ATTR_MAT4}}, dynamic);
     }
 
     void calculate_buffers(const vertex *vertices, const size_t vertex_count, const GLuint *indices, const size_t index_count);
