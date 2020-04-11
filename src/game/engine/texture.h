@@ -17,11 +17,9 @@ protected:
 	int h = 0;
 
 public:
-	texture() {}
+    texture(SDL_Surface *surface = nullptr);
 
-	texture(SDL_Surface *surf) {
-		loadSurface(surf);
-	}
+    texture(texture &&old);
 
     ~texture();
 

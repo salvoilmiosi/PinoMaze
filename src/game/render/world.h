@@ -14,7 +14,6 @@
 
 #include "world_shader.h"
 #include "bridge.h"
-#include "teleport.h"
 
 class world : public entity {
 public:
@@ -39,9 +38,8 @@ private:
     shader m_shadow;
 
     box box_pillar, box_ground, box_wall;
-    box box_start, box_end, box_arrow;
+    box box_start, box_end, box_arrow, box_teleport;
     bridge m_bridge;
-    teleport box_teleport;
 	sphere marble;
 };
 

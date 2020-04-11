@@ -5,9 +5,8 @@
 #include <algorithm>
 #include <functional>
 
-const material material::MAT_DEFAULT;
-
 std::map<std::string, material> material::mat;
+std::map<std::string, texture> material::texs;
 
 inline void trim(std::string &s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(isspace))));
@@ -25,8 +24,6 @@ bool material::loadMaterials(const std::string &source) {
 	std::string line;
 	int line_num = 0;
 
-	std::map<std::string, std::shared_ptr<texture>> tex;
-
 	while (getline(iss, line)) {
 		trim(line);
 
@@ -40,13 +37,29 @@ bool material::loadMaterials(const std::string &source) {
 		std::string token;
 		line_iss >> token;
 		if (token == "texture") {
-			std::string tex_name, tex_id;
+			std::string tex_name, tex_id, option;
 			line_iss >> tex_name >> tex_id; // texture name
 			if (line_iss.fail()) {
 				std::cerr << "Syntax error at line #" << line_num << "\n" << line << "\n";
 				return false;
 			}
-			tex[tex_name] = std::make_shared<texture>(loadImageFromResource(tex_id.c_str()));
+			texture new_tex(loadImageFromResource(tex_id.c_str()));
+			while (! line_iss.eof()) {
+				line_iss >> option;
+				if (option == "linear") {
+					new_tex.setFilter(GL_LINEAR);
+				} else if (option == "nearest") {
+					new_tex.setFilter(GL_NEAREST);
+				} else if (option == "clamp") {
+					new_tex.setWrapParam(GL_CLAMP_TO_EDGE);
+				} else if (option == "repeat") {
+					new_tex.setWrapParam(GL_REPEAT);
+				} else {
+					std::cerr << "Sintax error at line #" << line_num << ": unexpected option " << option << std::endl;
+					return false;
+				}
+			}
+			texs.emplace(tex_name, std::move(new_tex));
 		} else if (token == "material") {
 			std::string mat_name;
 			line_iss >> mat_name;
@@ -62,12 +75,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
 						return false;
 					}
-					auto it = tex.find(tex_name);
-					if (it != tex.end()) {
-						m.tex = it->second;
-					} else {
-						std::cerr << "Could not find texture " << tex_name << ", skipping\n";
-					}
+					m.tex = tex_name;
 				} else if (token == "normals") {
 					std::string tex_name;
 					line_iss >> tex_name;
@@ -75,12 +83,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
 						return false;
 					}
-					auto it = tex.find(tex_name);
-					if (it != tex.end()) {
-						m.normals = it->second;
-					} else {
-						std::cerr << "Could not find texture " << tex_name << ", skipping\n";
-					}
+					m.normals = tex_name;
 				} else if (token == "ambient") {
 					int col;
 					line_iss >> std::hex >> col;
@@ -135,11 +138,22 @@ bool material::loadMaterials(const std::string &source) {
 	return true;
 }
 
-const material &material::get(const char *name) {
+const texture &material::getTexture(const std::string &name) {
+	static const texture TEX_DEFAULT;
+	auto it = texs.find(name);
+	if (it != texs.end()) {
+		return it->second;
+	} else {
+		return TEX_DEFAULT;
+	}
+}
+
+const material &material::get(const std::string &name) {
+	static const material MAT_DEFAULT;
 	auto it = mat.find(name);
 	if (it != mat.end()) {
 		return it->second;
 	} else {
-		return material::MAT_DEFAULT;
+		return MAT_DEFAULT;
 	}
 }

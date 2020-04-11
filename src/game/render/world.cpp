@@ -19,6 +19,7 @@ world::world(context *m_context, game *m_game) :
     box_start(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
     box_end(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
     box_arrow(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
+    box_teleport(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
     marble(marbleRadius, 16, 16)
 {
     m_shadow.add_uniform("lightMatrix", &m_shader.m_light);
@@ -28,7 +29,6 @@ world::world(context *m_context, game *m_game) :
     initWalls();
     initItems();
     m_bridge.init(m_game->m_maze);
-    box_teleport.init(m_game->m_maze);
 
 	checkGlError("Failed to init world renderer");
 }
@@ -99,7 +99,7 @@ void world::render() {
     m_bridge.draw(m_shader);
 
     m_shader.enableTpTiles = true;
-    m_shader.tpTileSampler.bindTexture(box_teleport.tex);
+    m_shader.tpTileSampler.bindTexture(material::getTexture("TEX_TELEPORT_TILES"));
     m_shader.apply_material("MAT_RUST");
     box_teleport.draw();
     m_shader.enableTpTiles = false;
@@ -231,6 +231,13 @@ void world::initItems() {
     }
 
     std::vector<glm::mat4> arrowMatrices;
+    
+    struct tp_instance_data {
+        glm::mat4 matrix;
+        glm::vec2 uv;
+    };
+    
+    std::vector<tp_instance_data> tp_instances;
 
     for (std::pair<const int, mazeItem> &it : m->items) {
         switch(it.second.type) {
@@ -241,10 +248,26 @@ void world::initItems() {
             matrix = matrix * glm::rotate(glm::mat4(1.f), glm::radians(90.f) * (it.second.arrow.direction + 1), glm::vec3(0.f, 1.f, 0.f));
             arrowMatrices.push_back(matrix);
             break;
+        case ITEM_TELEPORT:
+        {
+            tp_instance_data tpdata;
+			unsigned char c = it.second.teleport.tpChar;
+			tpdata.uv.x = (1.f / 16.f) * (c % 16);
+			tpdata.uv.y = (1.f / 16.f) * (c / 16);
+
+			int x = it.second.item.x;
+			int y = it.second.item.y;
+
+			tpdata.matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
+
+            tp_instances.push_back(tpdata);
+            break;
+        }
         default:
             break;
         }
     }
 
     box_arrow.update_matrices(arrowMatrices.data(), arrowMatrices.size(), 4);
+    box_teleport.update_instances(2, tp_instances.data(), tp_instances.size() * sizeof(tp_instance_data), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
 }

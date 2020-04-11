@@ -6,7 +6,6 @@
 #include "texture.h"
 
 #include <string>
-#include <memory>
 #include <map>
 
 #include <glm/glm.hpp>
@@ -33,8 +32,6 @@ struct light {
 
 class material {
 public:
-	static const material MAT_DEFAULT;
-
 	color ambient = 0xffffff;
 	color diffuse = 0xffffff;
 	color specular = 0x4c4c4c;
@@ -42,24 +39,26 @@ public:
 
 	float shininess = 25.f;
 
-	std::shared_ptr<texture> tex = nullptr;
-	std::shared_ptr<texture> normals = nullptr;
+	std::string tex;
+	std::string normals;
 
 	material() {}
 
 	material(color ambient, color diffuse, color specular, color emissive,
-		std::shared_ptr<texture> tex = nullptr, std::shared_ptr<texture> normals = nullptr)
+		std::string tex, std::string normals)
 		: ambient(ambient), diffuse(diffuse), specular(specular), emissive(emissive), tex(tex), normals(normals) {}
 
-	material(std::shared_ptr<texture> tex, std::shared_ptr<texture> normals) : tex(tex), normals(normals) {}
+	material(std::string tex, std::string normals) : tex(tex), normals(normals) {}
 
 public:
 	static bool loadMaterials(const std::string &source);
 
-	static const material &get(const char *name);
+	static const texture &getTexture(const std::string &name);
+	static const material &get(const std::string &name);
 
 private:
 	static std::map<std::string, material> mat;
+	static std::map<std::string, texture> texs;
 };
 
 #endif  // __MATERIAL_H__

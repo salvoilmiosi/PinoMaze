@@ -2,17 +2,32 @@
 
 #include "context.h"
 
+#include <iostream>
+
+texture::texture(SDL_Surface *surface) {
+    loadSurface(surface);
+}
+
+texture::texture(texture &&old) {
+    texID = old.texID;
+    old.texID = 0;
+    filter = old.filter;
+    wrapParam = old.wrapParam;
+    surface = old.surface;
+    old.surface = nullptr;
+    w = old.w;
+    h = old.h;
+}
+
 texture::~texture() {
-	glDeleteTextures(1, &texID);
-	if (surface != nullptr)
-		SDL_FreeSurface(surface);
-	surface = nullptr;
+	if (texID) glDeleteTextures(1, &texID);
+	if (surface) SDL_FreeSurface(surface);
 }
 
 void texture::loadSurface(SDL_Surface *_surface) {
+    if (_surface == nullptr) return;
     surface = _surface;
 
-    if (surface == nullptr) return;
     unsigned char bpp = surface->format->BytesPerPixel;
     if (bpp != 3 && bpp != 4) return;
 

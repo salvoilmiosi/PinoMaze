@@ -51,7 +51,7 @@ world_shader::world_shader(game *m_game) :
 
 void world_shader::apply_material(const char *mat_name) {
     m_material = material::get(mat_name);
-    diffuseSampler.bindTexture(*m_material.tex);
-    normalSampler.bindTexture(*m_material.normals);
+    diffuseSampler.bindTexture(material::getTexture(m_material.tex));
+    normalSampler.bindTexture(material::getTexture(m_material.normals));
     update_uniforms();
 }

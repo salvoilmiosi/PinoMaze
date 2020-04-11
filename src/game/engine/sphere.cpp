@@ -67,7 +67,7 @@ sphere::sphere(float r, int sh, int sv) :
         }
     }
 
-    vao.update_buffer(0, vertices.data(), vertices.size() * sizeof(vertex), {{0, ATTR_VEC3}, {1, ATTR_VEC2}});
-    vao.update_buffer(1, normal_tangents.data(), normal_tangents.size() * sizeof(normal_and_tangent), {{2, ATTR_VEC3}, {3, ATTR_VEC3}});
-    vao.update_indices(indices.data(), indices.size());
+    update_buffer(0, vertices.data(), vertices.size() * sizeof(vertex), {{0, ATTR_VEC3}, {1, ATTR_VEC2}});
+    update_buffer(1, normal_tangents.data(), normal_tangents.size() * sizeof(normal_and_tangent), {{2, ATTR_VEC3}, {3, ATTR_VEC3}});
+    update_indices(indices.data(), indices.size());
 }

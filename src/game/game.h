@@ -8,6 +8,8 @@
 #include "engine/material.h"
 #include "engine/context.h"
 
+#include <memory>
+
 struct camera {
 	float yaw;
 	float pitch;
