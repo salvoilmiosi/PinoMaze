@@ -9,17 +9,18 @@
 #include "../engine/cubemap.h"
 #include "../engine/shader.h"
 
-class skybox : public model {
+class skybox {
 public:
     skybox(class game *m_game);
 
 public:
-    void draw();
+    void render();
 
 private:
     class game *m_game;
 
     shader m_shader;
+    vertex_array vao;
 
 	cubemap CUB_SKYBOX;
 

@@ -8,7 +8,7 @@
 #include "../engine/model.h"
 #include "../engine/framebuffer.h"
 
-class hole : public model {
+class hole {
 public:
 	hole(context *con, class game *m_game);
 
@@ -20,10 +20,11 @@ public:
     void init(class maze *m_maze);
 
 	void tick();
-    void draw();
+    void render();
     
 private:
     shader m_shader;
+	vertex_array vao;
 
 	texture refraction;
 	texture refractionDepth;

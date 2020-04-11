@@ -65,6 +65,7 @@ int main (int argc, char **argv) {
 
     context con;
 	con.window_title = "PinoMaze";
+	con.vsync = false;
 
     try {
 	    engine m_engine(&con);

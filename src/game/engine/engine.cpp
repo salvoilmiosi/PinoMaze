@@ -22,7 +22,7 @@ engine::engine(context *con) : con(con) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-	SDL_GL_SetSwapInterval(0);
+	SDL_GL_SetSwapInterval(con->vsync);
 
 	glewExperimental = true;
 	GLenum error = glewInit();
@@ -43,31 +43,31 @@ void engine::mainLoop() {
 	SDL_Event event;
 
 	int lastTime = SDL_GetTicks();
+	int secondsTimer = SDL_GetTicks();
+	float frameTimer = SDL_GetTicks();
+
 	float unprocessed = 0;
 	float msPerTick = 1000.f / con->tickrate;
+	float msPerFrame = 1000.f / con->fps_limit;
+
 	int frames = 0;
 	int ticks = 0;
-	int secondsTimer = SDL_GetTicks();
 
 	bool quit = false;
 	while (!quit) {
 		int now = SDL_GetTicks();
 		unprocessed += (now - lastTime) / msPerTick;
 		lastTime = now;
-		bool shouldRender = false;
 		while (unprocessed >= 1) {
 			tick();
-
 			++ticks;
 			--unprocessed;
-			shouldRender = true;
 		}
 
-		if (shouldRender) {
+		if (now - frameTimer > msPerFrame) {
 			render();
-
 			SDL_GL_SwapWindow(con->window);
-
+			frameTimer += msPerFrame;
 			++frames;
 		}
 
@@ -86,7 +86,7 @@ void engine::mainLoop() {
 
 		if (SDL_GetTicks() - secondsTimer > 1000) {
 			secondsTimer += 1000;
-			setStatus("Frames: " + std::to_string(frames) + "\nTicks: " + std::to_string(ticks));
+			setStatus(std::to_string(frames) + "\n" + std::to_string(ticks));
 			frames = 0;
 			ticks = 0;
 		}

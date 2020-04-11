@@ -4,9 +4,10 @@
 #include "../game.h"
 #include "../options.h"
 
-particle_system::particle_system(game *m_game) : model(DRAW_TRIANGLE_STRIP),
+particle_system::particle_system(game *m_game) : 
 	m_game(m_game),
-	m_shader("particle", SHADER_RESOURCE(s_particle_v), SHADER_RESOURCE(s_particle_f))
+	m_shader("particle", SHADER_RESOURCE(s_particle_v), SHADER_RESOURCE(s_particle_f)),
+	vao(DRAW_TRIANGLE_STRIP)
 {
 	m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
 	m_shader.add_uniform("viewMatrix", &m_game->m_view);
@@ -22,7 +23,7 @@ particle_system::particle_system(game *m_game) : model(DRAW_TRIANGLE_STRIP),
 		glm::vec2( 1.f, -1.f),
 	};
 
-	update_vertices(0, vertices, 4 * sizeof(glm::vec2), {{0, ATTR_VEC2}});
+	vao.update_vertices(0, vertices, 4 * sizeof(glm::vec2), {{0, ATTR_VEC2}});
 
 	checkGlError("Failed to init particle system");
 }
@@ -64,7 +65,7 @@ void particle_system::tick() {
 	removeDeadParticles();
 }
 
-void particle_system::draw() {
+void particle_system::render() {
 	if (numAlive <= 0) return;
 
 	m_shader.use_program();
@@ -74,10 +75,10 @@ void particle_system::draw() {
 
 	particleSampler.bind(material::getTexture("TEX_PARTICLE_TEXTURE"));
 
-	update_instances(1, particles, sizeof(particle) * numAlive,
+	vao.update_instances(1, particles, sizeof(particle) * numAlive,
 		{{1, ATTR_VEC3}, {2, ATTR_VEC3}, {3, ATTR_VEC2}, {4, ATTR_FLOAT}, {5, ATTR_VEC3}, {6, ATTR_INT}}, true);
 
-	model::draw();
+	vao.draw_instances();
 
 	glDepthMask(true);
 	glDisable(GL_BLEND);

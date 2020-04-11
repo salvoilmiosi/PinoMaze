@@ -157,20 +157,28 @@ void vertex_array::draw(size_t first, size_t count) {
         if (count == 0) {
             count = num_indices - first;
         }
-        if (num_instances > 0) {
-            glDrawElementsInstanced(gl_draw_mode, count, GL_UNSIGNED_INT, (void *)(first * sizeof(GLuint)), num_instances);
-        } else {
-            glDrawElements(gl_draw_mode, count, GL_UNSIGNED_INT, (void *)(first * sizeof(GLuint)));
-        }
+        glDrawElements(gl_draw_mode, count, GL_UNSIGNED_INT, (void *)(first * sizeof(GLuint)));
     } else if (num_vertices > 0) {
         if (count == 0) {
             count = num_vertices - first;
         }
-        if (num_instances > 0) {
-            glDrawArraysInstanced(gl_draw_mode, first, count, num_instances);
-        } else {
-            glDrawArrays(gl_draw_mode, first, count);
+        glDrawArrays(gl_draw_mode, first, count);
+    }
+    glBindVertexArray(0);
+}
+
+void vertex_array::draw_instances(size_t first, size_t count) {
+    glBindVertexArray(gl_vao);
+    if (num_indices > 0) {
+        if (count == 0) {
+            count = num_indices - first;
         }
+         glDrawElementsInstanced(gl_draw_mode, count, GL_UNSIGNED_INT, (void *)(first * sizeof(GLuint)), num_instances);
+    } else if (num_vertices > 0) {
+        if (count == 0) {
+            count = num_vertices - first;
+        }
+        glDrawArraysInstanced(gl_draw_mode, first, count, num_instances);
     }
     glBindVertexArray(0);
 }

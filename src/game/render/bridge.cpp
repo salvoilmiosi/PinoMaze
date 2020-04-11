@@ -77,20 +77,20 @@ void bridge::init(maze *m) {
     m_wall.update_matrices(2, wallMatrices.data(), wallMatrices.size(), 4);
 }
 
-void bridge::drawFlat() {
-    m_arc.draw();
-    m_wall.draw();
+void bridge::render_flat() {
+    m_arc.draw_instances();
+    m_wall.draw_instances();
 }
 
-void bridge::draw(world_shader &m_shader) {
+void bridge::render(world_shader &m_shader) {
     m_shader.apply_material("MAT_TILES");
-    m_arc.draw(0, underArc_offset);
+    m_arc.draw_instances(0, underArc_offset);
 
     m_shader.apply_material("MAT_CEILING");
-    m_arc.draw(underArc_offset);
+    m_arc.draw_instances(underArc_offset);
     
     m_shader.apply_material("MAT_BRICKS");
-    m_wall.draw();
+    m_wall.draw_instances();
 }
 
 void bridge::addArcVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext) {

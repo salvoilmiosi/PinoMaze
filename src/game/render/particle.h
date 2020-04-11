@@ -15,7 +15,7 @@ struct particle {
 	int life;
 };
 
-class particle_system : public model {
+class particle_system {
 public:
 	particle_system(class game *m_game);
 
@@ -33,7 +33,7 @@ public:
 	void addParticles(int num, float force = 1.f);
 
 	void tick();
-	void draw();
+	void render();
 
 private:
 	void removeDeadParticles();
@@ -43,6 +43,7 @@ private:
 
 	class game *m_game;
 	shader m_shader;
+	vertex_array vao;
 
 	particle particles[maxParticles];
 	size_t numAlive = 0;

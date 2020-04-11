@@ -56,12 +56,12 @@ void world::renderShadowmap() {
 	glClear(GL_DEPTH_BUFFER_BIT);
 
     m_shadow.use_program();
-    box_wall.draw();
-    box_pillar.draw();
-    m_bridge.drawFlat();
+    box_wall.draw_instances();
+    box_pillar.draw_instances();
+    m_bridge.render_flat();
 
     if (m_game->teleportTimer % 18 < 9) {
-        marble.draw();
+        marble.draw_instances();
     }
 
     framebuffer::unbind();
@@ -77,7 +77,7 @@ void world::tick() {
 
 void world::render() {
 	glClear(GL_DEPTH_BUFFER_BIT);
-    m_skybox.draw();
+    m_skybox.render();
 
     static const glm::mat4 biasMatrix(
         0.5f, 0.0f, 0.0f, 0.0f,
@@ -93,52 +93,52 @@ void world::render() {
     m_shader.m_light_biased = biasMatrix * m_shader.m_light;
 
     m_shader.apply_material("MAT_FLOOR");
-    box_ground.draw();
+    box_ground.draw_instances();
 
     m_shader.apply_material("MAT_PILLAR");
-    box_pillar.draw();
+    box_pillar.draw_instances();
 
     m_shader.apply_material("MAT_BRICKS");
-    box_wall.draw();
+    box_wall.draw_instances();
 
     m_shader.apply_material("MAT_START");
-    box_start.draw();
+    box_start.draw_instances();
 
     m_shader.apply_material("MAT_END");
-    box_end.draw();
+    box_end.draw_instances();
 
     m_shader.apply_material("MAT_ARROW");
-    box_arrow.draw();
+    box_arrow.draw_instances();
 
-    m_bridge.draw(m_shader);
+    m_bridge.render(m_shader);
 
     m_shader.enableTpTiles = true;
     m_shader.tpTileSampler.bind(material::getTexture("TEX_TELEPORT_TILES"));
     m_shader.apply_material("MAT_RUST");
-    box_teleport.draw();
+    box_teleport.draw_instances();
     m_shader.enableTpTiles = false;
 
     renderRefraction();
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
-    m_hole.draw();
+    m_hole.render();
 
     m_shader.use_program();
 
     if (m_game->teleportTimer % 18 < 9) {
         m_shader.apply_material("MAT_MARBLE");
 	    marble.update_matrices(2, &m_game->m_marble, 1, 4);
-        marble.draw();
+        marble.draw_instances();
     }
 
-    m_particles.draw();
+    m_particles.render();
 }
 
 void world::renderRefraction() {
     m_hole.bindRefraction();
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    m_skybox.draw();
+    m_skybox.render();
     m_shader.use_program();
 
     glEnable(GL_CLIP_DISTANCE0);
@@ -146,10 +146,10 @@ void world::renderRefraction() {
 
     m_shader.refractionHeight = -blockHeight;
     m_shader.apply_material("MAT_FLOOR");
-    box_ground.draw();
+    box_ground.draw_instances();
 
     m_shader.apply_material("MAT_MARBLE");
-    marble.draw();
+    marble.draw_instances();
 
     m_shader.refractionHeight = 999.f;
     glEnable(GL_CULL_FACE);

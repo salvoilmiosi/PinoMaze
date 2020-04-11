@@ -12,9 +12,9 @@ public:
 public:
     void init(class maze *m_maze);
 
-    void drawFlat();
+    void render_flat();
 
-    void draw(class world_shader &m_shader);
+    void render(class world_shader &m_shader);
 
 private:
 	void addArcVerts(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext);

@@ -6,8 +6,9 @@
 
 #include "maze.h"
 
-hole::hole(context *con, game *m_game) : model(DRAW_TRIANGLE_STRIP),
+hole::hole(context *con, game *m_game) :
 	m_shader("hole", SHADER_RESOURCE(s_hole_v), SHADER_RESOURCE(s_hole_f)),
+	vao(DRAW_TRIANGLE_STRIP),
 	refraction(con->window_width, con->window_height),
 	refractionDepth(con->window_width, con->window_height, true)
 {
@@ -36,7 +37,7 @@ hole::hole(context *con, game *m_game) : model(DRAW_TRIANGLE_STRIP),
         glm::vec3(tileSize, 0.f, tileSize),
     };
 
-	update_vertices(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
+	vao.update_vertices(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
 
 	checkGlError("Failed to init hole model");
 }
@@ -53,18 +54,18 @@ void hole::init(maze *m) {
         }
     }
 
-	update_matrices(1, matrices.data(), matrices.size(), 1);
+	vao.update_matrices(1, matrices.data(), matrices.size(), 1);
 }
 
 void hole::tick() {
 	++tickCount;
 }
 
-void hole::draw() {
+void hole::render() {
 	refractionSampler.bind(refraction);
 	dudvSampler.bind(material::getTexture("TEX_WATER_DUDV"));
 	normalSampler.bind(material::getTexture("TEX_WATER_NORMALS"));
 	m_shader.use_program();
 
-	model::draw();
+	vao.draw_instances();
 }

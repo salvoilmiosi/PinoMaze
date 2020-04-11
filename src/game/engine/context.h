@@ -20,6 +20,8 @@ struct context {
     int window_width = 800;
     int window_height = 600;
     int tickrate = 60;
+    int fps_limit = 300;
+    bool vsync = true;
 };
 
 #endif // __CONTEXT_H__

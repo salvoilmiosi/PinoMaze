@@ -18,10 +18,6 @@ struct normal_and_tangent {
 class model : public vertex_array {
 public:
     model(draw_mode mode = DRAW_TRIANGLES) : vertex_array(mode) {}
-    
-    void update_matrices(size_t vbo_index, const glm::mat4 *matrices, const size_t size, int location, bool dynamic = false) {
-        update_instances(vbo_index, matrices, size * sizeof(glm::mat4), {{location, ATTR_MAT4}}, dynamic);
-    }
 
     void calculate_buffers(const vertex *vertices, const size_t vertex_count, const GLuint *indices, const size_t index_count);
 };

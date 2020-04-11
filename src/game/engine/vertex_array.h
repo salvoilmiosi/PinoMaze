@@ -45,8 +45,13 @@ public:
     void update_vertices(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic = false);
     void update_instances(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic = false);
     void update_indices(const unsigned int *data, const size_t size, bool dynamic = false);
+    
+    void update_matrices(size_t vbo_index, const glm::mat4 *matrices, const size_t size, int location, bool dynamic = false) {
+        update_instances(vbo_index, matrices, size * sizeof(glm::mat4), {{location, ATTR_MAT4}}, dynamic);
+    }
 
     void draw(size_t first = 0, size_t count = 0);
+    void draw_instances(size_t first = 0, size_t count = 0);
 
 private:
     size_t num_vbos = 0;
