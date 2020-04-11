@@ -17,12 +17,14 @@ public:
     ~framebuffer();
 
 public:
-    void bindFramebuffer();
-    static void unbindFramebuffer(context *con);
+    void bind();
+    static void unbind();
 
 public:
     void attachTexture(const texture &t);
     void attachDepthMap(const texture &t);
+
+    bool complete();
 };
 
 #endif // __FRAMEBUFFER_H__

@@ -1,24 +1,14 @@
 #include "game.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 #include "engine/material.h"
 
 #include "resources.h"
 #include "options.h"
 
-glm::mat4 camera::viewMatrix() const {
-	glm::mat4 m_position, m_pitch, m_yaw, m_roll;
-
-	m_position = glm::translate(m_position, -position);
-	m_pitch = glm::rotate(m_pitch, pitch, glm::vec3(1.f, 0.f, 0.f));
-	m_yaw = glm::rotate(m_yaw, -yaw, glm::vec3(0.f, 1.f, 0.f));
-	m_roll = glm::rotate(m_roll, -roll, glm::vec3(0.f, 0.f, 1.f));
-
-	return m_roll * m_pitch * m_yaw * m_position;
-}
-
-game::game(context *m_context, maze *m_maze) : entity(m_context), m_maze(m_maze) {
+game::game(context *m_context, maze *m_maze) : entity(m_context), m_maze(m_maze), marbleRotation(1.f) {
     if (!material::loadMaterials(loadStringFromResource("IDM_MATERIALS"))) {
         throw std::string("Could not load materials");
     }
@@ -87,7 +77,7 @@ void game::teleportTo(int _x, int _y) {
 
 	endMove();
 
-	teleported = true;
+	teleportTimer = 72;
 	lockToMarble = false;
 }
 
@@ -240,6 +230,13 @@ void game::setupCamera() {
 	} else {
 		cam.pitch = pitch;
 	}
+	
+	glm::mat4 m_position = glm::translate(glm::mat4(1.f), -cam.position);
+	glm::mat4 m_pitch = glm::rotate(glm::mat4(1.f), cam.pitch, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 m_yaw = glm::rotate(glm::mat4(1.f), -cam.yaw, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 m_roll = glm::rotate(glm::mat4(1.f), -cam.roll, glm::vec3(0.f, 0.f, 1.f));
+
+	m_view = m_roll * m_pitch * m_yaw * m_position;
 }
 
 void game::setupMarble() {
@@ -292,6 +289,8 @@ void game::setupMarble() {
 	} else if (!onItem) {
 		marblePos.y = marbleRadius;
 	}
+	
+    m_marble = glm::translate(glm::mat4(1.f), marblePos) * marbleRotation;
 }
 
 void game::rollMarble(glm::vec3 delta) {
@@ -303,7 +302,7 @@ void game::rollMarble(glm::vec3 delta) {
     float angleZ = (delta.x != 0.f) ? sqrtf(delta.x*delta.x + delta.y*delta.y) * rollAmount : 0.f;
 	if (delta.x < 0.f) angleZ = -angleZ;
 
-    glm::mat4 rotation;
+    glm::mat4 rotation(1.f);
     rotation = glm::rotate(rotation, angleX, glm::vec3( 1.f, 0.f, 0.f));
 	rotation = glm::rotate(rotation, angleZ, glm::vec3(0.f, 0.f, -1.f));
 
@@ -434,7 +433,9 @@ void game::teleportToStart(bool resetWon) {
 
 void game::tick() {
 	++tickCount;
-	teleported = false;
+	if (teleportTimer > 0) {
+		--teleportTimer;
+	}
 
 	if (moving > 0) {
 		float endX = (tx + 0.5f) * tileSize;
@@ -450,6 +451,19 @@ void game::tick() {
 		}
 	}
 
+	handleInput();
+
+	static glm::vec3 lastPos = marblePos;
+
+	rollMarble(marblePos - lastPos);
+
+    setupMarble();
+	setupCamera();
+
+	lastPos = marblePos;
+}
+
+void game::handleInput() {
 	const Uint8* keys = SDL_GetKeyboardState(nullptr);
 	static bool pressed_space = false;
 
@@ -597,16 +611,4 @@ void game::tick() {
     } else {
         rightPressed = false;
     }
-
-	static glm::vec3 lastPos = marblePos;
-
-	rollMarble(marblePos - lastPos);
-
-    setupMarble();
-	setupCamera();
-
-	lastPos = marblePos;
-    
-	m_view = cam.viewMatrix();
-    m_marble = glm::translate(glm::mat4(1.f), marblePos) * marbleRotation;
 }

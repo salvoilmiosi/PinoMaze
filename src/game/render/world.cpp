@@ -1,6 +1,7 @@
 #include "world.h"
 
 #include <glm/glm.hpp>
+#include <iostream>
 
 #include "../resources.h"
 #include "../options.h"
@@ -48,7 +49,7 @@ world::world(context *m_context, game *m_game) :
     m_shader.add_uniform("shadowTexelSize", &shadowTexelSize);
     m_shader.add_uniform("refractionHeight", &refractionHeight);
     
-    m_shadow.add_uniform("lightMatrix", &m_light_biased);
+    m_shadow.add_uniform("lightMatrix", &m_light);
 
     shadowMap.setFilter(GL_NEAREST);
     shadowMap.setWrapParam(GL_CLAMP_TO_EDGE);
@@ -62,6 +63,7 @@ world::world(context *m_context, game *m_game) :
     initGround();
     initWalls();
     initItems();
+    m_bridge.init(m_game->m_maze);
 
 	checkGlError("Failed to init world renderer");
 }
@@ -79,7 +81,7 @@ void world::renderShadowmap() {
     glm::mat4 lightView = glm::lookAt(m_game->sun.direction + center, center, glm::vec3(0.f, 1.f, 0.f));
     m_light = lightProjection * lightView;
 
-	shadowBuffer.bindFramebuffer();
+	shadowBuffer.bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
     m_shadow.use_program();
@@ -87,69 +89,59 @@ void world::renderShadowmap() {
     pillarBox.draw();
     m_bridge.drawFlat();
 
-    if (teleportTimer % 18 < 9) {
+    if (m_game->teleportTimer % 18 < 9) {
         marble.draw();
     }
 
-    shadowBuffer.unbindFramebuffer(m_context);
+    framebuffer::unbind();
+    glViewport(0, 0, m_context->window_width, m_context->window_height);
 }
 
-void world::tick() {
-	if (teleportTimer > 0) {
-		--teleportTimer;
-	}
-	if (m_game->hasTeleported()) {
-		teleportTimer = 72;
-	}
+void world::apply_material(const char *mat_name) {
+    m_material = material::get(mat_name);
+    diffuseSampler.bindTexture(*m_material.tex);
+    normalSampler.bindTexture(*m_material.normals);
+    m_shader.update_uniforms();
 }
 
 void world::render() {
-	m_shader.use_program();
-
     static const glm::mat4 biasMatrix(
         0.5f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.5f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.5f, 0.0f,
         0.5f, 0.5f, 0.5f, 1.0f);
 
-	marble.update_matrices(&m_game->m_marble, 1, 4);
-
     renderShadowmap();
+	m_shader.use_program();
     
     m_sun = m_game->sun;
     m_sun.direction = glm::vec3(m_game->m_view * glm::vec4(m_game->sun.direction, 0.0));
     m_light_biased = biasMatrix * m_light;
     
     shadowSampler.bindTexture(shadowMap);
-
-    m_material = material::get("MAT_FLOOR");
-    m_shader.update_uniforms();
+    apply_material("MAT_FLOOR");
     groundBox.draw();
 
-    m_material = material::get("MAT_PILLAR");
-    m_shader.update_uniforms();
+    apply_material("MAT_PILLAR");
     pillarBox.draw();
 
-    m_material = material::get("MAT_BRICKS");
-    m_shader.update_uniforms();
+    apply_material("MAT_BRICKS");
     wallBox.draw();
 
-    m_bridge.draw(m_shader, m_material);
+    m_bridge.draw([&](const char *mat_name){apply_material(mat_name);});
 
-    m_material = material::get("MAT_START");
-    m_shader.update_uniforms();
+    apply_material("MAT_START");
     startBox.draw();
 
-    m_material = material::get("MAT_END");
-    m_shader.update_uniforms();
+    apply_material("MAT_END");
     endBox.draw();
 
-    m_material = material::get("MAT_ARROW");
-    m_shader.update_uniforms();
+    apply_material("MAT_ARROW");
     arrowBox.draw();
 
-    if (teleportTimer % 18 < 9) {
-        m_material = material::get("MAT_MARBLE");
+    if (m_game->teleportTimer % 18 < 9) {
+        apply_material("MAT_MARBLE");
+	    marble.update_matrices(&m_game->m_marble, 1, 4);
         marble.draw();
     }
 }
@@ -175,8 +167,6 @@ void world::renderRefraction() {
 }
 
 void world::initPillars() {
-    glm::mat4 identity;
-
     tile *t;
     mazeItem *item;
 
@@ -199,8 +189,7 @@ void world::initPillars() {
             }
 
             if (hasWalls) {
-                matrices.push_back(glm::translate(identity,
-                    glm::vec3(x * tileSize, pillarHeight / 2.f, y * tileSize)));
+                matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, pillarHeight / 2.f, y * tileSize)));
             }
         }
 	}
@@ -209,16 +198,13 @@ void world::initPillars() {
 }
 
 void world::initGround() {
-    glm::mat4 identity;
-
     std::vector<glm::mat4> matrices;
 
     for (int i=0; i<m_game->m_maze->datasize(); ++i) {
         if (m_game->m_maze->getTile(i)->state != STATE_BLOCK) {
             int x = i % m_game->m_maze->width();
             int y = i / m_game->m_maze->width();
-            matrices.push_back(glm::translate(
-                identity, glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize)));
+            matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize)));
         }
     }
 
@@ -226,7 +212,7 @@ void world::initGround() {
 }
 
 void world::initWalls() {
-    glm::mat4 matrix, identity;
+    glm::mat4 matrix;
     int x = 0;
     int y = 0;
 
@@ -237,7 +223,7 @@ void world::initWalls() {
     for (wall &w : m->hwalls) {
         for (x = 0; x<w.length(); ++x) {
             if (w[x]) {
-                matrices.push_back(glm::translate(identity, glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize)));
+                matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize)));
             }
         }
         ++y;
@@ -247,7 +233,7 @@ void world::initWalls() {
     for (wall &w : m->vwalls) {
         for (y = 0; y < w.length(); ++y) {
             if (w[y]) {
-                matrix = glm::translate(identity, glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
+                matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
                 matrix = glm::rotate(matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
                 matrices.push_back(matrix);
             }
@@ -259,7 +245,7 @@ void world::initWalls() {
 }
 
 void world::initItems() {
-    glm::mat4 matrix, identity;
+    glm::mat4 matrix;
 
     maze *m = m_game->m_maze;
 
@@ -269,7 +255,7 @@ void world::initItems() {
         index = m->getIndex(t);
         x = index % m->width();
         y = index / m->width();
-        matrix = glm::translate(identity, glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
+        matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
         startBox.update_matrices(&matrix, 1, 4);
     }
 
@@ -277,21 +263,25 @@ void world::initItems() {
         index = m->getIndex(t);
         x = index % m->width();
         y = index / m->width();
-        matrix = glm::translate(identity, glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
+        matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
         endBox.update_matrices(&matrix, 1, 4);
     }
+
+    std::vector<glm::mat4> arrowMatrices;
 
     for (std::pair<const int, mazeItem> &it : m->items) {
         switch(it.second.type) {
         case ITEM_ARROW:
             x = it.second.item.x;
             y = it.second.item.y;
-            matrix = glm::translate(identity, glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
-            matrix = glm::rotate(matrix, glm::radians(90.f) * (it.second.arrow.direction + 1), glm::vec3(0.f, 1.f, 0.f));
-            arrowBox.update_matrices(&matrix, 1, 4);
+            matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
+            matrix = glm::rotate(glm::mat4(1.f), glm::radians(90.f) * (it.second.arrow.direction + 1), glm::vec3(0.f, 1.f, 0.f)) * matrix;
+            arrowMatrices.push_back(matrix);
             break;
         default:
             break;
         }
     }
+
+    arrowBox.update_matrices(arrowMatrices.data(), arrowMatrices.size(), 4);
 }

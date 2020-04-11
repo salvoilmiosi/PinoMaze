@@ -41,10 +41,10 @@ bridge::bridge() {
 }
 
 void bridge::init(maze *m) {
-	glm::mat4 identity, matrix;
+	glm::mat4 matrix;
 	bool wallUp, wallDown;
 
-    std::vector<glm::mat4> matrices;
+    std::vector<glm::mat4> arcMatrices;
     std::vector<glm::mat4> wallMatrices;
 
 	for (std::pair<const int, mazeItem> &it : m->items) {
@@ -52,7 +52,7 @@ void bridge::init(maze *m) {
 			int x = it.second.item.x;
 			int y = it.second.item.y;
 
-			matrix = glm::translate(identity, glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
+			matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
 			wallUp = !m->hwalls[y][x];
 			wallDown = !m->hwalls[y + 1][x];
 
@@ -62,13 +62,13 @@ void bridge::init(maze *m) {
 				wallDown = false;
 			}
 
-			matrices.push_back(matrix);
+			arcMatrices.push_back(matrix);
 			if (wallUp) wallMatrices.push_back(glm::translate(matrix, glm::vec3(0.f, 0.f, -tileSize * 0.5f)));
 			if (wallDown) wallMatrices.push_back(glm::translate(matrix, glm::vec3(0.f, 0.f, tileSize * 0.5f)));
 		}
 	}
 
-    m_arc.update_matrices(matrices.data(), matrices.size(), 4);
+    m_arc.update_matrices(arcMatrices.data(), arcMatrices.size(), 4);
     m_wall.update_matrices(wallMatrices.data(), wallMatrices.size(), 4);
 }
 
@@ -77,15 +77,14 @@ void bridge::drawFlat() {
     m_wall.draw();
 }
 
-void bridge::draw(class shader &m_shader, class material &m_material) {
-    m_material = material::get("MAT_TILES");
-    m_shader.update_uniforms();
+void bridge::draw(material_fun apply_material) {
+    apply_material("MAT_TILES");
     m_arc.draw(underArc_offset - overArc_offset, overArc_offset);
-    m_material = material::get("MAT_CEILING");
-    m_shader.update_uniforms();
+
+    apply_material("MAT_CEILING");
     m_arc.draw(0, underArc_offset);
-    m_material = material::get("MAT_BRICKS");
-    m_shader.update_uniforms();
+    
+    apply_material("MAT_BRICKS");
     m_wall.draw();
 }
 

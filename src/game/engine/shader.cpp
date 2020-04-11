@@ -29,6 +29,28 @@ void shader::use_program() {
 	update_uniforms();
 }
 
+inline void updateValue(const uniform<bool> &uni) {
+	glUniform1i(uni.location, *uni.data);
+}
+inline void updateValue(const uniform<int> &uni) {
+	glUniform1i(uni.location, *uni.data);
+}
+inline void updateValue(const uniform<float> &uni) {
+	glUniform1f(uni.location, *uni.data);
+}
+inline void updateValue(const uniform<glm::vec2> &uni) {
+	glUniform2fv(uni.location, 1, glm::value_ptr(*uni.data));
+}
+inline void updateValue(const uniform<glm::vec3> &uni) {
+	glUniform3fv(uni.location, 1, glm::value_ptr(*uni.data));
+}
+inline void updateValue(const uniform<glm::vec4> &uni) {
+	glUniform4fv(uni.location, 1, glm::value_ptr(*uni.data));
+}
+inline void updateValue(const uniform<glm::mat4> &uni) {
+	glUniformMatrix4fv(uni.location, 1, false, glm::value_ptr(*uni.data));
+}
+
 void shader::update_uniforms() {
 	mpl::for_each_in_tuple(p_uniforms, [&](auto &uni_vector) {
 		for (auto &uni : uni_vector) {
@@ -53,7 +75,9 @@ void shader::compile(GLuint gl_shaderid, const std::string &source) {
 
 	glGetShaderInfoLog(gl_shaderid, max_length, &length, info_log.data());
 
-	std::cout << "In shader " << name << ":" << std::endl << info_log << std::endl;
+	if (length > 0) {
+		std::cout << "In shader " << name << ":" << std::endl << info_log << std::endl;
+	}
 
 	GLint compiled = GL_FALSE;
 	glGetShaderiv(gl_shaderid, GL_COMPILE_STATUS, &compiled);

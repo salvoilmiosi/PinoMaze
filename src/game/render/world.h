@@ -19,10 +19,6 @@ public:
     world(context *m_context, game *m_game);
 
 public:
-    bool init();
-
-	void tick();
-
     void render();
 	void renderRefraction();
 
@@ -33,6 +29,8 @@ private:
     void initGround();
     void initWalls();
     void initItems();
+
+    void apply_material(const char *mat_name);
 
 private:
     game *m_game;
@@ -59,16 +57,14 @@ private:
     sampler shadowSampler;
 	texture shadowMap;
 
-    bool enableTexture;
-    bool enableNormalMap;
+    bool enableTexture = true;
+    bool enableNormalMap = true;
     float shadowBias = 0.003f;
     glm::vec2 shadowTexelSize;
     float refractionHeight;
 
     light m_sun;
     material m_material;
-
-	int teleportTimer = 0;
 };
 
 #endif // __SHADER_WORLD_H__

@@ -4,34 +4,39 @@
 
 framebuffer::framebuffer() {
     glGenFramebuffers(1, &fboID);
-
-	checkGlError("Failed to init framebuffer");
 }
 
 framebuffer::~framebuffer() {
 	glDeleteFramebuffers(1, &fboID);
 }
 
-void framebuffer::bindFramebuffer() {
+void framebuffer::bind() {
     glBindFramebuffer(GL_FRAMEBUFFER, fboID);
     glViewport(0, 0, width, height);
 }
 
-void framebuffer::unbindFramebuffer(context *con) {
+void framebuffer::unbind() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, con->window_width, con->window_width);
 }
 
 void framebuffer::attachTexture(const texture &t) {
-    bindFramebuffer();
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, t.texID, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, t.texID, 0);
     width = t.width();
     height = t.height();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void framebuffer::attachDepthMap(const texture &t) {
-    bindFramebuffer();
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, t.texID, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, t.texID, 0);
     width = t.width();
     height = t.height();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+bool framebuffer::complete() {
+    glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+    return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

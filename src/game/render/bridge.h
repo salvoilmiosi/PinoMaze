@@ -4,6 +4,10 @@
 #include "../engine/model.h"
 #include "maze.h"
 
+#include <functional>
+
+typedef std::function<void(const char *)> material_fun;
+
 class bridge {
 public:
 	bridge();
@@ -13,7 +17,7 @@ public:
 
     void drawFlat();
 
-    void draw(class shader &m_shader, class material &m_material);
+    void draw(material_fun apply_material);
 
 private:
 	void drawArc(std::vector<vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext);

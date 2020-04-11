@@ -82,7 +82,10 @@ int main (int argc, char **argv) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", error.c_str(), nullptr);
         std::cerr << error << std::endl;
         return -2;
-    }
+    } catch (...) {
+		std::cerr << "Generic error?" << std::endl;
+		return -3;
+	}
 
 	SDL_Quit();
 

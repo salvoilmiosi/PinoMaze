@@ -13,8 +13,6 @@ struct camera {
 	float pitch;
 	float roll;
 	glm::vec3 position;
-
-	glm::mat4 viewMatrix() const;
 };
 
 class game : public entity {
@@ -33,6 +31,9 @@ public:
 	glm::mat4 m_marble;
 
     light sun;
+
+	int teleportTimer = 0;
+	bool won = false;
 
 private:
 	std::unique_ptr<a_star> pathfinder = nullptr;
@@ -62,9 +63,6 @@ private:
 	int moving = 0;
 	int restartDelay = 0;
 
-	bool teleported = false;
-	bool won = false;
-
 	camera cam;
 
 	bool lockToMarble = false;
@@ -77,6 +75,7 @@ private:
 	float fallSpeed = 0.f;
 
 private:
+	void handleInput();
     void rollMarble(glm::vec3 delta);
     void teleportTo(int _x, int _y);
     bool offsetMove(int angleOffset);
@@ -93,15 +92,6 @@ private:
 	void setupMarble();
 
 	void loadMusic();
-
-public:
-	bool hasTeleported() {
-		return teleported;
-	}
-
-	bool hasWon() {
-		return won;
-	}
 };
 
 #endif

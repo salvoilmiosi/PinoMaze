@@ -73,6 +73,8 @@ void vertex_array::update_indices(const unsigned int *data, const size_t size, b
 }
 
 void vertex_array::update_matrices(const glm::mat4 *data, const size_t size, int location, bool dynamic) {
+    if (size == 0) return;
+    
     glBindVertexArray(gl_vao);
     matrix_count = size;
 
