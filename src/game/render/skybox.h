@@ -4,24 +4,22 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
-#include "../engine/entity.h"
+#include "../engine/model.h"
 #include "../engine/vertex_array.h"
 #include "../engine/cubemap.h"
 #include "../engine/shader.h"
 
-class skybox : public entity {
+class skybox : public model {
 public:
-    skybox(context *m_context, class game *m_game);
+    skybox(class game *m_game);
 
 public:
-    void render();
+    void draw();
 
 private:
     class game *m_game;
 
     shader m_shader;
-
-    vertex_array vao;
 
 	cubemap CUB_SKYBOX;
 

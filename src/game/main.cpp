@@ -10,7 +10,6 @@
 
 #include "engine/engine.h"
 
-#include "render/skybox.h"
 #include "render/world.h"
 
 #include "maze_io.h"
@@ -69,12 +68,9 @@ int main (int argc, char **argv) {
 	    engine m_engine(&con);
 
 		game m_game(&con, m_maze.get());
-		
-		skybox m_skybox(&con, &m_game);
 		world m_world(&con, &m_game);
 
 		m_engine.add_entity(&m_game);
-		m_engine.add_entity(&m_skybox);
 		m_engine.add_entity(&m_world);
 		
         m_engine.mainLoop();

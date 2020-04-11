@@ -31,8 +31,9 @@ public:
 	}
 
 	bool play(int loops = 0, int chan = -1) {
-		channel = Mix_PlayChannel(chan, chunk, loops);
-		return channel >= 0;
+		return true;
+		// channel = Mix_PlayChannel(chan, chunk, loops);
+		// return channel >= 0;
 	}
 
 	void pause() {

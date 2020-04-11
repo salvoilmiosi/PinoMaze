@@ -16,6 +16,7 @@ hole::hole(context *con, game *m_game) : model(DRAW_TRIANGLE_STRIP),
 	m_shader.add_uniform("dudvTexture", &dudvSampler.gl_samplerid);
 	m_shader.add_uniform("normalTexture", &normalSampler.gl_samplerid);
 	m_shader.add_uniform("tickCount", &tickCount);
+	m_shader.add_uniform("shininess", &shininess);
 	
 	refraction.setFilter(GL_NEAREST);
 	refraction.setWrapParam(GL_CLAMP_TO_EDGE);
@@ -42,31 +43,28 @@ hole::hole(context *con, game *m_game) : model(DRAW_TRIANGLE_STRIP),
 
 void hole::init(maze *m) {
     std::vector<glm::mat4> matrices;
-	
-	glm::mat4 matrix;
 
     for (int i=0; i<m->datasize(); ++i) {
         tile *t = m->getTile(i);
         int x = i % m->width();
         int y = i / m->width();
         if (t->state == STATE_BLOCK) {
-            matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, -blockHeight, y * tileSize));
-            matrices.push_back(matrix);
+            matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, -blockHeight, y * tileSize)));
         }
     }
 
-	update_matrices(matrices.data(), matrices.size(), 1);
+	update_matrices(1, matrices.data(), matrices.size(), 1);
 }
 
 void hole::tick() {
 	++tickCount;
 }
 
-void hole::render() {
+void hole::draw() {
 	refractionSampler.bindTexture(refraction);
 	dudvSampler.bindTexture(material::getTexture("TEX_WATER_DUDV"));
 	normalSampler.bindTexture(material::getTexture("TEX_WATER_NORMALS"));
 	m_shader.use_program();
 
-	draw();
+	model::draw();
 }

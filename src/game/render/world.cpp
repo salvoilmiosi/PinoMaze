@@ -13,6 +13,9 @@ world::world(context *m_context, game *m_game) :
     m_shader(m_game),
     m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f)),
 
+    m_skybox(m_game),
+    m_hole(m_context, m_game),
+
 	box_pillar(pillarSize, pillarHeight, pillarSize, pillarHeight),
     box_ground(tileSize, blockHeight * 2.f, tileSize, tileSize),
     box_wall(tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f),
@@ -28,6 +31,7 @@ world::world(context *m_context, game *m_game) :
     initGround();
     initWalls();
     initItems();
+
     m_bridge.init(m_game->m_maze);
     m_hole.init(m_game->m_maze);
 
@@ -61,6 +65,8 @@ void world::renderShadowmap() {
 
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
+
+    m_shader.shadowSampler.bindTexture(m_shader.shadowMap);
 }
 
 void world::tick() {
@@ -68,6 +74,8 @@ void world::tick() {
 }
 
 void world::render() {
+    m_skybox.draw();
+
     static const glm::mat4 biasMatrix(
         0.5f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.5f, 0.0f, 0.0f,
@@ -80,8 +88,6 @@ void world::render() {
     m_shader.m_sun = m_game->sun;
     m_shader.m_sun.direction = glm::vec3(m_game->m_view * glm::vec4(m_game->sun.direction, 0.0));
     m_shader.m_light_biased = biasMatrix * m_shader.m_light;
-    
-    m_shader.shadowSampler.bindTexture(m_shader.shadowMap);
 
     m_shader.apply_material("MAT_FLOOR");
     box_ground.draw();
@@ -109,20 +115,25 @@ void world::render() {
     box_teleport.draw();
     m_shader.enableTpTiles = false;
 
-    m_hole.bindRefraction();
     renderRefraction();
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
-    m_hole.render();
+    m_hole.draw();
+    
+    m_shader.use_program();
 
     if (m_game->teleportTimer % 18 < 9) {
         m_shader.apply_material("MAT_MARBLE");
-	    marble.update_matrices(&m_game->m_marble, 1, 4);
+	    marble.update_matrices(2, &m_game->m_marble, 1, 4);
         marble.draw();
     }
 }
 
 void world::renderRefraction() {
+    m_hole.bindRefraction();
+
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    m_skybox.draw();
     m_shader.use_program();
 
     glEnable(GL_CLIP_DISTANCE0);
@@ -168,7 +179,7 @@ void world::initPillars() {
         }
 	}
 
-    box_pillar.update_matrices(matrices.data(), matrices.size(), 4);
+    box_pillar.update_matrices(2, matrices.data(), matrices.size(), 4);
 }
 
 void world::initGround() {
@@ -182,7 +193,7 @@ void world::initGround() {
         }
     }
 
-    box_ground.update_matrices(matrices.data(), matrices.size(), 4);
+    box_ground.update_matrices(2, matrices.data(), matrices.size(), 4);
 }
 
 void world::initWalls() {
@@ -215,7 +226,7 @@ void world::initWalls() {
         ++x;
     }
 
-    box_wall.update_matrices(matrices.data(), matrices.size(), 4);
+    box_wall.update_matrices(2, matrices.data(), matrices.size(), 4);
 }
 
 void world::initItems() {
@@ -230,7 +241,7 @@ void world::initItems() {
         x = index % m->width();
         y = index / m->width();
         matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
-        box_start.update_matrices(&matrix, 1, 4);
+        box_start.update_matrices(2, &matrix, 1, 4);
     }
 
     if ((t = m->endTile()) != nullptr) {
@@ -238,7 +249,7 @@ void world::initItems() {
         x = index % m->width();
         y = index / m->width();
         matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
-        box_end.update_matrices(&matrix, 1, 4);
+        box_end.update_matrices(2, &matrix, 1, 4);
     }
 
     std::vector<glm::mat4> arrowMatrices;
@@ -279,6 +290,6 @@ void world::initItems() {
         }
     }
 
-    box_arrow.update_matrices(arrowMatrices.data(), arrowMatrices.size(), 4);
+    box_arrow.update_matrices(2, arrowMatrices.data(), arrowMatrices.size(), 4);
     box_teleport.update_instances(2, tp_instances.data(), tp_instances.size() * sizeof(tp_instance_data), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
 }

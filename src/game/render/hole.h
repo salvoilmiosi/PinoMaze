@@ -20,7 +20,7 @@ public:
     void init(class maze *m_maze);
 
 	void tick();
-    void render();
+    void draw();
     
 private:
     shader m_shader;
@@ -33,6 +33,7 @@ private:
     sampler dudvSampler{1};
     sampler normalSampler{2};
 
+	float shininess = 10.f;
     int tickCount = 0;
 };
 

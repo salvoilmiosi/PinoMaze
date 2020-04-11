@@ -4,10 +4,9 @@
 #include "../game.h"
 #include "../options.h"
 
-skybox::skybox(context *m_context, game *m_game) :
-    entity(m_context), m_game(m_game),
-    m_shader("skybox", SHADER_RESOURCE(s_skybox_v), SHADER_RESOURCE(s_skybox_f)),
-    vao(DRAW_TRIANGLES)
+skybox::skybox(game *m_game) :
+    m_game(m_game),
+    m_shader("skybox", SHADER_RESOURCE(s_skybox_v), SHADER_RESOURCE(s_skybox_f))
 {
     m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
     m_shader.add_uniform("viewMatrix", &m_view_zeroed);
@@ -83,13 +82,13 @@ skybox::skybox(context *m_context, game *m_game) :
         22, 21, 23,
 	};
 
-    vao.update_buffer(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
-    vao.update_indices(indices, sizeof(indices)/sizeof(GLuint));
+    update_buffer(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
+    update_indices(indices, sizeof(indices)/sizeof(GLuint));
 
 	checkGlError("Failed to init skybox");
 }
 
-void skybox::render() {
+void skybox::draw() {
     m_view_zeroed = m_game->m_view;
     m_view_zeroed[3][0] = 0.f;
     m_view_zeroed[3][1] = 0.f;
@@ -97,5 +96,5 @@ void skybox::render() {
 
 	CUB_SKYBOX.bindTexture(0);
     m_shader.use_program();
-    vao.draw();
+    model::draw();
 }

@@ -15,6 +15,7 @@
 #include "world_shader.h"
 #include "bridge.h"
 #include "hole.h"
+#include "skybox.h"
 
 class world : public entity {
 public:
@@ -43,6 +44,7 @@ private:
     box box_start, box_end, box_arrow, box_teleport;
     bridge m_bridge;
     hole m_hole;
+    skybox m_skybox;
 	sphere marble;
 };
 

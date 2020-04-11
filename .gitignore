@@ -1,6 +1,7 @@
 .vscode/*
 bin/*
 *.exe
+*.Td
 *.a
 *.dll
 *.dat

@@ -73,8 +73,8 @@ void bridge::init(maze *m) {
 		}
 	}
 
-    m_arc.update_matrices(arcMatrices.data(), arcMatrices.size(), 4);
-    m_wall.update_matrices(wallMatrices.data(), wallMatrices.size(), 4);
+    m_arc.update_matrices(2, arcMatrices.data(), arcMatrices.size(), 4);
+    m_wall.update_matrices(2, wallMatrices.data(), wallMatrices.size(), 4);
 }
 
 void bridge::drawFlat() {
