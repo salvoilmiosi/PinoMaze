@@ -5,7 +5,7 @@
 
 world_shader::world_shader(game *m_game) :
     shader("world", SHADER_RESOURCE(s_world_v), SHADER_RESOURCE(s_world_f)),
-    shadowMap(4096, 4096, true)
+    shadowMap(2048, 2048, true)
 {
     add_uniform("projectionMatrix", &m_game->m_proj);
     add_uniform("viewMatrix", &m_game->m_view);

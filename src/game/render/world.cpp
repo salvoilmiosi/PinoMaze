@@ -84,6 +84,8 @@ void world::render() {
         0.0f, 0.5f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.5f, 0.0f,
         0.5f, 0.5f, 0.5f, 1.0f);
+        
+	marble.update_matrices(2, &m_game->m_marble, 1, 4, true);
 
     renderShadowmap();
 	m_shader.use_program();
@@ -127,7 +129,6 @@ void world::render() {
 
     if (m_game->teleportTimer % 18 < 9) {
         m_shader.apply_material("MAT_MARBLE");
-	    marble.update_matrices(2, &m_game->m_marble, 1, 4);
         marble.draw_instances();
     }
 

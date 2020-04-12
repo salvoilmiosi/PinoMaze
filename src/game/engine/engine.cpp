@@ -39,36 +39,52 @@ engine::~engine() {
 	SDL_DestroyWindow(con->window);
 }
 
+float engine::calculate_fps() {
+	static const int NUM_SAMPLES = 10;
+	static float frameTimes[NUM_SAMPLES];
+	static float prevTicks = SDL_GetTicks();
+	static int currentFrame = 0;
+
+	float currentTicks = SDL_GetTicks();
+	float frameTime = currentTicks - prevTicks;
+	frameTimes[currentFrame % NUM_SAMPLES] = frameTime;
+
+	prevTicks = currentTicks;
+
+	++currentFrame;
+	size_t count = (currentFrame < NUM_SAMPLES) ? currentFrame : NUM_SAMPLES;
+	float frameTimeAverage = 0;
+	for (size_t i=0; i<count; ++i) {
+		frameTimeAverage += frameTimes[i];
+	}
+	frameTimeAverage /= count;
+	return 1000.f / frameTimeAverage;
+}
+
 void engine::mainLoop() {
 	SDL_Event event;
 
-	int lastTime = SDL_GetTicks();
-	int secondsTimer = SDL_GetTicks();
-	float frameTimer = SDL_GetTicks();
-
-	float unprocessed = 0;
-	float msPerTick = 1000.f / con->tickrate;
-	float msPerFrame = 1000.f / con->fps_limit;
-
-	int frames = 0;
-	int ticks = 0;
-
+	static const float msPerTick = 1000.f / con->tickrate;
+	static const float msPerFrame = 1000.f / con->fps_limit;
+	float lastTime = SDL_GetTicks();
+	float lastFrame = SDL_GetTicks();
+	float delta = 0;
+	
 	bool quit = false;
 	while (!quit) {
-		int now = SDL_GetTicks();
-		unprocessed += (now - lastTime) / msPerTick;
-		lastTime = now;
-		while (unprocessed >= 1) {
+		int startTicks = SDL_GetTicks();
+		delta += (startTicks - lastTime) / msPerTick;
+		lastTime = startTicks;
+		while (delta >= 1) {
 			tick();
-			++ticks;
-			--unprocessed;
+			--delta;
 		}
 
-		if (now - frameTimer > msPerFrame) {
+		float frameTicks = SDL_GetTicks();
+		if (frameTicks - lastFrame > msPerFrame) {
+			setStatus(std::to_string((int)calculate_fps()));
 			render();
-			SDL_GL_SwapWindow(con->window);
-			frameTimer += msPerFrame;
-			++frames;
+			lastFrame += msPerFrame;
 		}
 
 		while (SDL_PollEvent(&event)) {
@@ -83,13 +99,6 @@ void engine::mainLoop() {
 				break;
 			}
 		}
-
-		if (SDL_GetTicks() - secondsTimer > 1000) {
-			secondsTimer += 1000;
-			setStatus(std::to_string(frames) + "\n" + std::to_string(ticks));
-			frames = 0;
-			ticks = 0;
-		}
 	}
 }
 
@@ -103,6 +112,7 @@ void engine::render() {
 	for (entity *ent : entities) {
 		ent->render();
 	}
+	SDL_GL_SwapWindow(con->window);
 }
 
 void engine::setStatus(const std::string &status) {

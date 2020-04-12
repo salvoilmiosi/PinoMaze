@@ -31,6 +31,8 @@ public:
     }
 
 private:
+    float calculate_fps();
+    
     context *con;
 
     std::vector<entity *> entities;
