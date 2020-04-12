@@ -69,7 +69,7 @@ void particle_system::render() {
 	return;
 	if (numAlive <= 0) return;
 
-	m_shader.use_program();
+	m_shader.use();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	glDepthMask(false);

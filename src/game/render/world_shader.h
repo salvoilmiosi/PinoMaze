@@ -5,7 +5,7 @@
 #include "../engine/material.h"
 #include "../engine/framebuffer.h"
 
-class world_shader : public shader {
+class world_shader : public vf_shader {
 public:
     world_shader(class game *m_game);
 

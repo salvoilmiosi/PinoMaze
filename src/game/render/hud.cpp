@@ -96,7 +96,7 @@ void hud::render() {
 
 	m_color = glm::vec3(0.f, 0.f, 0.f);
 	m_offset = toWorldVector(1, 1);
-	m_shader.use_program();
+	m_shader.use();
 	vao.draw();
 
 	m_color = glm::vec3(1.f, 0.f, 0.f);

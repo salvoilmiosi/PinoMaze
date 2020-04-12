@@ -27,7 +27,7 @@ private:
 	std::string text;
 	bool textChanged = false;
 
-    shader m_shader;
+    vf_shader m_shader;
     vertex_array vao;
 
     sampler m_sampler{0};

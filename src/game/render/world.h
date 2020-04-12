@@ -39,7 +39,7 @@ private:
     game *m_game;
 
     world_shader m_shader;
-    shader m_shadow;
+    vf_shader m_shadow;
 
     skybox m_skybox;
     hole m_hole;

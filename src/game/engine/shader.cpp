@@ -2,64 +2,14 @@
 
 #include <iostream>
 
-shader::shader(const char *name, const std::string &vertex_src, const std::string &fragment_src) : name(name) {
-	gl_programid = glCreateProgram();
+static const GLenum gl_shader_types[] = {
+	GL_VERTEX_SHADER,
+	GL_GEOMETRY_SHADER,
+	GL_FRAGMENT_SHADER
+};
 
-	gl_vertexid = glCreateShader(GL_VERTEX_SHADER);
-	compile(gl_vertexid, vertex_src);
-	glAttachShader(gl_programid, gl_vertexid);
-
-	gl_fragmentid = glCreateShader(GL_FRAGMENT_SHADER);
-	compile(gl_fragmentid, fragment_src);
-	glAttachShader(gl_programid, gl_fragmentid);
-
-	glLinkProgram(gl_programid);
-}
-
-shader::~shader() {
-	glDetachShader(gl_programid, gl_vertexid);
-	glDetachShader(gl_programid, gl_fragmentid);
-	glDeleteShader(gl_vertexid);
-	glDeleteShader(gl_fragmentid);
-	glDeleteProgram(gl_programid);
-}
-
-void shader::use_program() {
-	glUseProgram(gl_programid);
-	update_uniforms();
-}
-
-inline void updateValue(const uniform<bool> &uni) {
-	glUniform1i(uni.location, *uni.data);
-}
-inline void updateValue(const uniform<int> &uni) {
-	glUniform1i(uni.location, *uni.data);
-}
-inline void updateValue(const uniform<float> &uni) {
-	glUniform1f(uni.location, *uni.data);
-}
-inline void updateValue(const uniform<glm::vec2> &uni) {
-	glUniform2fv(uni.location, 1, glm::value_ptr(*uni.data));
-}
-inline void updateValue(const uniform<glm::vec3> &uni) {
-	glUniform3fv(uni.location, 1, glm::value_ptr(*uni.data));
-}
-inline void updateValue(const uniform<glm::vec4> &uni) {
-	glUniform4fv(uni.location, 1, glm::value_ptr(*uni.data));
-}
-inline void updateValue(const uniform<glm::mat4> &uni) {
-	glUniformMatrix4fv(uni.location, 1, false, glm::value_ptr(*uni.data));
-}
-
-void shader::update_uniforms() {
-	mpl::for_each_in_tuple(p_uniforms, [&](auto &uni_vector) {
-		for (auto &uni : uni_vector) {
-			updateValue(uni);
-		}
-	});
-}
-
-void shader::compile(GLuint gl_shaderid, const std::string &source) {
+shader::shader(const char *name, shader_type type, const std::string &source) {
+	gl_shaderid = glCreateShader(gl_shader_types[type]);
     const GLchar *source_cstr = source.c_str();
     const GLsizei source_size = source.size(); 
 
@@ -85,4 +35,62 @@ void shader::compile(GLuint gl_shaderid, const std::string &source) {
 	if (!compiled) {
 		throw std::string("Failed to compile shader ") + name + "\n" + info_log;
 	}
+}
+
+shader::~shader() {
+	glDeleteShader(gl_shaderid);
+}
+
+shader_program::shader_program() {
+	gl_programid = glCreateProgram();
+}
+
+shader_program::~shader_program() {
+	glDeleteProgram(gl_programid);
+}
+
+void shader_program::use() {
+	glUseProgram(gl_programid);
+	update_uniforms();
+}
+
+template<> inline void shader_program::uniform<bool>::update() {
+	glUniform1i(location, *data);
+}
+template<> inline void shader_program::uniform<int>::update() {
+	glUniform1i(location, *data);
+}
+template<> inline void shader_program::uniform<float>::update() {
+	glUniform1f(location, *data);
+}
+template<> inline void shader_program::uniform<glm::vec2>::update() {
+	glUniform2fv(location, 1, glm::value_ptr(*data));
+}
+template<> inline void shader_program::uniform<glm::vec3>::update() {
+	glUniform3fv(location, 1, glm::value_ptr(*data));
+}
+template<> inline void shader_program::uniform<glm::vec4>::update() {
+	glUniform4fv(location, 1, glm::value_ptr(*data));
+}
+template<> inline void shader_program::uniform<glm::mat4>::update() {
+	glUniformMatrix4fv(location, 1, false, glm::value_ptr(*data));
+}
+
+void shader_program::update_uniforms() {
+	mpl::for_each_in_tuple(p_uniforms, [&](auto &uni_vector) {
+		for (auto &uni : uni_vector) {
+			uni.update();
+		}
+	});
+}
+
+vf_shader::vf_shader(const char *name, const std::string &vertex_source, const std::string &fragment_source) :
+	m_vertex(name, SHADER_VERTEX, vertex_source),
+	m_fragment(name, SHADER_FRAGMENT, fragment_source)
+{
+	shader_program::link_shaders(m_vertex, m_fragment);
+}
+
+vf_shader::~vf_shader() {
+	shader_program::detach_shaders(m_vertex, m_fragment);
 }

@@ -95,6 +95,6 @@ void skybox::render() {
     m_view_zeroed[3][2] = 0.f;
 
 	CUB_SKYBOX.bind(0);
-    m_shader.use_program();
+    m_shader.use();
     vao.draw();
 }

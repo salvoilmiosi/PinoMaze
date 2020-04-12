@@ -4,7 +4,7 @@
 #include "../game.h"
 
 world_shader::world_shader(game *m_game) :
-    shader("world", SHADER_RESOURCE(s_world_v), SHADER_RESOURCE(s_world_f)),
+    vf_shader("world", SHADER_RESOURCE(s_world_v), SHADER_RESOURCE(s_world_f)),
     shadowMap(2048, 2048, true)
 {
     add_uniform("projectionMatrix", &m_game->m_proj);

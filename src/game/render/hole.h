@@ -23,7 +23,7 @@ public:
     void render();
     
 private:
-    shader m_shader;
+    vf_shader m_shader;
 	vertex_array vao;
 
 	texture refraction;

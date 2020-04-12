@@ -65,7 +65,7 @@ void hole::render() {
 	refractionSampler.bind(refraction);
 	dudvSampler.bind(material::getTexture("TEX_WATER_DUDV"));
 	normalSampler.bind(material::getTexture("TEX_WATER_NORMALS"));
-	m_shader.use_program();
+	m_shader.use();
 
 	vao.draw_instances();
 }

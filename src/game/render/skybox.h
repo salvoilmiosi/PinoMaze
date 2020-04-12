@@ -18,7 +18,7 @@ public:
 private:
     class game *m_game;
 
-    shader m_shader;
+    vf_shader m_shader;
     vertex_array vao;
 
 	cubemap CUB_SKYBOX;

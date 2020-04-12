@@ -12,33 +12,43 @@
 #include "mpl.h"
 #include "texture.h"
 
-template<typename T>
-struct uniform {
-	GLint location;
-	const char *name;
-	T *data;
-
-	uniform(GLint location, const char *name, T *data) : location(location), name(name), data(data) {}
+enum shader_type {
+	SHADER_VERTEX,
+	SHADER_GEOMETRY,
+	SHADER_FRAGMENT
 };
 
-using uniform_types = mpl::TypeList<bool, int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
-
 class shader {
-private:
-	const char *name;
-
-	GLuint gl_programid = 0;
-	GLuint gl_vertexid = 0;
-	GLuint gl_fragmentid = 0;
-
-	template<typename ... Ts>
-	using uniform_list = std::tuple<std::vector<uniform<Ts>>...>;
-
-	mpl::Rename<uniform_list, uniform_types> p_uniforms;
+public:
+	shader(const char *name, shader_type type, const std::string &source);
+	~shader();
 
 public:
-	shader(const char *name, const std::string &vertex_src, const std::string &fragment_src);
-	~shader();
+	GLuint getId() {
+		return gl_shaderid;
+	}
+
+private:
+	GLuint gl_shaderid = 0;
+
+	friend class shader_program;
+};
+
+class shader_program {
+protected:
+	shader_program();
+	~shader_program();
+
+	template<typename ... Ts>
+	void link_shaders(const Ts& ... shaders) {
+		(glAttachShader(gl_programid, shaders.gl_shaderid) , ...);
+		glLinkProgram(gl_programid);
+	}
+
+	template<typename ... Ts>
+	void detach_shaders(const Ts& ... shaders) {
+		(glDetachShader(gl_programid, shaders.gl_shaderid) , ...);
+	}
 
 public:
 	template<typename T>
@@ -47,12 +57,37 @@ public:
 		std::get<std::vector<uniform<T>>>(p_uniforms).emplace_back(location, name, data);
 	}
 
-	void use_program();
-
+	void use();
 	void update_uniforms();
+	
+private:
+	GLuint gl_programid;
+
+	template<typename T>
+	struct uniform {
+		GLint location;
+		const char *name;
+		T *data;
+
+		uniform(GLint location, const char *name, T *data) : location(location), name(name), data(data) {}
+
+		void update();
+	};
+
+	using uniform_types = mpl::TypeList<bool, int, float, glm::vec2, glm::vec3, glm::vec4, glm::mat4>;
+	template<typename ... Ts>
+	using uniform_list = std::tuple<std::vector<uniform<Ts>>...>;
+
+	mpl::Rename<uniform_list, uniform_types> p_uniforms;
+};
+
+class vf_shader : public shader_program {
+public:
+	vf_shader(const char *name, const std::string &vertex_source, const std::string &fragment_source);
+	~vf_shader();
 
 private:
-	void compile(GLuint gl_shaderid, const std::string &source);
+	shader m_vertex, m_fragment;
 };
 
 #endif

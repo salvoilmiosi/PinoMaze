@@ -55,7 +55,7 @@ void world::renderShadowmap() {
 	m_shader.shadowBuffer.bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-    m_shadow.use_program();
+    m_shadow.use();
     box_wall.draw_instances();
     box_pillar.draw_instances();
     m_bridge.render_flat();
@@ -88,7 +88,7 @@ void world::render() {
 	marble.update_matrices(2, &m_game->m_marble, 1, 4, true);
 
     renderShadowmap();
-	m_shader.use_program();
+	m_shader.use();
     
     m_shader.m_sun = m_game->sun;
     m_shader.m_sun.direction = glm::vec3(m_game->m_view * glm::vec4(m_game->sun.direction, 0.0));
@@ -125,7 +125,7 @@ void world::render() {
     glViewport(0, 0, m_context->window_width, m_context->window_height);
     m_hole.render();
 
-    m_shader.use_program();
+    m_shader.use();
 
     if (m_game->teleportTimer % 18 < 9) {
         m_shader.apply_material("MAT_MARBLE");
@@ -140,7 +140,7 @@ void world::renderRefraction() {
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     m_skybox.render();
-    m_shader.use_program();
+    m_shader.use();
 
     glEnable(GL_CLIP_DISTANCE0);
     glDisable(GL_CULL_FACE);
