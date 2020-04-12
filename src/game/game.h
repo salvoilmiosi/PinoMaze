@@ -32,6 +32,8 @@ public:
 	glm::mat4 m_proj;
 	glm::mat4 m_marble;
 
+	camera m_camera;
+
     light sun;
 
 	int teleportTimer = 0;
@@ -64,8 +66,6 @@ private:
 
 	int moving = 0;
 	int restartDelay = 0;
-
-	camera cam;
 
 	bool lockToMarble = false;
 

@@ -3,56 +3,39 @@
 
 #include "../engine/shader.h"
 #include "../engine/texture.h"
-#include "../engine/vertex_array.h"
+#include "../engine/transform_feedback.h"
 
-struct particle {
-	glm::vec3 position;
-	glm::vec3 color;
-	glm::vec2 uv;
-	float particleSize;
-
-	glm::vec3 velocity;
-	int life;
-};
+#include <glm/glm.hpp>
 
 class particle_system {
 public:
-	particle_system(class game *m_game);
+    particle_system(class game *m_game);
 
 public:
-	bool init();
-
-	void setPosition(const glm::vec3 &pos) {
-		position = pos;
-	}
-
-	void setVelocity(const glm::vec3 &vel) {
-		velocity = vel;
-	}
-
-	void addParticles(int num, float force = 1.f);
-
-	void tick();
-	void render();
+    void render();
 
 private:
-	void removeDeadParticles();
+    void createRandomTexture();
 
 private:
-	static const int maxParticles = 2000;
+    class game *m_game;
+    
+    transform_feedback_shader m_particle;
+    geom_shader m_billboard;
 
-	class game *m_game;
-	vf_shader m_shader;
-	vertex_array vao;
+    texture randomTexture;
 
-	particle particles[maxParticles];
-	size_t numAlive = 0;
+    sampler randomSampler{0};
+    sampler particleSampler{0};
 
-	glm::vec3 position{0.f};
-	glm::vec3 velocity;
-	
-	sampler particleSampler{0};
-	float texSize = 0.5f;
+    transform_feedback tfbs[2];
+
+    bool enabled = true;
+
+    float deltaMs;
+    float globalTime;
+    glm::vec3 gravityAccel{0.f, -2.f, 0.f};
+    float particleLifetime = 1000.f;
 };
 
-#endif
+#endif // __PARTICLE_H__

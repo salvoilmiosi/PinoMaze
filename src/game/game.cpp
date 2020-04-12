@@ -71,9 +71,9 @@ void game::teleportTo(int _x, int _y) {
 
 	marblePos = { (tx + 0.5f) * tileSize, marbleRadius, (ty + 0.5f) * tileSize };
 
-	cam.yaw = angleFacing * M_PI / 2.f;
-	cam.position = marblePos;
-    cam.position.y = cameraHeight;
+	m_camera.yaw = angleFacing * M_PI / 2.f;
+	m_camera.position = marblePos;
+    m_camera.position.y = cameraHeight;
 
 	endMove();
 
@@ -176,22 +176,22 @@ bool game::offsetMove(int angleOffset) {
 }
 
 void game::setupCamera() {
-	cam.position.x = marblePos.x;
-	cam.position.z = marblePos.z;
+	m_camera.position.x = marblePos.x;
+	m_camera.position.z = marblePos.z;
 
-    float angleDiff = angleFacing * M_PI / 2.f - cam.yaw;
+    float angleDiff = angleFacing * M_PI / 2.f - m_camera.yaw;
     if (angleDiff > M_PI) {
         angleDiff -= M_PI * 2.f;
     }
     if (angleDiff < -M_PI) {
         angleDiff += M_PI * 2.f;
     }
-    cam.yaw += angleDiff * cameraTurnSpeed;
-    if (cam.yaw < 0.f) {
-		cam.yaw += M_PI * 2.f;
+    m_camera.yaw += angleDiff * cameraTurnSpeed;
+    if (m_camera.yaw < 0.f) {
+		m_camera.yaw += M_PI * 2.f;
     }
-    if (cam.yaw >= M_PI * 2.f) {
-		cam.yaw -= M_PI * 2.f;
+    if (m_camera.yaw >= M_PI * 2.f) {
+		m_camera.yaw -= M_PI * 2.f;
     }
 
 	tile *tile_from = m_maze->getTile(tx_prev, ty_prev);
@@ -215,26 +215,26 @@ void game::setupCamera() {
 	float pitch = glm::radians(cameraPitch);
 
 	float radius = cosf(pitch) * cameraDistance;
-	float distX = sinf(cam.yaw) * radius;
+	float distX = sinf(m_camera.yaw) * radius;
 	float distY = sinf(pitch) * cameraDistance;
-	float distZ = cosf(cam.yaw) * radius;
-	cam.position += glm::vec3(distX, 0.f, distZ);
+	float distZ = cosf(m_camera.yaw) * radius;
+	m_camera.position += glm::vec3(distX, 0.f, distZ);
 
-	float dy = cameraToY + distY - cam.position.y;
-	cam.position.y += dy * cameraSpeed;
+	float dy = cameraToY + distY - m_camera.position.y;
+	m_camera.position.y += dy * cameraSpeed;
 
 	if (lockToMarble) {
-		float cameraToPitch = atan2f(cam.position.y - marblePos.y, radius);
-		float delta = cameraToPitch - cam.pitch;
-		cam.pitch += delta * 0.05f;
+		float cameraToPitch = atan2f(m_camera.position.y - marblePos.y, radius);
+		float delta = cameraToPitch - m_camera.pitch;
+		m_camera.pitch += delta * 0.05f;
 	} else {
-		cam.pitch = pitch;
+		m_camera.pitch = pitch;
 	}
 	
-	glm::mat4 m_position = glm::translate(glm::mat4(1.f), -cam.position);
-	glm::mat4 m_pitch = glm::rotate(glm::mat4(1.f), cam.pitch, glm::vec3(1.f, 0.f, 0.f));
-	glm::mat4 m_yaw = glm::rotate(glm::mat4(1.f), -cam.yaw, glm::vec3(0.f, 1.f, 0.f));
-	glm::mat4 m_roll = glm::rotate(glm::mat4(1.f), -cam.roll, glm::vec3(0.f, 0.f, 1.f));
+	glm::mat4 m_position = glm::translate(glm::mat4(1.f), -m_camera.position);
+	glm::mat4 m_pitch = glm::rotate(glm::mat4(1.f), m_camera.pitch, glm::vec3(1.f, 0.f, 0.f));
+	glm::mat4 m_yaw = glm::rotate(glm::mat4(1.f), -m_camera.yaw, glm::vec3(0.f, 1.f, 0.f));
+	glm::mat4 m_roll = glm::rotate(glm::mat4(1.f), -m_camera.roll, glm::vec3(0.f, 0.f, 1.f));
 
 	m_view = m_roll * m_pitch * m_yaw * m_position;
 }

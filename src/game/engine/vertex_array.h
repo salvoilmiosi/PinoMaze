@@ -53,7 +53,7 @@ public:
     void draw(size_t first = 0, size_t count = 0);
     void draw_instances(size_t first = 0, size_t count = 0);
 
-private:
+protected:
     size_t num_vbos = 0;
     
     GLuint gl_vao = 0;

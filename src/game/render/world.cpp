@@ -72,7 +72,6 @@ void world::renderShadowmap() {
 
 void world::tick() {
     m_hole.tick();
-    m_particles.tick();
 }
 
 void world::render() {
@@ -127,10 +126,10 @@ void world::render() {
 
     m_shader.use();
 
-    if (m_game->teleportTimer % 18 < 9) {
-        m_shader.apply_material("MAT_MARBLE");
-        marble.draw_instances();
-    }
+    // if (m_game->teleportTimer % 18 < 9) {
+    //     m_shader.apply_material("MAT_MARBLE");
+    //     marble.draw_instances();
+    // }
 
     m_particles.render();
 }

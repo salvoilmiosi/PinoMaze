@@ -20,9 +20,7 @@ shader::shader(const char *name, shader_type type, const std::string &source) {
 	int max_length = 0;
 
 	glGetShaderiv(gl_shaderid, GL_INFO_LOG_LENGTH, &max_length);
-
 	std::string info_log(max_length, '\0');
-
 	glGetShaderInfoLog(gl_shaderid, max_length, &length, info_log.data());
 
 	if (length > 0) {
@@ -41,7 +39,7 @@ shader::~shader() {
 	glDeleteShader(gl_shaderid);
 }
 
-shader_program::shader_program() {
+shader_program::shader_program(const char *name) : name(name) {
 	gl_programid = glCreateProgram();
 }
 
@@ -52,6 +50,28 @@ shader_program::~shader_program() {
 void shader_program::use() {
 	glUseProgram(gl_programid);
 	update_uniforms();
+}
+
+void shader_program::link() {
+	glLinkProgram(gl_programid);
+
+	int length = 0;
+	int max_length = 0;
+
+	glGetProgramiv(gl_programid, GL_INFO_LOG_LENGTH, &max_length);
+	std::string info_log(max_length, '\0');
+	glGetProgramInfoLog(gl_programid, max_length, &length, info_log.data());
+
+	if (length > 0) {
+		std::cout << "In program " << name << ":" << std::endl << info_log << std::endl;
+	}
+
+	GLint linked = GL_FALSE;
+	glGetProgramiv(gl_programid, GL_LINK_STATUS, &linked);
+
+	if (linked == GL_FALSE) {
+		throw std::string("Failed to link program ") + name + "\n" + info_log;
+	}
 }
 
 template<> inline void shader_program::uniform<bool>::update() {
@@ -82,15 +102,4 @@ void shader_program::update_uniforms() {
 			uni.update();
 		}
 	});
-}
-
-vf_shader::vf_shader(const char *name, const std::string &vertex_source, const std::string &fragment_source) :
-	m_vertex(name, SHADER_VERTEX, vertex_source),
-	m_fragment(name, SHADER_FRAGMENT, fragment_source)
-{
-	shader_program::link_shaders(m_vertex, m_fragment);
-}
-
-vf_shader::~vf_shader() {
-	shader_program::detach_shaders(m_vertex, m_fragment);
 }
