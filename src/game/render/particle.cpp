@@ -9,14 +9,15 @@
 
 #define MAX_PARTICLES 1000
 
-enum particle_type {
-    TYPE_NONE = 0,
-    TYPE_SOURCE = 1,
-    TYPE_PARTICLE = 2
-};
+#define TYPE_NONE 0.f
+#define TYPE_SOURCE 1.f
+#define TYPE_PARTICLE1 2.f
+#define TYPE_PARTICLE2 3.f
+#define TYPE_PARTICLE3 4.f
+#define TYPE_PARTICLE4 5.f
 
 struct particle {
-    particle_type type;
+    float type;
     float age;
     glm::vec3 position;
     glm::vec3 velocity;
@@ -25,7 +26,7 @@ struct particle {
 };
 
 static constexpr std::initializer_list<vertex_attrib> particle_attr_list {
-    {0, ATTR_INT}, {1, ATTR_FLOAT}, {2, ATTR_VEC3}, {3, ATTR_VEC3}, {4, ATTR_VEC3}, {5, ATTR_FLOAT}};
+    {0, ATTR_FLOAT}, {1, ATTR_FLOAT}, {2, ATTR_VEC3}, {3, ATTR_VEC3}, {4, ATTR_VEC3}, {5, ATTR_FLOAT}};
 
 particle_system::particle_system(game *m_game) :
     m_game(m_game),
@@ -37,8 +38,6 @@ particle_system::particle_system(game *m_game) :
     m_particle.add_uniform("randomTexture", &randomSampler.gl_samplerid);
     m_particle.add_uniform("deltaMs", &deltaMs);
     m_particle.add_uniform("globalTime", &globalTime);
-    m_particle.add_uniform("gravityAccel", &gravityAccel);
-    m_particle.add_uniform("particleLifetime", &particleLifetime);
 
     m_billboard.add_uniform("viewMatrix", &m_game->m_view);
     m_billboard.add_uniform("projMatrix", &m_game->m_proj);
@@ -70,6 +69,18 @@ void particle_system::createRandomTexture() {
     checkGlError("Could not create random Texture");
 }
 
+void particle_system::tick() {
+	static int enableTimer = 0;
+
+	if (enableTimer > 0) --enableTimer;
+
+	if (m_game->teleportTimer >= 72) {
+		enableTimer = 20;
+	}
+
+	enabled = m_game->won || enableTimer > 0;
+}
+
 void particle_system::render() {
     static size_t currentVBO = 0;
 
@@ -81,39 +92,49 @@ void particle_system::render() {
     lastTime = globalTime;
 
     randomSampler.bind(randomTexture);
+
     m_particle.use();
 
     glEnable(GL_RASTERIZER_DISCARD);
-    
     tfbs[currentTFB].start();
+    static bool first = true;
+    
+    glm::vec3 marblePosition = glm::vec3(m_game->m_marble[3][0], m_game->m_marble[3][1], m_game->m_marble[3][2]);
+    static glm::vec3 lastPos = marblePosition;
+    static glm::vec3 velocity;
+    velocity = (velocity + marblePosition - lastPos) * 0.992f;
+    lastPos = marblePosition;
 
     if (enabled) {
-        glm::vec3 marblePosition = glm::vec3(m_game->m_marble[3][0], m_game->m_marble[3][1], m_game->m_marble[3][2]);
 
         particle source;
         source.type = TYPE_SOURCE;
-        source.age = 0.f;
+        source.age = 5.f;
         source.position = marblePosition;
-        source.velocity = glm::vec3(0.f);
-        source.color = glm::vec3(1.f);
-        source.size = 0.3f;
+        source.velocity = velocity + glm::vec3(0.f, 0.3f, 0.f);
 
         tfbs[currentVBO].update_vertices(0, &source, sizeof(particle), particle_attr_list, true);
         tfbs[currentVBO].draw(0, 1);
     }
     
-    tfbs[currentVBO].draw_feedback();
+    if (!first) {
+        tfbs[currentVBO].draw_feedback();
+    }
+        
+    first = false;
     transform_feedback::stop();
-
     glDisable(GL_RASTERIZER_DISCARD);
+
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glDepthMask(GL_FALSE);
 
     particleSampler.bind(material::getTexture("TEX_PARTICLE_TEXTURE"));
     m_billboard.use();
 
     tfbs[currentTFB].draw_feedback();
     glDisable(GL_BLEND);
+    glDepthMask(GL_TRUE);
 
     currentVBO = currentTFB;
 }

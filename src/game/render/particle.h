@@ -12,6 +12,7 @@ public:
     particle_system(class game *m_game);
 
 public:
+    void tick();
     void render();
 
 private:
@@ -30,12 +31,10 @@ private:
 
     transform_feedback tfbs[2];
 
-    bool enabled = true;
+    bool enabled = false;
 
     float deltaMs;
     float globalTime;
-    glm::vec3 gravityAccel{0.f, -2.f, 0.f};
-    float particleLifetime = 1000.f;
 };
 
 #endif // __PARTICLE_H__
