@@ -1,22 +1,6 @@
 #ifndef __OPTIONS_H__
 #define __OPTIONS_H__
 
-#include <cstdio>
-#include <GL/glew.h>
-#include <GL/gl.h>
-
-#ifndef M_PI
-    #define M_PI 3.14159265358979323846
-#endif
-
-static auto MAX = [](auto a, auto b) {
-	return a > b ? a : b;
-};
-
-static auto MIN = [](auto a, auto b) {
-	return a > b ? b : a;
-};
-
 constexpr float tileSize = 1.f;
 constexpr float blockHeight = 0.15f;
 

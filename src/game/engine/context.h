@@ -6,6 +6,10 @@
 
 #include <string>
 
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
 inline void checkGlError(const char *message) {
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR) {
@@ -13,6 +17,13 @@ inline void checkGlError(const char *message) {
 	}
 }
 
+static auto MAX = [](auto a, auto b) {
+	return a > b ? a : b;
+};
+
+static auto MIN = [](auto a, auto b) {
+	return a > b ? b : a;
+};
 struct context {
     SDL_Window *window = nullptr;
     

@@ -21,6 +21,7 @@ private:
 private:
     class game *m_game;
     
+    vertex_array init_vao{DRAW_POINTS};
     transform_feedback_shader m_particle;
     geom_shader m_billboard;
 
@@ -30,8 +31,6 @@ private:
     sampler particleSampler{0};
 
     transform_feedback tfbs[2];
-
-    bool enabled = false;
 
     float deltaMs;
     float globalTime;

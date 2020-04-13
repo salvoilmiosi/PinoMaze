@@ -35,6 +35,8 @@ struct vertex_attrib {
     attrib_type type;
 };
 
+typedef std::initializer_list<vertex_attrib> vertex_attrib_list;
+
 constexpr size_t MAX_VBOS = 5;
 
 class vertex_array {
@@ -42,8 +44,9 @@ public:
     vertex_array(draw_mode mode = DRAW_TRIANGLES);
     ~vertex_array();
 
-    void update_vertices(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic = false);
-    void update_instances(size_t vbo_index, const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs, bool dynamic = false);
+    void alloc_buffer(size_t vbo_index, const size_t size, vertex_attrib_list attribs, bool dynamic = false, size_t divisor = 0);
+    void update_vertices(size_t vbo_index, const void *data, const size_t size, vertex_attrib_list attribs, bool dynamic = false);
+    void update_instances(size_t vbo_index, const void *data, const size_t size, vertex_attrib_list attribs, bool dynamic = false);
     void update_indices(const unsigned int *data, const size_t size, bool dynamic = false);
     
     void update_matrices(size_t vbo_index, const glm::mat4 *matrices, const size_t size, int location, bool dynamic = false) {
@@ -57,10 +60,12 @@ protected:
     size_t num_vbos = 0;
     
     GLuint gl_vao = 0;
-    GLuint gl_vbo[MAX_VBOS];
+    GLuint gl_vbo[MAX_VBOS] = {0};
     GLuint gl_ebo = 0;
 
     GLenum gl_draw_mode;
+
+    size_t buffer_size[MAX_VBOS] = {0};
 
     size_t num_vertices = 0;
     size_t num_indices = 0;

@@ -9,15 +9,17 @@ public:
     ~transform_feedback();
 
 public:
-    void update_buffer(const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs);
+    void init_buffer(const size_t size, std::initializer_list<vertex_attrib> attribs);
 
     void draw_feedback();
 
     void start();
-    static void stop();
+    void stop();
 
 private:
     GLuint gl_tfb;
+
+    bool empty = true;
 };
 
 #endif // __TRANSFORM_FEEDBACK_H__

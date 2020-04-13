@@ -10,14 +10,16 @@ transform_feedback::~transform_feedback() {
     glDeleteTransformFeedbacks(1, &gl_tfb);
 }
 
-void transform_feedback::update_buffer(const void *data, const size_t size, std::initializer_list<vertex_attrib> attribs) {
+void transform_feedback::init_buffer(const size_t size, vertex_attrib_list attribs) {
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, gl_tfb);
-    update_vertices(0, data, size, attribs, true);
+    alloc_buffer(0, size, attribs, true, 0);
     glBindBuffer(GL_ARRAY_BUFFER, gl_vbo[0]);
     glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, gl_vbo[0]);
 }
 
 void transform_feedback::draw_feedback() {
+    if (empty) return;
+
     glBindVertexArray(gl_vao);
     glDrawTransformFeedback(gl_draw_mode, gl_tfb);
     glBindVertexArray(0);
@@ -31,4 +33,5 @@ void transform_feedback::start() {
 
 void transform_feedback::stop() {
     glEndTransformFeedback();
+    empty = false;
 }
