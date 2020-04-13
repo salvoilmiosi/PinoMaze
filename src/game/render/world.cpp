@@ -71,7 +71,6 @@ void world::renderShadowmap() {
 }
 
 void world::tick() {
-    m_hole.tick();
     m_particles.tick();
 }
 

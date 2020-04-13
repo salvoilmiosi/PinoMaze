@@ -20,10 +20,10 @@
 
 struct particle {
     float type;
-    float age;              // source : number of particles to generate
+    float age;              // for source : number of particles to generate
     glm::vec3 position;
     glm::vec3 velocity;
-    glm::vec3 color;        // source : (force, random, random)
+    glm::vec3 color;        // for source : (force, random, random)
     float size;
 };
 
@@ -89,7 +89,7 @@ void particle_system::tick() {
         force = 1.f;
 	}
 	if (m_game->won) {
-        count += rand() % 15 + 10;
+        count += rand() % 15 + 15;
         force = 0.3;
     }
     
@@ -98,7 +98,7 @@ void particle_system::tick() {
     size_t i = 0;
     while (count > 0.f && i<5) {
         sources[i].type = TYPE_SOURCE;
-        sources[i].age = MAX(count, 50.f);
+        sources[i].age = MIN(count, 50.f);
         sources[i].position = position;
         sources[i].velocity = velocity + glm::vec3(0.f, 0.6f, 0.f);
         sources[i].color.x = force;

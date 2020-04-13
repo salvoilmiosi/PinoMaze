@@ -8,7 +8,6 @@
 
 hole::hole(context *con, game *m_game) :
 	m_shader("hole", SHADER_RESOURCE(s_hole_v), SHADER_RESOURCE(s_hole_f)),
-	vao(DRAW_TRIANGLE_STRIP),
 	refraction(con->window_width, con->window_height),
 	refractionDepth(con->window_width, con->window_height, true)
 {
@@ -18,7 +17,7 @@ hole::hole(context *con, game *m_game) :
 	m_shader.add_uniform("refractionTexture", &refractionSampler.gl_samplerid);
 	m_shader.add_uniform("dudvTexture", &dudvSampler.gl_samplerid);
 	m_shader.add_uniform("normalTexture", &normalSampler.gl_samplerid);
-	m_shader.add_uniform("tickCount", &tickCount);
+	m_shader.add_uniform("globalTime", &globalTime);
 	m_shader.add_uniform("shininess", &shininess);
 	
 	refraction.setFilter(GL_NEAREST);
@@ -57,14 +56,12 @@ void hole::init(maze *m) {
 	vao.update_matrices(1, matrices.data(), matrices.size(), 1);
 }
 
-void hole::tick() {
-	++tickCount;
-}
-
 void hole::render() {
 	refractionSampler.bind(refraction);
 	dudvSampler.bind(material::getTexture("TEX_WATER_DUDV"));
 	normalSampler.bind(material::getTexture("TEX_WATER_NORMALS"));
+
+	globalTime = SDL_GetTicks();
 	m_shader.use();
 
 	vao.draw_instances();

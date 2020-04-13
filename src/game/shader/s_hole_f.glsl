@@ -13,12 +13,12 @@ uniform sampler2D dudvTexture;
 uniform vec3 lightDirection;
 uniform float shininess = 10.0;
 
-uniform int tickCount;
+uniform float globalTime;
 
 void main() {
     vec3 uv_proj = (clipSpace.xyz / clipSpace.w) * 0.5 + 0.5;
 
-    float moveFactor = tickCount * 0.0002;
+    float moveFactor = globalTime * 0.0003;
 
     vec2 offset = texture2D(dudvTexture, texCoords + vec2(moveFactor, 0.0)).rg * 0.1;
     offset += texCoords + vec2(0.0, moveFactor);

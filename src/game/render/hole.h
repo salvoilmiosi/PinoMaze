@@ -19,12 +19,11 @@ public:
 
     void init(class maze *m_maze);
 
-	void tick();
     void render();
     
 private:
     vf_shader m_shader;
-	vertex_array vao;
+	vertex_array vao{DRAW_TRIANGLE_STRIP};
 
 	texture refraction;
 	texture refractionDepth;
@@ -35,7 +34,7 @@ private:
     sampler normalSampler{2};
 
 	float shininess = 10.f;
-    int tickCount = 0;
+	float globalTime;
 };
 
 #endif // __HOLE_H__
