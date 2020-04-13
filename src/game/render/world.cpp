@@ -22,7 +22,7 @@ world::world(context *m_context, game *m_game) :
     box_wall(tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f),
     box_start(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
     box_end(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
-    box_arrow(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
+    box_arrow(tileSize, blockHeight * 2.f, tileSize, tileSize),
     box_teleport(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
     marble(marbleRadius, 16, 16)
 {
@@ -147,6 +147,7 @@ void world::renderRefraction() {
     m_shader.refractionHeight = -blockHeight;
     m_shader.apply_material("MAT_FLOOR");
     box_ground.draw_instances();
+    box_arrow.draw_instances();
 
     m_shader.apply_material("MAT_MARBLE");
     marble.draw_instances();
@@ -191,7 +192,9 @@ void world::initGround() {
     std::vector<glm::mat4> matrices;
 
     for (int i=0; i<m_game->m_maze->datasize(); ++i) {
-        if (m_game->m_maze->getTile(i)->state != STATE_BLOCK) {
+        tile *m_tile = m_game->m_maze->getTile(i);
+        mazeItem *item = m_game->m_maze->findItem(m_tile);
+        if (m_tile->state != STATE_BLOCK && !(item && item->type == ITEM_ARROW)) {
             int x = i % m_game->m_maze->width();
             int y = i / m_game->m_maze->width();
             matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize)));
@@ -271,7 +274,8 @@ void world::initItems() {
         case ITEM_ARROW:
             x = it.second.item.x;
             y = it.second.item.y;
-            matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
+            matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize));
+            //matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
             matrix = matrix * glm::rotate(glm::mat4(1.f), glm::radians(90.f) * (it.second.arrow.direction + 1), glm::vec3(0.f, 1.f, 0.f));
             arrowMatrices.push_back(matrix);
             break;

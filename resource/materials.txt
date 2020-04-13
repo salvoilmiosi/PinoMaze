@@ -30,7 +30,7 @@ material   MAT_PILLAR   texture TEX_PILLAR_TEXTURE   normals TEX_PILLAR_NORMALS 
 material   MAT_TILES    texture TEX_TILES_TEXTURE    normals TEX_TILES_NORMALS    diffuse ffffbf specular 666666
 material   MAT_CEILING  texture TEX_CEILING_TEXTURE  normals TEX_CEILING_NORMALS
 material   MAT_MARBLE   texture TEX_MARBLE_TEXTURE   normals TEX_MARBLE_NORMALS   ambient b2b2b2 specular 808080
-material   MAT_ARROW    texture TEX_ARROW_TEXTURE    normals TEX_PLASTER_NORMALS
+material   MAT_ARROW    texture TEX_ARROW_TEXTURE    normals TEX_FLOOR_NORMALS
 material   MAT_START    texture TEX_PLASTER_TEXTURE  normals TEX_PLASTER_NORMALS  diffuse ff0000
 material   MAT_END      texture TEX_PLASTER_TEXTURE  normals TEX_PLASTER_NORMALS  diffuse ff00ff
 material   MAT_RUST     texture TEX_RUST_TEXTURE     normals TEX_RUST_NORMALS

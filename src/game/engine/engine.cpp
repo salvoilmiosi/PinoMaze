@@ -62,6 +62,8 @@ float engine::calculate_fps() {
 }
 
 void engine::mainLoop() {
+	SDL_RaiseWindow(con->window);
+	
 	SDL_Event event;
 
 	static const float msPerTick = 1000.f / con->tickrate;

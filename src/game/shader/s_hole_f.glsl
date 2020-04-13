@@ -18,7 +18,7 @@ uniform float globalTime;
 void main() {
     vec3 uv_proj = (clipSpace.xyz / clipSpace.w) * 0.5 + 0.5;
 
-    float moveFactor = globalTime * 0.0003;
+    float moveFactor = globalTime * 0.0001;
 
     vec2 offset = texture2D(dudvTexture, texCoords + vec2(moveFactor, 0.0)).rg * 0.1;
     offset += texCoords + vec2(0.0, moveFactor);
