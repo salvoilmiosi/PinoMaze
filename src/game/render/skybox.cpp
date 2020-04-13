@@ -4,62 +4,72 @@
 #include "../game.h"
 #include "../options.h"
 
-skybox::skybox(game *m_game) :
-    m_game(m_game),
-    m_shader("skybox", SHADER_RESOURCE(s_skybox_v), SHADER_RESOURCE(s_skybox_f))
+skybox::skybox(game *m_game) : m_game(m_game),
+    m_shader("skybox", SHADER_RESOURCE(s_skybox_v), SHADER_RESOURCE(s_skybox_f)),
+    m_texture {
+        loadImageFromResource("IDC_SKYBOX_FRONT"),
+        loadImageFromResource("IDC_SKYBOX_BACK"),
+        loadImageFromResource("IDC_SKYBOX_RIGHT"),
+        loadImageFromResource("IDC_SKYBOX_LEFT"),
+        loadImageFromResource("IDC_SKYBOX_TOP"),
+        loadImageFromResource("IDC_SKYBOX_BOTTOM"),
+    }
 {
     m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
     m_shader.add_uniform("viewMatrix", &m_view_zeroed);
-    m_shader.add_uniform("cubeMap", &cubeMapSampler);
+    m_shader.add_uniform("skyboxTexture[0]", &m_sampler[0].gl_samplerid);
+    m_shader.add_uniform("skyboxTexture[1]", &m_sampler[1].gl_samplerid);
+    m_shader.add_uniform("skyboxTexture[2]", &m_sampler[2].gl_samplerid);
+    m_shader.add_uniform("skyboxTexture[3]", &m_sampler[3].gl_samplerid);
+    m_shader.add_uniform("skyboxTexture[4]", &m_sampler[4].gl_samplerid);
+    m_shader.add_uniform("skyboxTexture[5]", &m_sampler[5].gl_samplerid);
 
-	SDL_Surface *skyboxSurfaces[] = {
-		loadImageFromResource("IDC_SKYBOX_LEFT"),
-		loadImageFromResource("IDC_SKYBOX_RIGHT"),
-		loadImageFromResource("IDC_SKYBOX_TOP"),
-		loadImageFromResource("IDC_SKYBOX_BOTTOM"),
-		loadImageFromResource("IDC_SKYBOX_BACK"),
-		loadImageFromResource("IDC_SKYBOX_FRONT"),
-	};
+    for (size_t i=0; i<6; ++i) {
+	    m_texture[i].setWrapParam(GL_CLAMP_TO_EDGE);
+    }
 
-	CUB_SKYBOX.setWrapParam(GL_CLAMP_TO_EDGE);
-	CUB_SKYBOX.loadSurfaces(skyboxSurfaces);
+    struct vertex {
+        glm::vec3 position;
+        glm::vec2 texCoords;
+        float index;
+    };
 
-    glm::vec3 vertices[] = {
+    vertex vertices[] = {
         // Front face
-        glm::vec3(-skyboxSize, skyboxSize, skyboxSize),
-        glm::vec3( skyboxSize, skyboxSize, skyboxSize),
-        glm::vec3(-skyboxSize,-skyboxSize, skyboxSize),
-        glm::vec3( skyboxSize,-skyboxSize, skyboxSize),
+        {{-skyboxSize, skyboxSize, skyboxSize}, {1.f, 0.f}, 0.f},
+        {{ skyboxSize, skyboxSize, skyboxSize}, {0.f, 0.f}, 0.f},
+        {{-skyboxSize,-skyboxSize, skyboxSize}, {1.f, 1.f}, 0.f},
+        {{ skyboxSize,-skyboxSize, skyboxSize}, {0.f, 1.f}, 0.f},
 
         // Back face
-        glm::vec3( skyboxSize, skyboxSize,-skyboxSize),
-        glm::vec3(-skyboxSize, skyboxSize,-skyboxSize),
-        glm::vec3( skyboxSize,-skyboxSize,-skyboxSize),
-        glm::vec3(-skyboxSize,-skyboxSize,-skyboxSize),
+        {{ skyboxSize, skyboxSize,-skyboxSize}, {1.f, 0.f}, 1.f},
+        {{-skyboxSize, skyboxSize,-skyboxSize}, {0.f, 0.f}, 1.f},
+        {{ skyboxSize,-skyboxSize,-skyboxSize}, {1.f, 1.f}, 1.f},
+        {{-skyboxSize,-skyboxSize,-skyboxSize}, {0.f, 1.f}, 1.f},
 
         // Left face
-        glm::vec3(-skyboxSize, skyboxSize,-skyboxSize),
-        glm::vec3(-skyboxSize, skyboxSize, skyboxSize),
-        glm::vec3(-skyboxSize,-skyboxSize,-skyboxSize),
-        glm::vec3(-skyboxSize,-skyboxSize, skyboxSize),
+        {{-skyboxSize, skyboxSize,-skyboxSize}, {1.f, 0.f}, 2.f},
+        {{-skyboxSize, skyboxSize, skyboxSize}, {0.f, 0.f}, 2.f},
+        {{-skyboxSize,-skyboxSize,-skyboxSize}, {1.f, 1.f}, 2.f},
+        {{-skyboxSize,-skyboxSize, skyboxSize}, {0.f, 1.f}, 2.f},
 
         // Right face
-        glm::vec3( skyboxSize, skyboxSize, skyboxSize),
-        glm::vec3( skyboxSize, skyboxSize,-skyboxSize),
-        glm::vec3( skyboxSize,-skyboxSize, skyboxSize),
-        glm::vec3( skyboxSize,-skyboxSize,-skyboxSize),
+        {{ skyboxSize, skyboxSize, skyboxSize}, {1.f, 0.f}, 3.f},
+        {{ skyboxSize, skyboxSize,-skyboxSize}, {0.f, 0.f}, 3.f},
+        {{ skyboxSize,-skyboxSize, skyboxSize}, {1.f, 1.f}, 3.f},
+        {{ skyboxSize,-skyboxSize,-skyboxSize}, {0.f, 1.f}, 3.f},
 
         // Top face
-        glm::vec3(-skyboxSize, skyboxSize,-skyboxSize),
-        glm::vec3( skyboxSize, skyboxSize,-skyboxSize),
-        glm::vec3(-skyboxSize, skyboxSize, skyboxSize),
-        glm::vec3( skyboxSize, skyboxSize, skyboxSize),
+        {{-skyboxSize, skyboxSize,-skyboxSize}, {0.f, 1.f}, 4.f},
+        {{ skyboxSize, skyboxSize,-skyboxSize}, {1.f, 1.f}, 4.f},
+        {{-skyboxSize, skyboxSize, skyboxSize}, {0.f, 0.f}, 4.f},
+        {{ skyboxSize, skyboxSize, skyboxSize}, {1.f, 0.f}, 4.f},
 
         // Bottom face
-        glm::vec3( skyboxSize,-skyboxSize,-skyboxSize),
-        glm::vec3(-skyboxSize,-skyboxSize,-skyboxSize),
-        glm::vec3( skyboxSize,-skyboxSize, skyboxSize),
-        glm::vec3(-skyboxSize,-skyboxSize, skyboxSize),
+        {{ skyboxSize,-skyboxSize,-skyboxSize}, {1.f, 0.f}, 5.f},
+        {{-skyboxSize,-skyboxSize,-skyboxSize}, {0.f, 0.f}, 5.f},
+        {{ skyboxSize,-skyboxSize, skyboxSize}, {1.f, 1.f}, 5.f},
+        {{-skyboxSize,-skyboxSize, skyboxSize}, {0.f, 1.f}, 5.f},
     };
 
     GLuint indices[] = {
@@ -82,7 +92,7 @@ skybox::skybox(game *m_game) :
         22, 21, 23,
 	};
 
-    vao.update_vertices(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
+    vao.update_vertices(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}, {1, ATTR_VEC2}, {2, ATTR_FLOAT}});
     vao.update_indices(indices, sizeof(indices)/sizeof(GLuint));
 
 	checkGlError("Failed to init skybox");
@@ -94,7 +104,10 @@ void skybox::render() {
     m_view_zeroed[3][1] = 0.f;
     m_view_zeroed[3][2] = 0.f;
 
-	CUB_SKYBOX.bind(0);
+    for (size_t i=0; i<6; ++i) {
+        m_sampler[i].bind(m_texture[i]);
+    }
     m_shader.use();
+
     vao.draw();
 }

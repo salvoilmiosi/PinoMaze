@@ -37,7 +37,7 @@ int main (int argc, char **argv) {
 		return -3;
 	}
 
-	if (openResourceFiles(argv[0], "resource.dat", "music.dat") != 2) {
+	if (openResourceFiles(argv[0], "resource.dat") != 1) {
 		std::cerr << "Could not open resource files" << std::endl;
 		return -4;
 	}

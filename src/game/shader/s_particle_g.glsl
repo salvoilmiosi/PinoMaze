@@ -34,7 +34,7 @@ const float particleLifetime = 500.0;
 
 vec3 randomVector(float seed) {
     float tex_coord = (globalTime + seed) / 1000.f;
-    return texture2D(randomTexture, vec2(tex_coord, 0.0)).xyz;
+    return texture(randomTexture, vec2(tex_coord, 0.0)).xyz;
 }
 
 void main() {

@@ -5,7 +5,7 @@
 #include <GL/gl.h>
 
 #include "../engine/vertex_array.h"
-#include "../engine/cubemap.h"
+#include "../engine/texture.h"
 #include "../engine/shader.h"
 
 class skybox {
@@ -21,10 +21,10 @@ private:
     vf_shader m_shader;
     vertex_array vao;
 
-	cubemap CUB_SKYBOX;
+	texture m_texture[6];
+    sampler m_sampler[6] = {0, 1, 2, 3, 4, 5};
 
     glm::mat4 m_view_zeroed;
-    int cubeMapSampler = 0;
 };
 
 #endif // __SKYBOX_H__

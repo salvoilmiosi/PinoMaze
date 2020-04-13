@@ -8,5 +8,5 @@ in vec3 color;
 out vec4 FragColor;
 
 void main() {
-    FragColor = texture2D(particleTexture, texCoords) * vec4(color, 1.0);
+    FragColor = texture(particleTexture, texCoords) * vec4(color, 1.0);
 }

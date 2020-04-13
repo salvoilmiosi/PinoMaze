@@ -20,13 +20,13 @@ void main() {
 
     float moveFactor = globalTime * 0.0001;
 
-    vec2 offset = texture2D(dudvTexture, texCoords + vec2(moveFactor, 0.0)).rg * 0.1;
+    vec2 offset = texture(dudvTexture, texCoords + vec2(moveFactor, 0.0)).rg * 0.1;
     offset += texCoords + vec2(0.0, moveFactor);
-    vec2 dudv = (texture2D(dudvTexture, offset).rg * 2.0 - 1.0) * 0.05;
+    vec2 dudv = (texture(dudvTexture, offset).rg * 2.0 - 1.0) * 0.05;
 
-    color = texture2D(refractionTexture, uv_proj.xy + dudv);
+    color = texture(refractionTexture, uv_proj.xy + dudv);
 	
-	vec3 normalColor = texture2D(normalTexture, offset).xyz;
+	vec3 normalColor = texture(normalTexture, offset).xyz;
 	vec3 normal = normalColor.rbg * 2.0 - 1.0;
 
 	// Light direction in world space

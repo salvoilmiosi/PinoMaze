@@ -49,7 +49,7 @@ uniform float shadowBias = 0.0005;
 uniform vec2 shadowTexelSize = vec2(1.0 / 1024.0);
 
 float sampleShadow(sampler2D tex, vec2 uv, float compare) {
-    return step(compare, texture2D(tex, uv).z + shadowBias);
+    return step(compare, texture(tex, uv).z + shadowBias);
 }
 
 float shadowLinear(sampler2D tex, vec2 uv, float compare) {
@@ -72,9 +72,9 @@ float shadowLinear(sampler2D tex, vec2 uv, float compare) {
 }
 
 void main() {
-    vec4 baseColor = enableTexture ? texture2D(diffuseTexture, texCoords) : vec4(1.0);
+    vec4 baseColor = enableTexture ? texture(diffuseTexture, texCoords) : vec4(1.0);
     if (enableTpTiles) {
-        vec4 tpTileColor = texture2D(tpTileTexture, tpTileCoords);
+        vec4 tpTileColor = texture(tpTileTexture, tpTileCoords);
         tpTileColor *= tileDiffuse;
         baseColor = mix(baseColor, tpTileColor, tpTileColor.w);
     }
@@ -82,7 +82,7 @@ void main() {
     vec3 normal, lightVec, cameraVec;
     if (enableNormalMap) {
         // Tangent space
-		vec4 normalColor = texture2D(normalTexture, texCoords);
+		vec4 normalColor = texture(normalTexture, texCoords);
 		vec4 normalValue = 2.0 * normalColor - 1.0;
 
         normal = normalize(normalValue.rgb);
