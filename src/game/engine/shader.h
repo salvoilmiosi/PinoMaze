@@ -130,21 +130,20 @@ private:
 class transform_feedback_shader : public shader_program {
 public:
 	template<typename ... Ts>
-	transform_feedback_shader(const char *name, const std::string &vertex_source, const std::string &geometry_source, const std::string &fragment_source, Ts ... varyings) :
+	transform_feedback_shader(const char *name, const std::string &vertex_source, const std::string &geometry_source, Ts ... varyings) :
 		shader_program(name),
 		m_vertex(name, SHADER_VERTEX, vertex_source),
-		m_geometry(name, SHADER_GEOMETRY, geometry_source),
-		m_fragment(name, SHADER_FRAGMENT, fragment_source)
+		m_geometry(name, SHADER_GEOMETRY, geometry_source)
 	{
 		attach_transform_varyings(varyings ...);
-		attach_and_link(m_vertex, m_geometry, m_fragment);
+		attach_and_link(m_vertex, m_geometry);
 	}
 	~transform_feedback_shader() {
-		detach_shaders(m_vertex, m_geometry, m_fragment);
+		detach_shaders(m_vertex, m_geometry);
 	}
 
 private:
-	shader m_vertex, m_geometry, m_fragment;
+	shader m_vertex, m_geometry;
 };
 
 #endif

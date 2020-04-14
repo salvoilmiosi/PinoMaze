@@ -26,12 +26,13 @@ void transform_feedback::draw_feedback() {
 }
 
 void transform_feedback::start() {
+    glEnable(GL_RASTERIZER_DISCARD);
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, gl_tfb);
     glBeginTransformFeedback(gl_draw_mode);
-    checkGlError("a");
 }
 
 void transform_feedback::stop() {
+    glDisable(GL_RASTERIZER_DISCARD);
     glEndTransformFeedback();
     empty = false;
 }

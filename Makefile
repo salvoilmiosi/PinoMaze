@@ -10,8 +10,8 @@ OBJ_DIR = obj
 BIN_DIR = bin
 RESOURCE_DIR = resource
 
-BIN_EDITOR = PinoMaze_editor
-BIN_GAME = PinoMaze_game
+BIN_EDITOR = MazeEditor
+BIN_GAME = PinoMaze
 
 INCLUDE = -I$(SRC_DIR)/shared/include -Itinyfiledialogs -Iresource_pack/include
 

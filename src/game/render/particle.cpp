@@ -32,7 +32,7 @@ static constexpr vertex_attrib_list particle_attr_list {
 
 particle_system::particle_system(game *m_game) :
     m_game(m_game),
-    m_particle("particle", SHADER_RESOURCE(s_particle_v), SHADER_RESOURCE(s_particle_g), SHADER_RESOURCE(s_particle_f),
+    m_particle("particle", SHADER_RESOURCE(s_particle_v), SHADER_RESOURCE(s_particle_g),
         "type1", "age1", "position1", "velocity1", "color1", "size1"),
     m_billboard("billboard", SHADER_RESOURCE(s_billboard_v), SHADER_RESOURCE(s_billboard_g), SHADER_RESOURCE(s_billboard_f)),
     randomTexture(1024, 1)
@@ -86,7 +86,7 @@ void particle_system::tick() {
     if (m_game->teleportTimer > 65) {
         velocity = glm::vec3(0.f);
         count += 100.f;
-        force = 1.f;
+        force = 0.8f;
 	}
 	if (m_game->won) {
         count += rand() % 15 + 15;
@@ -127,7 +127,6 @@ void particle_system::render() {
 
     m_particle.use();
 
-    glEnable(GL_RASTERIZER_DISCARD);
     tfbs[currentTFB].start();
 
     init_vao.draw();
@@ -136,7 +135,6 @@ void particle_system::render() {
     tfbs[currentVBO].draw_feedback();
     
     tfbs[currentTFB].stop();
-    glDisable(GL_RASTERIZER_DISCARD);
 
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
