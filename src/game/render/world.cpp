@@ -14,7 +14,7 @@ world::world(context *m_context, game *m_game) :
     m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f)),
 
     m_skybox(m_game),
-    m_hole(m_context, m_game),
+    m_water(m_context, m_game),
     m_particles(m_game),
 
 	box_pillar(pillarSize, pillarHeight, pillarSize, pillarHeight),
@@ -34,7 +34,7 @@ world::world(context *m_context, game *m_game) :
     initItems();
 
     m_bridge.init(m_game->m_maze);
-    m_hole.init(m_game->m_maze);
+    m_water.init(m_game->m_maze);
 
 	checkGlError("Failed to init world renderer");
 }
@@ -122,7 +122,7 @@ void world::render() {
     renderRefraction();
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
-    m_hole.render();
+    m_water.render();
 
     m_shader.use();
 
@@ -135,7 +135,7 @@ void world::render() {
 }
 
 void world::renderRefraction() {
-    m_hole.bindRefraction();
+    m_water.bindRefraction();
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     m_skybox.render();

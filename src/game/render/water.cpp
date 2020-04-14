@@ -1,4 +1,4 @@
-#include "hole.h"
+#include "water.h"
 
 #include "../game.h"
 #include "../options.h"
@@ -6,8 +6,8 @@
 
 #include "maze.h"
 
-hole::hole(context *con, game *m_game) :
-	m_shader("hole", SHADER_RESOURCE(s_hole_v), SHADER_RESOURCE(s_hole_f)),
+water::water(context *con, game *m_game) :
+	m_shader("water", SHADER_RESOURCE(s_water_v), SHADER_RESOURCE(s_water_f)),
 	refraction(con->window_width, con->window_height),
 	refractionDepth(con->window_width, con->window_height, true)
 {
@@ -41,7 +41,7 @@ hole::hole(context *con, game *m_game) :
 	checkGlError("Failed to init hole model");
 }
 
-void hole::init(maze *m) {
+void water::init(maze *m) {
     std::vector<glm::mat4> matrices;
 
     for (int i=0; i<m->datasize(); ++i) {
@@ -56,7 +56,7 @@ void hole::init(maze *m) {
 	vao.update_matrices(1, matrices.data(), matrices.size(), 1);
 }
 
-void hole::render() {
+void water::render() {
 	refractionSampler.bind(refraction);
 	dudvSampler.bind(material::getTexture("TEX_WATER_DUDV"));
 	normalSampler.bind(material::getTexture("TEX_WATER_NORMALS"));

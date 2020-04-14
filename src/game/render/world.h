@@ -14,7 +14,7 @@
 
 #include "world_shader.h"
 #include "bridge.h"
-#include "hole.h"
+#include "water.h"
 #include "skybox.h"
 #include "particle.h"
 
@@ -42,7 +42,7 @@ private:
     vf_shader m_shadow;
 
     skybox m_skybox;
-    hole m_hole;
+    water m_water;
     particle_system m_particles;
     box box_pillar, box_ground, box_wall;
     box box_start, box_end, box_arrow, box_teleport;

@@ -1,5 +1,5 @@
-#ifndef __HOLE_H__
-#define __HOLE_H__
+#ifndef __WATER_H__
+#define __WATER_H__
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
@@ -8,9 +8,9 @@
 #include "../engine/vertex_array.h"
 #include "../engine/framebuffer.h"
 
-class hole {
+class water {
 public:
-	hole(context *con, class game *m_game);
+	water(context *con, class game *m_game);
 
 public:
 	void bindRefraction() {
@@ -37,4 +37,4 @@ private:
 	float globalTime;
 };
 
-#endif // __HOLE_H__
+#endif // __WATER_H__
