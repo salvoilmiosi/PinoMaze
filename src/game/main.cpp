@@ -19,6 +19,32 @@
 #include "resources.h"
 #include "game.h"
 
+class game_engine : public engine {
+public:
+	game_engine(context *con, maze *m_maze) :
+		engine(con),
+		m_game(con, m_maze),
+		m_world(con, &m_game),
+		m_hud(con)
+	{}
+
+public:
+	void tick() {
+		m_game.tick();
+		m_world.tick();
+	}
+
+	void render() {
+		m_world.render();
+		m_hud.render();
+	}
+
+private:
+	game m_game;
+	world m_world;
+	hud m_hud;
+};
+
 int main (int argc, char **argv) {
     srand(time(NULL));
 
@@ -69,17 +95,7 @@ int main (int argc, char **argv) {
 	con.fps_limit = 300;
 
     try {
-	    engine m_engine(&con);
-
-		game m_game(&con, m_maze.get());
-		world m_world(&con, &m_game);
-		hud m_hud(&con);
-
-		m_engine.add_entity(&m_game);
-		m_engine.add_entity(&m_world);
-		m_engine.add_entity(&m_hud);
-		
-        m_engine.mainLoop();
+	    game_engine(&con, m_maze.get()).mainLoop();
     } catch (const std::string &error) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", error.c_str(), nullptr);
         std::cerr << error << std::endl;

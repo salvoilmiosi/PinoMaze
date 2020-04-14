@@ -8,7 +8,7 @@
 #include "../game.h"
 
 world::world(context *m_context, game *m_game) :
-    entity(m_context), m_game(m_game),
+    m_context(m_context), m_game(m_game),
 
     m_shader(m_game),
     m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f)),
@@ -23,8 +23,8 @@ world::world(context *m_context, game *m_game) :
     box_start(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
     box_end(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
     box_arrow(tileSize, blockHeight * 2.f, tileSize, tileSize),
-    box_teleport(startBoxSize, startBoxHeight, startBoxSize, startBoxSize),
-    marble(marbleRadius, 16, 16)
+    trunc_teleport(teleportRadius1, teleportRadius2, teleportHeight, circleSubs),
+    marble(marbleRadius, circleSubs, circleSubs)
 {
     m_shadow.add_uniform("lightMatrix", &m_shader.m_light);
 
@@ -116,7 +116,7 @@ void world::render() {
     m_shader.enableTpTiles = true;
     m_shader.tpTileSampler.bind(material::getTexture("TEX_TELEPORT_TILES"));
     m_shader.apply_material("MAT_RUST");
-    box_teleport.draw_instances();
+    trunc_teleport.draw_instances();
     m_shader.enableTpTiles = false;
 
     renderRefraction();
@@ -289,7 +289,7 @@ void world::initItems() {
 			int x = it.second.item.x;
 			int y = it.second.item.y;
 
-			tpdata.matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
+			tpdata.matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
 
             tp_instances.push_back(tpdata);
             break;
@@ -300,5 +300,5 @@ void world::initItems() {
     }
 
     box_arrow.update_matrices(2, arrowMatrices.data(), arrowMatrices.size(), 4);
-    box_teleport.update_instances(2, tp_instances.data(), tp_instances.size() * sizeof(tp_instance_data), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
+    trunc_teleport.update_instances(2, tp_instances.data(), tp_instances.size() * sizeof(tp_instance_data), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
 }

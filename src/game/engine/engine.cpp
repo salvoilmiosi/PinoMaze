@@ -39,28 +39,6 @@ engine::~engine() {
 	SDL_DestroyWindow(con->window);
 }
 
-float engine::calculate_fps() {
-	static const int NUM_SAMPLES = 10;
-	static float frameTimes[NUM_SAMPLES];
-	static float prevTicks = SDL_GetTicks();
-	static int currentFrame = 0;
-
-	float currentTicks = SDL_GetTicks();
-	float frameTime = currentTicks - prevTicks;
-	frameTimes[currentFrame % NUM_SAMPLES] = frameTime;
-
-	prevTicks = currentTicks;
-
-	++currentFrame;
-	size_t count = (currentFrame < NUM_SAMPLES) ? currentFrame : NUM_SAMPLES;
-	float frameTimeAverage = 0;
-	for (size_t i=0; i<count; ++i) {
-		frameTimeAverage += frameTimes[i];
-	}
-	frameTimeAverage /= count;
-	return 1000.f / frameTimeAverage;
-}
-
 void engine::mainLoop() {
 	SDL_RaiseWindow(con->window);
 	
@@ -84,8 +62,8 @@ void engine::mainLoop() {
 
 		float frameTicks = SDL_GetTicks();
 		if (frameTicks - lastFrame > msPerFrame) {
-			setStatus(std::to_string((int)calculate_fps()));
 			render();
+			SDL_GL_SwapWindow(con->window);
 			lastFrame += msPerFrame;
 		}
 
@@ -94,31 +72,9 @@ void engine::mainLoop() {
 			case SDL_QUIT:
 				quit = true;
 				break;
-			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_ESCAPE) {
-					quit = true;
-				}
+			default:
 				break;
 			}
 		}
-	}
-}
-
-void engine::tick() {
-	for (entity *ent : entities) {
-		ent->tick();
-	}
-}
-
-void engine::render() {
-	for (entity *ent : entities) {
-		ent->render();
-	}
-	SDL_GL_SwapWindow(con->window);
-}
-
-void engine::setStatus(const std::string &status) {
-	for (entity *ent : entities) {
-		ent->setStatus(status);
 	}
 }

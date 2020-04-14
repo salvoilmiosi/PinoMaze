@@ -8,7 +8,6 @@
 #include <string>
 
 #include "context.h"
-#include "entity.h"
 
 class engine {
 public:
@@ -18,24 +17,11 @@ public:
 public:
     void mainLoop();
 
-    void tick();
-    void render();
-    void setStatus(const std::string &status);
-
-    void add_entity(entity *ent) {
-        entities.push_back(ent);
-    }
-
-    void remove_entity(entity *ent) {
-        entities.erase(std::find(entities.begin(), entities.end(), ent));
-    }
+    virtual void tick() = 0;
+    virtual void render() = 0;
 
 private:
-    float calculate_fps();
-    
     context *con;
-
-    std::vector<entity *> entities;
 };
 
 #endif // __ENGINE_H__

@@ -4,7 +4,6 @@
 #include "maze.h"
 #include "a_star.h"
 
-#include "engine/entity.h"
 #include "engine/material.h"
 #include "engine/context.h"
 
@@ -17,7 +16,7 @@ struct camera {
 	glm::vec3 position;
 };
 
-class game : public entity {
+class game {
 public:
     game(context *m_context, maze *m_maze);
     ~game();
@@ -40,6 +39,8 @@ public:
 	bool won = false;
 
 private:
+	context *m_context;
+
 	std::unique_ptr<a_star> pathfinder = nullptr;
     std::list<const node *> path;
     std::list<const node *>::iterator stepIndex;
@@ -70,7 +71,7 @@ private:
 	bool lockToMarble = false;
 
 	glm::vec3 marblePos;
-	glm::mat4 marbleRotation;
+	glm::mat4 marbleRotation{1.f};
 
 	float startX = 0.f;
 	float startZ = 0.f;

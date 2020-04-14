@@ -8,7 +8,7 @@
 #include "resources.h"
 #include "options.h"
 
-game::game(context *m_context, maze *m_maze) : entity(m_context), m_maze(m_maze), marbleRotation(1.f) {
+game::game(context *m_context, maze *m_maze) : m_maze(m_maze), m_context(m_context) {
     if (!material::loadMaterials(loadStringFromResource("IDM_MATERIALS"))) {
         throw std::string("Could not load materials");
     }

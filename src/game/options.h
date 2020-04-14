@@ -7,6 +7,10 @@ constexpr float blockHeight = 0.15f;
 constexpr float startBoxSize = 0.8f;
 constexpr float startBoxHeight = 0.01f;
 
+constexpr float teleportRadius1 = 0.45f;
+constexpr float teleportRadius2 = 0.4f;
+constexpr float teleportHeight = 0.05f;
+
 constexpr float marbleRadius = 0.07f;
 
 constexpr float pillarHeight = 0.54f;
@@ -21,6 +25,8 @@ constexpr float bridgeWallHeight = 0.65f;
 
 constexpr int bridgeSubsH = 10;
 constexpr int bridgeSubsV = 6;
+
+constexpr int circleSubs = 16;
 
 constexpr float skyboxSize = 20.f;
 

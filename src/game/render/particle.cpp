@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-#define MAX_PARTICLES 1000
+#define MAX_PARTICLES 50000
 
 #define TYPE_NONE      0.f
 #define TYPE_SOURCE    1.f
@@ -94,9 +94,9 @@ void particle_system::tick() {
     }
     
     particle sources[5];
-    memset(sources, 0, sizeof(sources));
+
     size_t i = 0;
-    while (count > 0.f && i<5) {
+    while (count > 0.f && i < sizeof(sources) / sizeof(particle)) {
         sources[i].type = TYPE_SOURCE;
         sources[i].age = MIN(count, 50.f);
         sources[i].position = position;

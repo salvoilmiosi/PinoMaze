@@ -3,11 +3,11 @@
 
 #include <memory>
 
-#include "../engine/entity.h"
 #include "../engine/shader.h"
 #include "../engine/material.h"
 #include "../engine/box.h"
 #include "../engine/sphere.h"
+#include "../engine/trunc_cone.h"
 #include "../engine/framebuffer.h"
 
 #include "../game.h"
@@ -18,7 +18,7 @@
 #include "skybox.h"
 #include "particle.h"
 
-class world : public entity {
+class world {
 public:
     world(context *m_context, game *m_game);
 
@@ -36,6 +36,7 @@ private:
     void initItems();
 
 private:
+    context *m_context;
     game *m_game;
 
     world_shader m_shader;
@@ -45,7 +46,8 @@ private:
     water m_water;
     particle_system m_particles;
     box box_pillar, box_ground, box_wall;
-    box box_start, box_end, box_arrow, box_teleport;
+    box box_start, box_end, box_arrow;
+    trunc_cone trunc_teleport;
     bridge m_bridge;
 	sphere marble;
 };
