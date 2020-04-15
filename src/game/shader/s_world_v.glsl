@@ -26,6 +26,8 @@ uniform float refractionHeight;
 
 uniform bool enableTpTiles;
 
+flat out float enableTpTilesOut;
+
 struct light {
     vec3 ambient;
     vec3 diffuse;
@@ -38,7 +40,15 @@ uniform light sun;
 void main() {
     texCoords = uv;
 
-	tpTileCoords = enableTpTiles ? (tpUvOffset + tpTileSize * uv) : vec2(0.0);
+    tpTileCoords = vec2(0.0);
+    enableTpTilesOut = 0.0;
+    float dx = 0.5 - uv.x;
+    float dy = 0.5 - uv.y;
+    if (dx * dx + dy * dy < 0.25) {
+        vec2 transformedUv = uv * 2.0 - vec2(0.5);
+        tpTileCoords = tpUvOffset + tpTileSize * transformedUv;
+        enableTpTilesOut = 1.0;
+    }
 
     mat4 modelViewMatrix = viewMatrix * modelMatrix;
 

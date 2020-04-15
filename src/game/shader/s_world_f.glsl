@@ -9,6 +9,8 @@ in vec4 shadowCoords;
 in vec3 tangentLight;
 in vec3 tangentCamera;
 
+flat in float enableTpTilesOut;
+
 out vec4 color;
 
 uniform mat4 lightMatrix;
@@ -23,7 +25,6 @@ const vec4 tileDiffuse = vec4(1.0, 1.0, 0.0, 0.5);
 
 uniform bool enableTexture = false;
 uniform bool enableNormalMap = false;
-uniform bool enableTpTiles = false;
 uniform bool enableShadow = true;
 uniform bool enableSpecular = true;
 
@@ -73,7 +74,7 @@ float shadowLinear(sampler2D tex, vec2 uv, float compare) {
 
 void main() {
     vec4 baseColor = enableTexture ? texture(diffuseTexture, texCoords) : vec4(1.0);
-    if (enableTpTiles) {
+    if (enableTpTilesOut == 1.0) {
         vec4 tpTileColor = texture(tpTileTexture, tpTileCoords);
         tpTileColor *= tileDiffuse;
         baseColor = mix(baseColor, tpTileColor, tpTileColor.w);

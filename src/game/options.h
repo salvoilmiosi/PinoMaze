@@ -7,8 +7,8 @@ constexpr float blockHeight = 0.15f;
 constexpr float startBoxSize = 0.8f;
 constexpr float startBoxHeight = 0.01f;
 
-constexpr float teleportRadius1 = 0.45f;
-constexpr float teleportRadius2 = 0.4f;
+constexpr float teleportRadius1 = 0.48f;
+constexpr float teleportRadius2 = 0.33f;
 constexpr float teleportHeight = 0.05f;
 
 constexpr float marbleRadius = 0.07f;

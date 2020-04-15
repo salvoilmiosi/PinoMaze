@@ -199,16 +199,18 @@ void game::setupCamera() {
 
 	float cameraToY = cameraHeight;
 
-	if (tile_from->state == STATE_ITEM || tile_to->state == STATE_ITEM) {
-		mazeItem *item_from = m_maze->findItem(tile_from);
-		mazeItem *item_to = m_maze->findItem(tile_to);
+	if (!lockToMarble) {
+		if (tile_from->state == STATE_ITEM || tile_to->state == STATE_ITEM) {
+			mazeItem *item_from = m_maze->findItem(tile_from);
+			mazeItem *item_to = m_maze->findItem(tile_to);
 
-		if ((lastMoveAngle == 0 || lastMoveAngle == 2)
-			&& ((item_to && item_to->type == ITEM_BRIDGE)
-				|| (item_from && item_from->type == ITEM_BRIDGE && moving >= ticksPerMove / 2))) {
-			cameraToY = bridgeArcHeight * 0.4f;
-		} else if ((item_to && item_to->type == ITEM_BRIDGE) || (item_from && item_from->type == ITEM_BRIDGE)) {
-			cameraToY += marblePos.y - marbleRadius;
+			if ((lastMoveAngle == 0 || lastMoveAngle == 2)
+				&& ((item_to && item_to->type == ITEM_BRIDGE)
+					|| (item_from && item_from->type == ITEM_BRIDGE && moving >= ticksPerMove / 2))) {
+				cameraToY = bridgeArcHeight * 0.4f;
+			} else if ((item_to && item_to->type == ITEM_BRIDGE) || (item_from && item_from->type == ITEM_BRIDGE)) {
+				cameraToY += marblePos.y - marbleRadius;
+			}
 		}
 	}
 
@@ -247,47 +249,59 @@ void game::setupMarble() {
 	static const float l2 = l + bridgeArcThickness;
 	static const float a = l2 / 2.f + marbleRadius;
 	static const float b = l2 / l * bridgeArcHeight + marbleRadius;
-
-	bool onItem = false;
+	
+	float maxY = marbleRadius;
 
 	if (tile_from->state == STATE_ITEM || tile_to->state == STATE_ITEM) {
 		mazeItem *item_from = m_maze->findItem(tile_from);
 		mazeItem *item_to = m_maze->findItem(tile_to);
 
-		if (moving > 0 && (lastMoveAngle == 1 || lastMoveAngle == 3)) {
-			if (item_from && item_from->type == ITEM_BRIDGE) {
-				float dx = abs(marblePos.x - startX);
-				if (dx < a) {
-					dx += a;
-					marblePos.y = MAX(b / a * sqrtf(dx * (2.f * a - dx)), marbleRadius);
-				} else {
-					marblePos.y = marbleRadius;
-				}
-			}
-			if (item_to && item_to->type == ITEM_BRIDGE) {
-				float dx = abs(marblePos.x - startX);
-				dx -= tileSize - a;
-				if (dx > 0.f) {
-					marblePos.y = MAX(b / a * sqrtf(dx * (2.f * a - dx)), marblePos.y);
-				} else {
-					marblePos.y = MAX(marbleRadius, marblePos.y);
-				}
+		if (item_from && item_from->type == ITEM_BRIDGE && (lastMoveAngle % 2)) {
+			float dx = abs(marblePos.x - startX);
+			if (dx < a) {
+				dx += a;
+				maxY = MAX(maxY, b / a * sqrtf(dx * (2.f * a - dx)));
+			} else {
+				maxY = MAX(maxY, marbleRadius);
 			}
 		}
-
-		onItem = true;
+		if (item_to && item_to->type == ITEM_BRIDGE && (lastMoveAngle % 2)) {
+			float dx = abs(marblePos.x - startX);
+			dx -= tileSize - a;
+			if (dx > 0.f) {
+				maxY = MAX(maxY, b / a * sqrtf(dx * (2.f * a - dx)));
+			} else {
+				maxY = MAX(maxY, marbleRadius);
+			}
+		}
+		if (item_from && item_from->type == ITEM_TELEPORT) {
+			float dist = (lastMoveAngle % 2) ? abs(marblePos.x - startX) : abs(marblePos.z - startZ);
+			if (dist < teleportRadius2) {
+				maxY = MAX(maxY, marbleRadius + teleportHeight);
+			} else {
+				float h = (teleportRadius1 - dist) * teleportHeight / (teleportRadius1 - teleportRadius2);
+				maxY = MAX(maxY, marbleRadius + h);
+			}
+		}
+		if (item_to && item_to->type == ITEM_TELEPORT) {
+			float dist = (lastMoveAngle % 2) ? abs(marblePos.x - startX) : abs(marblePos.z - startZ);
+			dist = tileSize - dist;
+			if (dist < teleportRadius2) {
+				maxY = MAX(maxY, marbleRadius + teleportHeight);
+			} else {
+				float h = (teleportRadius1 - dist) * teleportHeight / (teleportRadius1 - teleportRadius2);
+				maxY = MAX(maxY, marbleRadius + h);
+			}
+		}
 	}
 	
-	if (tile_to->state == STATE_BLOCK) {
-		if (moving <= ticksPerMove / 2) {
-			marblePos.y -= fallSpeed;
-			fallSpeed += gravityAccel;
-			lockToMarble = true;
-		} else {
-			fallSpeed = 0.f;
-		}
-	} else if (!onItem) {
-		marblePos.y = marbleRadius;
+	if (tile_to->state == STATE_BLOCK && moving <= ticksPerMove / 2) {
+		marblePos.y -= fallSpeed;
+		fallSpeed += gravityAccel;
+		lockToMarble = true;
+	} else {
+		fallSpeed = 0.f;
+		marblePos.y = maxY;
 	}
 	
     m_marble = glm::translate(glm::mat4(1.f), marblePos) * marbleRotation;
