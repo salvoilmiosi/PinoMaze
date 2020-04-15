@@ -385,7 +385,7 @@ void game::nextStep() {
 }
 
 bool game::useItem() {
-	tile *t = m_maze->getTile((short)(marblePos.x/tileSize), (short)(marblePos.z/tileSize));
+	tile *t = (moving < ticksPerMove / 2) ? m_maze->getTile(tx, ty) : nullptr;
 	if (t) {
 		mazeItem *item = m_maze->findItem(t);
 		if (item) {
@@ -470,9 +470,14 @@ void game::updateMatrices() {
 	float deltaMs = now - lastTime;
 
 	if (moving > 0) {
-		float moveAmt = MIN(1.f, deltaMs * (float) m_context->tickrate / (float) ticksPerMove / 1000.f);
-		marblePos.x += ((tx + 0.5f) * tileSize - startX) * moveAmt;
-		marblePos.z += ((ty + 0.5f) * tileSize - startZ) * moveAmt;
+		float moveAmt = deltaMs * (float) m_context->tickrate / (float) ticksPerMove / 1000.f;
+		if (moveAmt >= 1.f) {
+			startX = marblePos.x = (tx + 0.5f) * tileSize;
+			startZ = marblePos.z = (ty + 0.5f) * tileSize;
+		} else {
+			marblePos.x += ((tx + 0.5f) * tileSize - startX) * moveAmt;
+			marblePos.z += ((ty + 0.5f) * tileSize - startZ) * moveAmt;
+		}
 	}
 
 	rollMarble(marblePos - lastPos);

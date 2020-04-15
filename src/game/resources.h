@@ -11,8 +11,8 @@
 bool openResourceFile(const char *dir, const char *filename);
 
 template<typename ... T>
-inline int openResourceFiles(const char *dir, T ... filenames) {
-	return (openResourceFile(dir, filenames) + ...);
+inline bool openResourceFiles(const char *dir, T ... filenames) {
+	return (openResourceFile(dir, filenames) && ...);
 }
 
 SDL_Surface *loadImageFromResource(const char *RES_ID);

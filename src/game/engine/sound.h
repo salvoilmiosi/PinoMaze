@@ -30,10 +30,14 @@ public:
 		return true;
 	}
 
-	bool play(int loops = 0, int chan = -1) {
-		return true;
-		// channel = Mix_PlayChannel(chan, chunk, loops);
-		// return channel >= 0;
+	bool play(int loops = 0, int chan = -1, float volume = 0.1f) {
+		channel = Mix_PlayChannel(chan, chunk, loops);
+		if (channel >= 0) {
+			Mix_Volume(channel, int(volume * MIX_MAX_VOLUME));
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	void pause() {
@@ -46,10 +50,6 @@ public:
 
 	void stop() {
 		Mix_HaltChannel(channel);
-	}
-
-	void volume(float vol) {
-		Mix_Volume(channel, int(vol * MIX_MAX_VOLUME));
 	}
 };
 
