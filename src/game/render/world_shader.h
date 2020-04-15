@@ -2,8 +2,9 @@
 #define __WORLD_SHADER_H__
 
 #include "../engine/shader.h"
-#include "../engine/material.h"
 #include "../engine/framebuffer.h"
+
+#include "material.h"
 
 class world_shader : public vf_shader {
 public:

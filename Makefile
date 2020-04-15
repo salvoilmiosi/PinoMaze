@@ -29,6 +29,9 @@ OBJECTS_GAME = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES_GAME)
 SHADERS_GLSL = $(wildcard $(SRC_DIR)/game/**/*.glsl)
 SHADERS_OBJS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SHADERS_GLSL)))
 
+TXT_SOURCES = $(RESOURCE_DIR)/materials.txt
+TXT_OBJS = $(patsubst $(RESOURCE_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(TXT_SOURCES)))
+
 SOURCES_SHARED = $(wildcard $(SRC_DIR)/shared/*.cpp $(SRC_DIR)/shared/**/*.cpp)
 OBJECTS_SHARED = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%.o,$(basename $(SOURCES_SHARED)))
 
@@ -78,14 +81,18 @@ $(BIN_DIR)/$(BIN_EDITOR): $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(LIBS_SHARED) $(R
 	$(CXX) -o $(BIN_DIR)/$(BIN_EDITOR) $(LDFLAGS) $(OBJECTS_EDITOR) $(OBJECTS_SHARED) $(LIBS_SHARED) $(LIBS_EDITOR) $(ICON_EDITOR)
 
 game: $(BIN_DIR)/$(BIN_GAME)
-$(BIN_DIR)/$(BIN_GAME): $(OBJECTS_GAME) $(OBJECTS_SHARED) $(LIBS_SHARED) $(SHADERS_OBJS) $(RESOURCES_GAME) $(ICON_GAME)
-	$(CXX) -o $(BIN_DIR)/$(BIN_GAME) $(LDFLAGS) $(OBJECTS_GAME) $(OBJECTS_SHARED) $(LIBS_SHARED) $(SHADERS_OBJS) $(LIBS_GAME) $(ICON_GAME)
+$(BIN_DIR)/$(BIN_GAME): $(OBJECTS_GAME) $(OBJECTS_SHARED) $(LIBS_SHARED) $(SHADERS_OBJS) $(TXT_OBJS) $(RESOURCES_GAME) $(ICON_GAME)
+	$(CXX) -o $(BIN_DIR)/$(BIN_GAME) $(LDFLAGS) $(OBJECTS_GAME) $(OBJECTS_SHARED) $(LIBS_SHARED) $(SHADERS_OBJS) $(TXT_OBJS) $(LIBS_GAME) $(ICON_GAME)
 
 $(OBJ_DIR)/%.res: $(RESOURCE_DIR)/%.rc
 	windres $< -O coff -o $@
 
 $(BIN_DIR)/%.dat: $(RESOURCE_DIR)/%.txt $(resource_pack)
 	$(resource_pack) $< $@
+
+$(OBJ_DIR)/%.o : $(RESOURCE_DIR)/%.txt
+	@mkdir -p $(dir $@)
+	$(LD) -r -b binary -o $@ $<
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.glsl
 	@mkdir -p $(dir $@)

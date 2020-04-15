@@ -4,15 +4,16 @@
 #include <memory>
 
 #include "../engine/shader.h"
-#include "../engine/material.h"
 #include "../engine/box.h"
 #include "../engine/sphere.h"
 #include "../engine/trunc_cone.h"
 #include "../engine/framebuffer.h"
 
 #include "../game.h"
+#include "../options.h"
 
 #include "world_shader.h"
+#include "material.h"
 #include "bridge.h"
 #include "water.h"
 #include "skybox.h"
@@ -42,14 +43,19 @@ private:
     world_shader m_shader;
     vf_shader m_shadow;
 
-    skybox m_skybox;
     water m_water;
-    particle_system m_particles;
-    box box_pillar, box_ground, box_wall;
-    box box_start, box_end, box_arrow;
-    trunc_cone trunc_teleport;
     bridge m_bridge;
-	sphere marble;
+    skybox m_skybox;
+    particle_system m_particles;
+
+    box m_pillar {pillarSize, pillarHeight, pillarSize, pillarHeight};
+    box m_ground {tileSize, blockHeight * 2.f, tileSize, tileSize};
+    box m_wall {tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f};
+    box m_start {startBoxSize, startBoxHeight, startBoxSize, startBoxSize};
+    box m_end {startBoxSize, startBoxHeight, startBoxSize, startBoxSize};
+    box m_arrow {tileSize, blockHeight * 2.f, tileSize, tileSize};
+    trunc_cone m_teleport {teleportRadius1, teleportRadius2, teleportHeight, circleSubs};
+	sphere m_marble {marbleRadius, circleSubs, circleSubs};
 };
 
 #endif // __SHADER_WORLD_H__

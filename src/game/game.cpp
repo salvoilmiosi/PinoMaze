@@ -1,15 +1,14 @@
 #include "game.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <SDL2/SDL.h>
 #include <iostream>
-
-#include "engine/material.h"
 
 #include "resources.h"
 #include "options.h"
 
 game::game(context *m_context, maze *m_maze) : m_maze(m_maze), m_context(m_context) {
-    if (!material::loadMaterials(loadStringFromResource("IDM_MATERIALS"))) {
+    if (!material::loadMaterials(BINARY_RESOURCE(resource_materials_txt))) {
         throw std::string("Could not load materials");
     }
     
@@ -24,16 +23,10 @@ game::game(context *m_context, maze *m_maze) : m_maze(m_maze), m_context(m_conte
 	currentMusic.volume(musicVolume);
 
 	teleportToStart(true);
-
-	controller = SDL_GameControllerOpen(0);
 }
 
 game::~game() {
 	currentMusic.stop();
-
-	if (controller) {
-		SDL_GameControllerClose(controller);
-	}
 }
 
 void game::loadMusic() {
@@ -52,8 +45,8 @@ void game::loadMusic() {
 }
 
 void game::teleportTo(int _x, int _y) {
-    tx = _x;
-    ty = _y;
+    tx = tx_prev = _x;
+    ty = ty_prev = _y;
 	restartDelay = 0;
 	moving = 0;
 
@@ -118,7 +111,7 @@ bool game::canMove(int moveAngle, bool checkBlocks) {
 		if (item) {
 			switch (item->type) {
 			case ITEM_BRIDGE:
-				if (lastMoveAngle != -1 && lastMoveAngle != moveAngle) {
+				if (lastMoveAngle >= 0 && lastMoveAngle != moveAngle) {
 					int backAngle = lastMoveAngle + 2;
 					if (backAngle > 3) backAngle -= 4;
 					if (backAngle != moveAngle) {
@@ -142,6 +135,7 @@ bool game::canMove(int moveAngle, bool checkBlocks) {
 
 bool game::offsetMove(int angleOffset) {
     if (moving > 0) return false;
+	if (restartDelay > 0) return false;
 
     int moveAngle = angleFacing + angleOffset;
     if (moveAngle > 3) {
@@ -204,7 +198,7 @@ void game::setupCamera(float deltaMs) {
 			mazeItem *item_from = m_maze->findItem(tile_from);
 			mazeItem *item_to = m_maze->findItem(tile_to);
 
-			if ((lastMoveAngle == 0 || lastMoveAngle == 2)
+			if (!(lastMoveAngle % 2)
 				&& ((item_to && item_to->type == ITEM_BRIDGE)
 					|| (item_from && item_from->type == ITEM_BRIDGE && moving >= ticksPerMove / 2))) {
 				cameraToY = bridgeArcHeight * 0.4f;
@@ -241,59 +235,51 @@ void game::setupCamera(float deltaMs) {
 	m_view = m_roll * m_pitch * m_yaw * m_position;
 }
 
+float itemHeight(maze *m_maze, tile *t, float dist, int angle) {
+	switch (t->state) {
+	case STATE_START:
+	case STATE_END:
+		if (dist < startBoxSize / 2.f) {
+			return marbleRadius + startBoxHeight;
+		}
+		break;
+	case STATE_ITEM:
+		if (mazeItem *item = m_maze->findItem(t)) {
+			switch(item->type) {
+			case ITEM_BRIDGE:
+				if (angle % 2) {
+					const float l = tileSize - wallThickness;
+					const float l2 = l + bridgeArcThickness;
+					const float a = l2 / 2.f + marbleRadius;
+					const float b = l2 / l * bridgeArcHeight + marbleRadius;
+
+					if (dist < a) {
+						return b / a * sqrtf((dist + a) * (a - dist));
+					}
+				}
+				break;
+			case ITEM_TELEPORT:
+				if (dist < teleportRadius2) {
+					return marbleRadius + teleportHeight;
+				} else {
+					return marbleRadius + (teleportRadius1 - dist) * teleportHeight / (teleportRadius1 - teleportRadius2);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	default:
+		break;
+	}
+	return marbleRadius;
+}
+
 void game::setupMarble(float deltaMs) {
 	tile *tile_from = m_maze->getTile(tx_prev, ty_prev);
 	tile *tile_to = m_maze->getTile(tx, ty);
-
-	static const float l = tileSize - wallThickness;
-	static const float l2 = l + bridgeArcThickness;
-	static const float a = l2 / 2.f + marbleRadius;
-	static const float b = l2 / l * bridgeArcHeight + marbleRadius;
 	
-	float maxY = marbleRadius;
-
-	if (tile_from->state == STATE_ITEM || tile_to->state == STATE_ITEM) {
-		mazeItem *item_from = m_maze->findItem(tile_from);
-		mazeItem *item_to = m_maze->findItem(tile_to);
-
-		if (item_from && item_from->type == ITEM_BRIDGE && (lastMoveAngle % 2)) {
-			float dx = abs(marblePos.x - startX);
-			if (dx < a) {
-				dx += a;
-				maxY = MAX(maxY, b / a * sqrtf(dx * (2.f * a - dx)));
-			} else {
-				maxY = MAX(maxY, marbleRadius);
-			}
-		}
-		if (item_to && item_to->type == ITEM_BRIDGE && (lastMoveAngle % 2)) {
-			float dx = abs(marblePos.x - startX);
-			dx -= tileSize - a;
-			if (dx > 0.f) {
-				maxY = MAX(maxY, b / a * sqrtf(dx * (2.f * a - dx)));
-			} else {
-				maxY = MAX(maxY, marbleRadius);
-			}
-		}
-		if (item_from && item_from->type == ITEM_TELEPORT) {
-			float dist = (lastMoveAngle % 2) ? abs(marblePos.x - startX) : abs(marblePos.z - startZ);
-			if (dist < teleportRadius2) {
-				maxY = MAX(maxY, marbleRadius + teleportHeight);
-			} else {
-				float h = (teleportRadius1 - dist) * teleportHeight / (teleportRadius1 - teleportRadius2);
-				maxY = MAX(maxY, marbleRadius + h);
-			}
-		}
-		if (item_to && item_to->type == ITEM_TELEPORT) {
-			float dist = (lastMoveAngle % 2) ? abs(marblePos.x - startX) : abs(marblePos.z - startZ);
-			dist = tileSize - dist;
-			if (dist < teleportRadius2) {
-				maxY = MAX(maxY, marbleRadius + teleportHeight);
-			} else {
-				float h = (teleportRadius1 - dist) * teleportHeight / (teleportRadius1 - teleportRadius2);
-				maxY = MAX(maxY, marbleRadius + h);
-			}
-		}
-	}
+	float dist = (lastMoveAngle % 2) ? abs(marblePos.x - startX) : abs(marblePos.z - startZ);
 	
 	if (tile_to->state == STATE_BLOCK && moving <= ticksPerMove / 2) {
 		marblePos.y -= fallSpeed * deltaMs / 1000.f;
@@ -301,7 +287,9 @@ void game::setupMarble(float deltaMs) {
 		lockToMarble = true;
 	} else {
 		fallSpeed = 0.f;
-		marblePos.y = maxY;
+
+		marblePos.y = MAX(marbleRadius, itemHeight(m_maze, tile_from, dist, lastMoveAngle));
+		marblePos.y = MAX(marblePos.y, itemHeight(m_maze, tile_to, tileSize - dist, lastMoveAngle));
 	}
 	
     m_marble = glm::translate(glm::mat4(1.f), marblePos) * marbleRotation;
@@ -331,7 +319,7 @@ void game::startPathing() {
 	tile *t;
 	mazeItem *item;
 	if ((t = m_maze->getTile(tx, ty)) && (t->state == STATE_ITEM) && (item = m_maze->findItem(t)) && (item->type == ITEM_BRIDGE)) {
-		if (lastMoveAngle == 1 || lastMoveAngle == 3) {
+		if (lastMoveAngle % 2) {
 			tz = 1;
 		}
 	}
@@ -459,7 +447,29 @@ void game::tick() {
 		}
 	}
 
-	handleInput();
+	if (restartDelay > 0) {
+		--restartDelay;
+		if (restartDelay == 0) {
+			teleportToStart(false);
+			SND_HOLE.play();
+		}
+	}
+
+	const Uint8 *key_down = SDL_GetKeyboardState(nullptr);
+	
+	if (key_down[SDL_SCANCODE_UP] || key_down[SDL_SCANCODE_W]) {
+		offsetMove(0);
+		pathfinder = nullptr;
+	} else if (key_down[SDL_SCANCODE_DOWN] || key_down[SDL_SCANCODE_S]) {
+		offsetMove(2);
+		pathfinder = nullptr;
+	} else if (key_down[SDL_SCANCODE_A]) {
+		offsetMove(1);
+		pathfinder = nullptr;
+	} else if (key_down[SDL_SCANCODE_D]) {
+		offsetMove(3);
+		pathfinder = nullptr;
+	}
 }
 
 void game::updateMatrices() {
@@ -489,156 +499,34 @@ void game::updateMatrices() {
 	lastTime = now;
 }
 
-void game::handleInput() {
-	const Uint8* keys = SDL_GetKeyboardState(nullptr);
-	static bool pressed_space = false;
-
-	bool up, down, left, right, strafeleft, straferight, use, reset, autoplay, changemusic;
-
-	up = (keys[SDL_SCANCODE_UP] != 0) || (keys[SDL_SCANCODE_W] != 0);
-	down = (keys[SDL_SCANCODE_DOWN] != 0) || (keys[SDL_SCANCODE_S] != 0);
-	left = keys[SDL_SCANCODE_LEFT] != 0;
-	right = keys[SDL_SCANCODE_RIGHT] != 0;
-	strafeleft = keys[SDL_SCANCODE_A] != 0;
-	straferight = keys[SDL_SCANCODE_D] != 0;
-	use = keys[SDL_SCANCODE_SPACE] != 0;
-	reset = keys[SDL_SCANCODE_R] != 0;
-	autoplay = keys[SDL_SCANCODE_P] != 0;
-	changemusic = keys[SDL_SCANCODE_M] != 0;
-
-	if (restartDelay > 0) {
-		--restartDelay;
-		if (moving == 0) {
-			// Keep moving forward when falling
-			float move = tileSize / ticksPerMove * MAX((1 - powf((fallingDelay - restartDelay) / 10.f, 2.f)), 0.f);
-			switch (lastMoveAngle) {
-			case 0:
-				marblePos.z -= move;
-				break;
-			case 1:
-				marblePos.x -= move;
-				break;
-			case 2:
-				marblePos.z += move;
-				break;
-			case 3:
-				marblePos.x += move;
-				break;
-			}
-		}
-		if (restartDelay == 0) {
-			teleportToStart(false);
-			SND_HOLE.play();
-		}
-	} else {
-		if (controller) {
-			use = use || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A);
-			reset = reset || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START);
-			autoplay = autoplay || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_X);
-			changemusic = changemusic || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_BACK);
-
-			static const short sens = 20000;
-
-			short l_x = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
-			strafeleft = strafeleft || (l_x < -sens);
-			straferight = straferight || (l_x > sens);
-
-			short l_y = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
-			up = up || (l_y < -sens);
-			down = down || (l_y > sens);
-
-			short r_x = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
-			left = left || (r_x < -sens);
-			right = right || (r_x > sens);
-
-			up = up || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP);
-			down = down || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-			left = left || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
-			right = right || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
-		}
-
-		if (up) {
-			offsetMove(0);
-			pathfinder = nullptr;
-		} else if (down) {
-			offsetMove(2);
-			pathfinder = nullptr;
-		}
-
-		if (use) {
-			if (!pressed_space && useItem()) {
-				pressed_space = true;
-			}
-		} else {
-			pressed_space = false;
-		}
-
-		if (strafeleft) {
-			offsetMove(1);
-			pathfinder = nullptr;
-		} else if (straferight) {
-			offsetMove(3);
-			pathfinder = nullptr;
-		}
-	}
-
-	static bool pressed_p = false;
-	if (autoplay) {
-		if (!pressed_p) {
+void game::handleEvent(SDL_Event &e) {
+	switch (e.type) {
+	case SDL_KEYDOWN:
+		if (!e.key.repeat) switch (e.key.keysym.scancode) {
+		case SDL_SCANCODE_P:
 			startPathing();
-			pressed_p = true;
-		}
-	} else {
-		pressed_p = false;
-	}
-
-	static bool pressed_r = false;
-	if (reset) {
-		if (!pressed_r) {
+			break;
+		case SDL_SCANCODE_R:
 			pathfinder = nullptr;
 			teleportToStart(true);
-			pressed_r = true;
-		}
-	} else {
-		pressed_r = false;
-	}
-
-	static bool pressed_m = false;
-	if (changemusic) {
-		if (!pressed_m) {
+			break;
+		case SDL_SCANCODE_M:
 			loadMusic();
-			pressed_m = true;
+			break;
+		case SDL_SCANCODE_LEFT:
+			angleFacing = (angleFacing + 1) % 4;
+			break;
+		case SDL_SCANCODE_RIGHT:
+			angleFacing = (angleFacing + 3) % 4;
+			break;
+		case SDL_SCANCODE_SPACE:
+			useItem();
+			break;
+		default:
+			break;
 		}
-	} else {
-		pressed_m = false;
+		break;
+	default:
+		break;
 	}
-
-    static bool leftPressed = false;
-    if (left) {
-        if (!leftPressed) {
-            ++angleFacing;
-            if (angleFacing > 3) {
-                angleFacing = 0;
-            }
-            leftPressed = true;
-        }
-    } else {
-        leftPressed = false;
-    }
-    static bool rightPressed = false;
-    if (right) {
-        if (!rightPressed) {
-            --angleFacing;
-            if (angleFacing < 0) {
-                angleFacing = 3;
-            }
-            rightPressed = true;
-        }
-    } else {
-        rightPressed = false;
-    }
-}
-
-void game::handleEvent(SDL_Event &e) {
-
 }

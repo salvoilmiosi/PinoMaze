@@ -33,6 +33,9 @@ bool loadMusicFromResource(music &mus, const char *RES_ID);
 #define DECLARE_SHADER(name) DECLARE_BINARY(SHADER_NAME(name))
 #define SHADER_RESOURCE(name) BINARY_RESOURCE(SHADER_NAME(name))
 
+DECLARE_BINARY(resource_materials_txt)
+DECLARE_BINARY(resource_options_txt)
+
 DECLARE_SHADER(s_billboard_v)
 DECLARE_SHADER(s_billboard_g)
 DECLARE_SHADER(s_billboard_f)

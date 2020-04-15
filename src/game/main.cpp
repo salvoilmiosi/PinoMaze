@@ -68,9 +68,13 @@ int main (int argc, char **argv) {
 		return -3;
 	}
 
-	if (!openResourceFiles(argv[0], "resource.dat", "music.dat")) {
-		std::cerr << "Could not open resource files" << std::endl;
+	if (!openResourceFiles(argv[0], "resource.dat")) {
+		std::cerr << "Could not open resource.dat" << std::endl;
 		return -4;
+	}
+
+	if (!openResourceFiles(argv[0], "music.dat")) {
+		std::cerr << "Could not open music.dat" << std::endl;
 	}
     
 	std::unique_ptr<maze> m_maze = nullptr;

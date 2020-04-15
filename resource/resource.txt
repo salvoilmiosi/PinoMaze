@@ -16,8 +16,8 @@ IDT_FLOOR_TEXTURE       "textures/t_floor.png"
 IDT_FLOOR_NORMALS       "textures/t_floor_n.png"
 IDT_MARBLE_TEXTURE      "textures/t_marble.png"
 IDT_MARBLE_NORMALS      "textures/t_marble_n.png"
-IDT_PLASTER_TEXTURE     "textures/t_plaster.png"
-IDT_PLASTER_NORMALS     "textures/t_plaster_n.png"
+IDT_CARPET_TEXTURE      "textures/t_carpet.png"
+IDT_CARPET_NORMALS      "textures/t_CARPET_n.png"
 IDT_CEILING_TEXTURE     "textures/t_ceiling.png"
 IDT_CEILING_NORMALS     "textures/t_ceiling_n.png"
 IDT_FONT_TEXTURE        "textures/t_text.png"
@@ -29,8 +29,6 @@ IDT_TELEPORT_TEXTURE    "textures/t_teleport.png"
 IDT_TELEPORT_NORMALS    "textures/t_teleport_n.png"
 IDT_TP_TILES_TEXTURE    "textures/t_tp_tiles.png"
 IDT_PARTICLE_TEXTURE    "textures/t_particle.png"
-
-IDM_MATERIALS           "materials.txt"
 
 # Game sounds
 

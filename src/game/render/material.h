@@ -1,9 +1,9 @@
 #ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
-#include "../resources.h"
+#include "../engine/texture.h"
 
-#include "texture.h"
+#include "../resources.h"
 
 #include <string>
 #include <map>

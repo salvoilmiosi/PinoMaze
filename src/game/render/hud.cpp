@@ -5,7 +5,8 @@
 
 #include "../resources.h"
 #include "../options.h"
-#include "../engine/material.h"
+
+#include "material.h"
 
 hud::hud(context *m_context) : m_context(m_context),
 	m_shader("hud", SHADER_RESOURCE(s_hud_v), SHADER_RESOURCE(s_hud_f))

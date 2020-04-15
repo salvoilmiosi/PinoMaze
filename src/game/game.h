@@ -4,16 +4,18 @@
 #include "maze.h"
 #include "a_star.h"
 
-#include "engine/material.h"
 #include "engine/context.h"
 
+#include "render/material.h"
+
+#include <glm/glm.hpp>
 #include <memory>
 
 struct camera {
-	float yaw;
-	float pitch;
-	float roll;
-	glm::vec3 position;
+	float yaw{0.f};
+	float pitch{0.f};
+	float roll{0.f};
+	glm::vec3 position{0.f};
 };
 
 class game {
@@ -53,8 +55,6 @@ private:
 
 	music currentMusic;
 
-	SDL_GameController *controller = nullptr;
-
 private:
 	int tickCount = 0;
 
@@ -80,7 +80,6 @@ private:
 	float fallSpeed = 0.f;
 
 private:
-	void handleInput();
     void rollMarble(glm::vec3 delta);
     void teleportTo(int _x, int _y);
     bool offsetMove(int angleOffset);

@@ -8,11 +8,11 @@
 #include "maze.h"
 
 #include "../options.h"
-#include "../engine/material.h"
 #include "../engine/shader.h"
 #include "../engine/context.h"
 
 #include "world_shader.h"
+#include "material.h"
 
 static void addArcVerts(std::vector<base_vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float h, float texSize, bool ext);
 static void addArcWallVerts(std::vector<base_vertex> &vertices, std::vector<GLuint> &indices, float z, float w, float texSize);
