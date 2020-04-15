@@ -35,8 +35,13 @@ public:
 	}
 
 	void render() {
+		m_game.updateMatrices();
 		m_world.render();
 		m_hud.render();
+	}
+
+	void handleEvent(SDL_Event &event) {
+		m_game.handleEvent(event);
 	}
 
 private:
@@ -93,6 +98,7 @@ int main (int argc, char **argv) {
 	con.window_title = "PinoMaze";
 	con.vsync = false;
 	con.fps_limit = 300;
+	con.tickrate = 60;
 
     try {
 	    game_engine(&con, m_maze.get()).mainLoop();

@@ -16,17 +16,11 @@ out vec4 shadowCoords;
 out vec3 tangentLight;
 out vec3 tangentCamera;
 
-uniform float tpTileSize;
-
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 lightMatrix;
 
 uniform float refractionHeight;
-
-uniform bool enableTpTiles;
-
-flat out float enableTpTilesOut;
 
 struct light {
     vec3 ambient;
@@ -39,16 +33,7 @@ uniform light sun;
 
 void main() {
     texCoords = uv;
-
-    tpTileCoords = vec2(0.0);
-    enableTpTilesOut = 0.0;
-    float dx = 0.5 - uv.x;
-    float dy = 0.5 - uv.y;
-    if (dx * dx + dy * dy < 0.25) {
-        vec2 transformedUv = uv * 2.0 - vec2(0.5);
-        tpTileCoords = tpUvOffset + tpTileSize * transformedUv;
-        enableTpTilesOut = 1.0;
-    }
+    tpTileCoords = tpUvOffset;
 
     mat4 modelViewMatrix = viewMatrix * modelMatrix;
 

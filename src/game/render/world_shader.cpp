@@ -35,7 +35,6 @@ world_shader::world_shader(game *m_game) :
     add_uniform("shadowBias", &shadowBias);
     add_uniform("shadowTexelSize", &shadowTexelSize);
     add_uniform("refractionHeight", &refractionHeight);
-    add_uniform("tpTileSize", &tpTileSize);
 
     shadowMap.setFilter(GL_NEAREST);
     shadowMap.setWrapParam(GL_CLAMP_TO_EDGE);

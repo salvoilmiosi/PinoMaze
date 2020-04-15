@@ -7,9 +7,9 @@ constexpr float blockHeight = 0.15f;
 constexpr float startBoxSize = 0.8f;
 constexpr float startBoxHeight = 0.01f;
 
-constexpr float teleportRadius1 = 0.48f;
+constexpr float teleportRadius1 = 0.46f;
 constexpr float teleportRadius2 = 0.33f;
-constexpr float teleportHeight = 0.05f;
+constexpr float teleportHeight = 0.06f;
 
 constexpr float marbleRadius = 0.07f;
 
@@ -33,13 +33,13 @@ constexpr float skyboxSize = 20.f;
 constexpr int ticksPerMove = 25;
 constexpr int fallingDelay = 40;
 
-constexpr float gravityAccel = 0.0012f;
+constexpr float gravityAccel = 9.8f;
 
 constexpr float cameraHeight = 0.26f;
 constexpr float cameraDistance = 0.33f;
 constexpr float cameraPitch = 15.f;
-constexpr float cameraSpeed = 0.1f;
-constexpr float cameraTurnSpeed = 0.12f;
+constexpr float cameraSpeed = 0.05f;
+constexpr float cameraTurnSpeed = 0.05f;
 
 constexpr float shadowArea = 4.f;
 

@@ -175,7 +175,7 @@ bool game::offsetMove(int angleOffset) {
 	return false;
 }
 
-void game::setupCamera() {
+void game::setupCamera(float deltaMs) {
 	m_camera.position.x = marblePos.x;
 	m_camera.position.z = marblePos.z;
 
@@ -228,7 +228,7 @@ void game::setupCamera() {
 	if (lockToMarble) {
 		float cameraToPitch = atan2f(m_camera.position.y - marblePos.y, radius);
 		float delta = cameraToPitch - m_camera.pitch;
-		m_camera.pitch += delta * 0.05f;
+		m_camera.pitch += delta * cameraSpeed;
 	} else {
 		m_camera.pitch = pitch;
 	}
@@ -241,7 +241,7 @@ void game::setupCamera() {
 	m_view = m_roll * m_pitch * m_yaw * m_position;
 }
 
-void game::setupMarble() {
+void game::setupMarble(float deltaMs) {
 	tile *tile_from = m_maze->getTile(tx_prev, ty_prev);
 	tile *tile_to = m_maze->getTile(tx, ty);
 
@@ -296,8 +296,8 @@ void game::setupMarble() {
 	}
 	
 	if (tile_to->state == STATE_BLOCK && moving <= ticksPerMove / 2) {
-		marblePos.y -= fallSpeed;
-		fallSpeed += gravityAccel;
+		marblePos.y -= fallSpeed * deltaMs / 1000.f;
+		fallSpeed += gravityAccel * deltaMs / 1000.f;
 		lockToMarble = true;
 	} else {
 		fallSpeed = 0.f;
@@ -452,13 +452,7 @@ void game::tick() {
 	}
 
 	if (moving > 0) {
-		float endX = (tx + 0.5f) * tileSize;
-		float endZ = (ty + 0.5f) * tileSize;
-
 		--moving;
-
-		marblePos.x = endX - (endX - startX) * ((float)moving / ticksPerMove);
-		marblePos.z = endZ - (endZ - startZ) * ((float)moving / ticksPerMove);
 
 		if (moving == 0) {
 			endMove();
@@ -466,15 +460,28 @@ void game::tick() {
 	}
 
 	handleInput();
+}
 
+void game::updateMatrices() {
+	static float lastTime = SDL_GetTicks();
 	static glm::vec3 lastPos = marblePos;
+
+	float now = SDL_GetTicks();
+	float deltaMs = now - lastTime;
+
+	if (moving > 0) {
+		float moveAmt = MIN(1.f, deltaMs * (float) m_context->tickrate / (float) ticksPerMove / 1000.f);
+		marblePos.x += ((tx + 0.5f) * tileSize - startX) * moveAmt;
+		marblePos.z += ((ty + 0.5f) * tileSize - startZ) * moveAmt;
+	}
 
 	rollMarble(marblePos - lastPos);
 
-    setupMarble();
-	setupCamera();
+    setupMarble(deltaMs);
+	setupCamera(deltaMs);
 
 	lastPos = marblePos;
+	lastTime = now;
 }
 
 void game::handleInput() {
@@ -625,4 +632,8 @@ void game::handleInput() {
     } else {
         rightPressed = false;
     }
+}
+
+void game::handleEvent(SDL_Event &e) {
+
 }

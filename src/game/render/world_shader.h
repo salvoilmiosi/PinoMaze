@@ -33,7 +33,6 @@ private:
     float shadowBias = 0.003f;
     glm::vec2 shadowTexelSize;
     float refractionHeight;
-    float tpTileSize = 1.f / 16.f;
 
     light m_sun;
     material m_material;

@@ -115,7 +115,7 @@ void world::render() {
 
     m_shader.enableTpTiles = true;
     m_shader.tpTileSampler.bind(material::getTexture("TEX_TELEPORT_TILES"));
-    m_shader.apply_material("MAT_RUST");
+    m_shader.apply_material("MAT_TELEPORT");
     trunc_teleport.draw_instances();
     m_shader.enableTpTiles = false;
 

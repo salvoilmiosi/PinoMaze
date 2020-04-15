@@ -73,6 +73,7 @@ void engine::mainLoop() {
 				quit = true;
 				break;
 			default:
+				handleEvent(event);
 				break;
 			}
 		}

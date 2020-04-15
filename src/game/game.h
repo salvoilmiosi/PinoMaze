@@ -23,6 +23,8 @@ public:
 
 public:
     void tick();
+	void updateMatrices();
+	void handleEvent(SDL_Event &event);
 
 public:
     maze *m_maze;
@@ -91,8 +93,8 @@ private:
 	void endMove();
 	void teleportToStart(bool resetWon);
 
-	void setupCamera();
-	void setupMarble();
+	void setupCamera(float deltaMs);
+	void setupMarble(float deltaMs);
 
 	void loadMusic();
 };

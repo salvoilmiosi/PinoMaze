@@ -19,6 +19,7 @@ public:
 
     virtual void tick() = 0;
     virtual void render() = 0;
+    virtual void handleEvent(SDL_Event &event) = 0;
 
 private:
     context *con;
