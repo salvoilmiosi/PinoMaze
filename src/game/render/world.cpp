@@ -208,7 +208,7 @@ void world::initWalls() {
     std::vector<glm::mat4> matrices;
 
     for (wall &w : m->hwalls) {
-        for (x = 0; x<w.length(); ++x) {
+        for (x = 0; x<w.size(); ++x) {
             if (w[x]) {
                 matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize)));
             }
@@ -218,7 +218,7 @@ void world::initWalls() {
 
     x = 0;
     for (wall &w : m->vwalls) {
-        for (y = 0; y < w.length(); ++y) {
+        for (y = 0; y < w.size(); ++y) {
             if (w[y]) {
                 matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
                 matrix = glm::rotate(matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));

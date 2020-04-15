@@ -46,20 +46,22 @@ static void writeWalls(std::ofstream &ofs, maze *m) {
 	int w = m->width();
 	int h = m->height();
 
-	bitArray bits(w * (h + 1) + (w + 1) * h);
+	bitArray bits((w * (h + 1) + (w + 1) * h) * 2);
 	int i = 0;
 
 	for (y = 0; y <= h; ++y) {
 		for (x = 0; x < w; ++x) {
-			bits[i] = m->hwalls[y][x];
-			++i;
+			bits[i]   = (m->hwalls[y][x] & 0x2) >> 1;
+			bits[i+1] = (m->hwalls[y][x] & 0x1);
+			i += 2;
 		}
 	}
 
 	for (x = 0; x <= w; ++x) {
 		for (y = 0; y < h; ++y) {
-			bits[i] = m->vwalls[x][y];
-			++i;
+			bits[i]   = (m->vwalls[x][y] & 0x2) >> 1;
+			bits[i+1] = (m->vwalls[x][y] & 0x1);
+			i += 2;
 		}
 	}
 
@@ -70,13 +72,14 @@ static void writeWalls(std::ofstream &ofs, maze *m) {
 }
 
 void writeBlocks(std::ofstream &ofs, maze *m) {
+	bitArray bits(m->datasize());
 	for (int i = 0; i < m->datasize(); ++i) {
 		tile *t = m->getTile(i);
-		if (t->state == STATE_BLOCK) {
-			writeToBuffer(ofs, "BLOC", 4);
-			writeInt(ofs, i);
-		}
+		bits[i] = t->state == STATE_BLOCK;
 	}
+	writeToBuffer(ofs, "BLOC", 4);
+	writeInt(ofs, bits.length());
+	bits.write(ofs);
 }
 
 void writeStartend(std::ofstream &ofs, maze *m) {

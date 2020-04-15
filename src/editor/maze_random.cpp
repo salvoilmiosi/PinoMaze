@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 static void randomWall (wall &w, int probability) {
-    for (int i=0; i < w.length(); ++i) {
+    for (int i=0; i < w.size(); ++i) {
         w[i] = rand() % 100 < probability;
     }
 }

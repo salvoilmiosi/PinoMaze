@@ -1,37 +1,36 @@
 #ifndef __WALL_H__
 #define __WALL_H__
 
-extern const int WALL_THICKNESS;
+constexpr int WALL_THICKNESS = 2;
 
-class wall {
-private:
-    bool *data;
-    int _length;
+#include <vector>
 
-public:
-    wall(int length = 0);
-    wall(const wall &w);
+struct wall_section {
+    int value = 0;
 
-    virtual ~wall();
-
-    wall & operator = (const wall &w);
-
-public:
-    int length() const {
-        return _length;
+    template<typename T>
+    wall_section &operator = (T new_value) {
+        value = new_value;
+        return *this;
     }
 
-    void resizeWall(int newLength);
-
-    void moveWall(int offset);
-
-    bool isEmpty() const {
-        return data == nullptr || _length == 0;
+    operator int() const {
+        return value;
     }
+};
 
-    bool &operator [](int index) const;
+class wall : public std::vector<wall_section> {
+public:
+    wall(int length = 0) : std::vector<wall_section>(length) {};
 
-private:
-    void makeEmpty(int length);
+    void move(int offset) {
+        if (offset > 0) {
+            resize(size() - offset);
+            insert(begin(), offset, wall_section());
+        } else if (offset < 0) {
+            erase(begin(), begin() - offset);
+            resize(size() - offset);
+        }
+    }
 };
 #endif // __WALL_H__

@@ -7,7 +7,7 @@
 #include <memory>
 
 static const unsigned int MAGIC_NUMBER = 0xCDC1DAC5;
-static const unsigned int VERSION_NUMBER = 0x01000000;
+static const unsigned int VERSION_NUMBER = 0x02000000;
 
 void saveMaze(const char *filename, maze *m);
 

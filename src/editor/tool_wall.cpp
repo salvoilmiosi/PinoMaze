@@ -6,8 +6,8 @@
 
 void toolWall::makeWall(bool horizontal, int startPos, int endPos, int wallPos) {
     wall &w = horizontal ? m->hwalls[wallPos] : m->vwalls[wallPos];
-    if (endPos > w.length()) {
-        endPos = w.length();
+    if (endPos > w.size()) {
+        endPos = w.size();
     } else if (endPos < 0) {
         endPos = 0;
     }

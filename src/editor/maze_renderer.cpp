@@ -28,7 +28,7 @@ SDL_Color getTileColor(const tile &t) {
 }
 
 static void renderWall(maze *m, SDL_Renderer *renderer, const wall &w, bool horizontal, int pos) {
-    if (w.isEmpty()) return;
+    if (w.empty()) return;
 
     SDL_SetRenderDrawColor(renderer, COLOR_WALL);
 
@@ -45,7 +45,7 @@ static void renderWall(maze *m, SDL_Renderer *renderer, const wall &w, bool hori
         rect.h = m->tileSize + WALL_THICKNESS;
     }
 
-    for (int i=0; i<w.length(); ++i) {
+    for (int i=0; i<w.size(); ++i) {
         if (rect.x > windowWidth || rect.y > windowHeight)
             break;
 

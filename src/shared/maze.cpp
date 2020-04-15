@@ -125,11 +125,11 @@ void maze::resizeMaze(int newW, int newH) {
 
     hwalls.resize(newH + 1);
     for (wall &i : hwalls) {
-        i.resizeWall(newW);
+        i.resize(newW);
     }
     vwalls.resize(newW + 1);
     for (wall &i : vwalls) {
-        i.resizeWall(newH);
+        i.resize(newH);
     }
 
     maze newMaze(newW, newH);
@@ -157,7 +157,7 @@ void maze::resizeMaze(int newW, int newH) {
 void maze::moveWalls(int ox, int oy) {
     if (ox != 0) {
         for (wall &i : hwalls) {
-            i.moveWall(ox);
+            i.move(ox);
         }
     }
     if (oy < 0) {
@@ -169,7 +169,7 @@ void maze::moveWalls(int ox, int oy) {
     }
     if (oy != 0) {
         for (wall &i : vwalls) {
-            i.moveWall(oy);
+            i.move(oy);
         }
     }
     if (ox < 0) {

@@ -55,18 +55,61 @@ static void readWalls(maze *m, std::ifstream &ifs) {
     int h = m->height();
     int i = 0;
 
-    for (y = 0; y <= h; ++y) {
-        for (x = 0; x < w; ++x) {
-            m->hwalls[y][x] = bits[i];
-            ++i;
+    switch (m->version) {
+    case 0x01000000:
+        for (y = 0; y <= h; ++y) {
+            for (x = 0; x < w; ++x) {
+                m->hwalls[y][x] = bits[i];
+                ++i;
+            }
         }
-    }
 
-    for (x = 0; x <= w; ++x) {
-        for (y = 0; y < h; ++y) {
-            m->vwalls[x][y] = bits[i];
-            ++i;
+        for (x = 0; x <= w; ++x) {
+            for (y = 0; y < h; ++y) {
+                m->vwalls[x][y] = bits[i];
+                ++i;
+            }
         }
+        break;
+    case 0x02000000:
+        for (y = 0; y <= h; ++y) {
+            for (x = 0; x < w; ++x) {
+                m->hwalls[y][x] = ((int) bits[i] << 1) | (int) bits[i+1];
+                i += 2;
+            }
+        }
+
+        for (x = 0; x <= w; ++x) {
+            for (y = 0; y < h; ++y) {
+                m->vwalls[x][y] = ((int) bits[i] << 1) | (int) bits[i+1];
+                i += 2;
+            }
+        }
+        break;
+    }
+}
+
+static void readBlocks(maze *m, std::ifstream &ifs) {
+    switch (m->version) {
+    case 0x01000000:
+        if (tile *t = m->getTile(readInt(ifs))) {
+            t->state = STATE_BLOCK;
+        }
+        break;
+    case 0x02000000:
+    {
+        bitArray bits(readInt(ifs));
+        bits.read(ifs);
+        for (int i=0; i<bits.length(); ++i) {
+            if (bits[i]) {
+                tile *t = m->getTile(i);
+                t->state = STATE_BLOCK;
+            }
+        }
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -124,12 +167,8 @@ static bool readFrame(maze *m, std::ifstream &ifs) {
         break;
     }
 	case str2int("BLOC"):
-    {
-        i = readInt(ifs);
-        tile *t = m->getTile(i);
-        if (t) t->state = STATE_BLOCK;
+        readBlocks(m, ifs);
         break;
-    }
 	case str2int("TELE"):
     {
         unsigned char tpChar = readChar(ifs);
@@ -163,6 +202,7 @@ std::unique_ptr<maze> openMaze(const char *filename) {
     int version = readInt(ifs);
     switch (version) {
     case 0x01000000:
+    case 0x02000000:
         break;
     default:
         return nullptr;
