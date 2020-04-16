@@ -6,6 +6,7 @@ layout (location = 2) in vec3 normal;
 layout (location = 3) in vec3 tangent;
 layout (location = 4) in mat4 modelMatrix;
 layout (location = 8) in vec2 tpUvOffset;
+layout (location = 9) in float wallValue;
 
 out vec2 texCoords;
 out vec2 tpTileCoords;
@@ -15,6 +16,7 @@ out vec4 shadowCoords;
 
 out vec3 tangentLight;
 out vec3 tangentCamera;
+out vec4 wallColor;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -29,11 +31,19 @@ struct light {
     vec3 direction;
 };
 
+const vec4[] wallColors = vec4[](
+    vec4(0.0),
+    vec4(1.0),
+    vec4(0.0, 1.0, 0.0, 1.0),
+    vec4(1.0, 0.0, 1.0, 1.0)
+);
+
 uniform light sun;
 
 void main() {
     texCoords = uv;
     tpTileCoords = tpUvOffset;
+    wallColor = wallColors[int(wallValue)];
 
     mat4 modelViewMatrix = viewMatrix * modelMatrix;
 

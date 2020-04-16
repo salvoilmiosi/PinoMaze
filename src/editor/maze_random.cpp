@@ -105,7 +105,6 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
             b.bridge.y = rand() % h;
         } while (m->getTile(b.bridge.x, b.bridge.y)->state != STATE_FLOOR);
         m->addItem(b);
-        removeWallsAround(b.bridge.x, b.bridge.y);
     }
 
     for (int y=0; y<h; ++y) {

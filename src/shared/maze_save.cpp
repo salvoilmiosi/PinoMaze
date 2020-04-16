@@ -117,6 +117,7 @@ void writeItems(std::ofstream &ofs, maze *m) {
 		case ITEM_BRIDGE:
 			writeToBuffer(ofs, "BRDG", 4);
 			writeInt(ofs, item.bridge.y * w + item.bridge.x);
+			writeChar(ofs, item.bridge.wallValue);
 			break;
 		case ITEM_ARROW:
 			writeToBuffer(ofs, "ARRW", 4);

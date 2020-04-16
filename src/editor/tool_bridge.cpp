@@ -11,23 +11,28 @@ void toolBridge::handleEvent(SDL_Event &e) {
 
     switch (e.type) {
     case SDL_MOUSEBUTTONDOWN:
-        gridX = (e.button.x - m->clip_rect.x) / m->tileSize;
-        gridY = (e.button.y - m->clip_rect.y) / m->tileSize;
-        currentTile = m->getTile(gridX, gridY);
+        if (e.button.button == SDL_BUTTON_LEFT) {
+            gridX = (e.button.x - m->clip_rect.x) / m->tileSize;
+            gridY = (e.button.y - m->clip_rect.y) / m->tileSize;
+            currentTile = m->getTile(gridX, gridY);
 
-        if (currentTile == nullptr) break;
+            if (currentTile == nullptr) break;
 
-        if (currentTile->state == STATE_FLOOR) {
-            mazeItem b = makeItem(ITEM_BRIDGE);
-            b.bridge.x = gridX;
-            b.bridge.y = gridY;
-            m->addItem(b);
-        }
+            if (currentTile->state == STATE_FLOOR) {
+                mazeItem b = makeItem(ITEM_BRIDGE);
+                b.bridge.x = gridX;
+                b.bridge.y = gridY;
+                b.bridge.wallValue = wallValue;
+                m->addItem(b);
+            }
 
-        item = m->findItem(currentTile);
-        if (item != nullptr && item->type == ITEM_BRIDGE) {
-            state = EDIT_BUILDING;
-            selectedTile = currentTile;
+            item = m->findItem(currentTile);
+            if (item != nullptr && item->type == ITEM_BRIDGE) {
+                state = EDIT_BUILDING;
+                selectedTile = currentTile;
+            }
+        } else if (e.button.button == SDL_BUTTON_MIDDLE) {
+            wallValue = wallValue % 3 + 1;
         }
         break;
     case SDL_MOUSEBUTTONUP:

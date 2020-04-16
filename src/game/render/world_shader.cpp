@@ -15,11 +15,7 @@ world_shader::world_shader(game *m_game) :
     add_uniform("tpTileTexture", &tpTileSampler.gl_samplerid);
     add_uniform("shadowMap", &shadowSampler.gl_samplerid);
 
-    add_uniform("enableTexture", &enableTexture);
-    add_uniform("enableNormalMap", &enableNormalMap);
-    add_uniform("enableTpTiles", &enableTpTiles);
-    add_uniform("enableShadow", &enableShadow);
-    add_uniform("enableSpecular", &enableSpecular);
+    add_uniform("renderFlags", &renderFlags);
     
     add_uniform("sun.ambient", (glm::vec3 *) &m_sun.ambient);
     add_uniform("sun.diffuse", (glm::vec3 *) &m_sun.diffuse);
@@ -42,11 +38,25 @@ world_shader::world_shader(game *m_game) :
     
     shadowBias = 0.003f;
     shadowTexelSize = glm::vec2(1.f / shadowMap.width());
+
+    addFlags(ENABLE_SHADOWS | ENABLE_SPECULAR);
 }
 
 void world_shader::apply_material(const char *mat_name) {
     m_material = material::get(mat_name);
-    diffuseSampler.bind(material::getTexture(m_material.tex));
-    normalSampler.bind(material::getTexture(m_material.normals));
+    const texture &diffuse = material::getTexture(m_material.tex);
+    if (diffuse.width() > 0) {
+        diffuseSampler.bind(diffuse);
+        addFlags(ENABLE_TEXTURE);
+    } else {
+        removeFlags(ENABLE_TEXTURE);
+    }
+    const texture &normals = material::getTexture(m_material.normals);
+    if (normals.width() > 0) {
+        normalSampler.bind(normals);
+        addFlags(ENABLE_NORMALS);
+    } else {
+        removeFlags(ENABLE_NORMALS);
+    }
     update_uniforms();
 }

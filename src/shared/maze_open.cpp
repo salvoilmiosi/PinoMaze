@@ -74,29 +74,30 @@ static void readWalls(maze *m, std::ifstream &ifs) {
     case 0x02000000:
         for (y = 0; y <= h; ++y) {
             for (x = 0; x < w; ++x) {
-                m->hwalls[y][x] = ((int) bits[i] << 1) | (int) bits[i+1];
+                m->hwalls[y][x] = (bits[i] << 1) | bits[i+1];
                 i += 2;
             }
         }
 
         for (x = 0; x <= w; ++x) {
             for (y = 0; y < h; ++y) {
-                m->vwalls[x][y] = ((int) bits[i] << 1) | (int) bits[i+1];
+                m->vwalls[x][y] = (bits[i] << 1) | bits[i+1];
                 i += 2;
             }
         }
         break;
     case 0x02000001:
+    case 0x02000002:
         for (y = 0; y <= h; ++y) {
             for (x = 0; x < w; ++x) {
-                m->hwalls[y][x] = ((int) bits[i] << 2) | ((int) bits[i+1] << 1) || ((int) bits[i+2] << 2);
+                m->hwalls[y][x] = (bits[i] << 2) | (bits[i+1] << 1) | (bits[i+2] << 0);
                 i += 3;
             }
         }
 
         for (x = 0; x <= w; ++x) {
             for (y = 0; y < h; ++y) {
-                m->vwalls[x][y] = ((int) bits[i] << 2) | ((int) bits[i+1] << 1) || ((int) bits[i+2] << 2);
+                m->vwalls[x][y] = (bits[i] << 2) | (bits[i+1] << 1) | (bits[i+2] << 0);
                 i += 3;
             }
         }
@@ -113,6 +114,7 @@ static void readBlocks(maze *m, std::ifstream &ifs) {
         break;
     case 0x02000000:
     case 0x02000001:
+    case 0x02000002:
     {
         bitArray bits(readInt(ifs));
         bits.read(ifs);
@@ -169,6 +171,11 @@ static bool readFrame(maze *m, std::ifstream &ifs) {
         mazeItem b = makeItem(ITEM_BRIDGE);
         b.bridge.x = i%w;
         b.bridge.y = i/w;
+        if (m->version == 0x02000002) {
+            b.bridge.wallValue = readChar(ifs);
+        } else {
+            b.bridge.wallValue = 1;
+        }
         m->addItem(b);
         break;
     }
@@ -220,6 +227,7 @@ std::unique_ptr<maze> openMaze(const char *filename) {
     case 0x01000000:
     case 0x02000000:
     case 0x02000001:
+    case 0x02000002:
         break;
     default:
         return nullptr;

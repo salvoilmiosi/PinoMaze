@@ -5,6 +5,7 @@ in vec2 tpTileCoords;
 in vec3 worldNormal;
 in vec3 toCamera;
 in vec4 shadowCoords;
+in vec4 wallColor;
 
 in vec3 tangentLight;
 in vec3 tangentCamera;
@@ -18,14 +19,15 @@ uniform sampler2D normalTexture;
 uniform sampler2D shadowMap;
 uniform sampler2D tpTileTexture;
 
-uniform bool enableTexture = false;
-uniform bool enableNormalMap = false;
-uniform bool enableShadow = true;
-uniform bool enableSpecular = true;
-uniform bool enableTpTiles;
+#define ENABLE_TEXTURE      (1 << 0)
+#define ENABLE_NORMALS      (1 << 1)
+#define ENABLE_SHADOWS      (1 << 2)
+#define ENABLE_SPECULAR     (1 << 3)
+#define DRAWING_TELEPORT    (1 << 4)
+#define DRAWING_WALLS       (1 << 5)
 
-const float tpTileSize = 1.0 / 16.0;
-const float tpTextAlpha = 0.4;
+uniform int renderFlags;
+
 const vec4 tileDiffuse = vec4(0.21, 0.67, 1.0, 0.8);
 
 struct light {
@@ -72,16 +74,24 @@ float shadowLinear(sampler2D tex, vec2 uv, float compare) {
     return mix(top, bottom, fracPart.y);
 }
 
+bool checkFlag(int flag) {
+    return (renderFlags & flag) != 0;
+}
+
 void main() {
-    vec4 baseColor = enableTexture ? texture(diffuseTexture, texCoords) : vec4(1.0);
-    if (enableTpTiles && texCoords.x > 0.25 && texCoords.x < 0.75 && texCoords.y > 0.25 && texCoords.y < 0.75) {
+    vec4 baseColor = checkFlag(ENABLE_TEXTURE) ? texture(diffuseTexture, texCoords) : vec4(1.0);
+    if (checkFlag(DRAWING_TELEPORT) && texCoords.x > 0.25 && texCoords.x < 0.75 && texCoords.y > 0.25 && texCoords.y < 0.75) {
         vec2 transformedUv = texCoords * 2.0 - vec2(0.5);
-        vec4 tpTileColor = texture(tpTileTexture, tpTileCoords + tpTileSize * transformedUv) * tileDiffuse;
+        vec4 tpTileColor = texture(tpTileTexture, tpTileCoords + transformedUv / 16.0) * tileDiffuse;
         baseColor = mix(baseColor, tpTileColor, tpTileColor.w);
     }
 
+    if (checkFlag(DRAWING_WALLS)) {
+        baseColor *= wallColor;
+    }
+
     vec3 normal, lightVec, cameraVec;
-    if (enableNormalMap) {
+    if (checkFlag(ENABLE_NORMALS)) {
         // Tangent space
 		vec4 normalColor = texture(normalTexture, texCoords);
 		vec4 normalValue = 2.0 * normalColor - 1.0;
@@ -103,14 +113,14 @@ void main() {
     vec4 emissive = vec4(mat.emissive, 1.0);
 
     // Shadow map
-    float shadowAmt = enableShadow ? shadowLinear(shadowMap, shadowCoords.xy / shadowCoords.w, shadowCoords.z) : 1.0;
+    float shadowAmt = checkFlag(ENABLE_SHADOWS) ? shadowLinear(shadowMap, shadowCoords.xy / shadowCoords.w, shadowCoords.z) : 1.0;
 
     float cosTheta = dot(normal, lightVec) * shadowAmt;
     float diffuseAmt = max(cosTheta, 0.0);
     // Ambient and diffuse lighting
     color = baseColor * diffuse * (ambient + (1.0 - ambient) * diffuseAmt);
 
-    if (enableSpecular && cosTheta > 0.0) {
+    if (checkFlag(ENABLE_SPECULAR) && cosTheta > 0.0) {
         vec3 reflectedLight = reflect(lightVec, normal);
         float shineAmt = max(dot(cameraVec, reflectedLight), 0.0);
         shineAmt = pow(shineAmt, mat.shininess);

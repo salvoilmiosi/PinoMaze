@@ -6,12 +6,28 @@
 
 #include "material.h"
 
+#define ENABLE_TEXTURE      (1 << 0)
+#define ENABLE_NORMALS      (1 << 1)
+#define ENABLE_SHADOWS      (1 << 2)
+#define ENABLE_SPECULAR     (1 << 3)
+#define DRAWING_TELEPORT    (1 << 4)
+#define DRAWING_WALLS       (1 << 5)
+
 class world_shader : public vf_shader {
 public:
     world_shader(class game *m_game);
 
 public:
     void apply_material(const char *mat_name);
+
+public:
+    void addFlags(int flags) {
+        renderFlags |= flags;
+    }
+
+    void removeFlags(int flags) {
+        renderFlags &= ~flags;
+    }
 
 private:
     glm::mat4 m_light;
@@ -25,11 +41,7 @@ private:
     framebuffer shadowBuffer;
 	texture shadowMap;
 
-    bool enableTexture = true;
-    bool enableNormalMap = true;
-    bool enableTpTiles = false;
-    bool enableShadow = true;
-    bool enableSpecular = true;
+    int renderFlags = 0;
     
     float shadowBias = 0.003f;
     glm::vec2 shadowTexelSize;

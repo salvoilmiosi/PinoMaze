@@ -93,8 +93,10 @@ void world::render() {
     m_shader.apply_material("MAT_PILLAR");
     m_pillar.draw_instances();
 
+    m_shader.addFlags(DRAWING_WALLS);
     m_shader.apply_material("MAT_BRICKS");
     m_wall.draw_instances();
+    m_shader.removeFlags(DRAWING_WALLS);
 
     m_shader.apply_material("MAT_START");
     m_start.draw_instances();
@@ -107,11 +109,11 @@ void world::render() {
 
     m_bridge.render(m_shader);
 
-    m_shader.enableTpTiles = true;
+    m_shader.addFlags(DRAWING_TELEPORT);
     m_shader.tpTileSampler.bind(material::getTexture("TEX_TELEPORT_TILES"));
     m_shader.apply_material("MAT_TELEPORT");
     m_teleport.draw_instances();
-    m_shader.enableTpTiles = false;
+    m_shader.removeFlags(DRAWING_TELEPORT);
 
     renderRefraction();
     framebuffer::unbind();
@@ -199,18 +201,24 @@ void world::initGround() {
 }
 
 void world::initWalls() {
-    glm::mat4 matrix;
     int x = 0;
     int y = 0;
 
     maze *m = m_game->m_maze;
 
-    std::vector<glm::mat4> matrices;
+    struct wall_instance {
+        glm::mat4 matrix;
+        float wallValue;
+    };
+    std::vector<wall_instance> instances;
 
     for (wall &w : m->hwalls) {
         for (x = 0; x<w.size(); ++x) {
             if (w[x]) {
-                matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize)));
+                wall_instance data;
+                data.matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize));
+                data.wallValue = w[x];
+                instances.push_back(data);
             }
         }
         ++y;
@@ -220,15 +228,17 @@ void world::initWalls() {
     for (wall &w : m->vwalls) {
         for (y = 0; y < w.size(); ++y) {
             if (w[y]) {
-                matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
-                matrix = glm::rotate(matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
-                matrices.push_back(matrix);
+                wall_instance data;
+                data.matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
+                data.matrix = glm::rotate(data.matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
+                data.wallValue = w[y];
+                instances.push_back(data);
             }
         }
         ++x;
     }
 
-    m_wall.update_matrices(2, matrices.data(), matrices.size(), 4);
+    m_wall.update_instances(2, instances.data(), instances.size() * sizeof(wall_instance), {{4, ATTR_MAT4}, {9, ATTR_FLOAT}});
 }
 
 void world::initItems() {
@@ -256,12 +266,12 @@ void world::initItems() {
 
     std::vector<glm::mat4> arrowMatrices;
     
-    struct tp_instance_data {
+    struct tp_instance {
         glm::mat4 matrix;
         glm::vec2 uv;
     };
     
-    std::vector<tp_instance_data> tp_instances;
+    std::vector<tp_instance> tp_instances;
 
     for (std::pair<const int, mazeItem> &it : m->items) {
         switch(it.second.type) {
@@ -274,7 +284,7 @@ void world::initItems() {
             break;
         case ITEM_TELEPORT:
         {
-            tp_instance_data tpdata;
+            tp_instance tpdata;
             unsigned char c = it.second.teleport.tpChar;
             tpdata.uv.x = (1.f / 16.f) * (c % 16);
             tpdata.uv.y = (1.f / 16.f) * (c / 16);
@@ -293,5 +303,5 @@ void world::initItems() {
     }
 
     m_arrow.update_matrices(2, arrowMatrices.data(), arrowMatrices.size(), 4);
-    m_teleport.update_instances(2, tp_instances.data(), tp_instances.size() * sizeof(tp_instance_data), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
+    m_teleport.update_instances(2, tp_instances.data(), tp_instances.size() * sizeof(tp_instance), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
 }

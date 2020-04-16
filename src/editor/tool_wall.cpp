@@ -17,14 +17,16 @@ void toolWall::makeWall(bool horizontal, int startPos, int endPos, int wallPos) 
         endPos = tmp;
     }
     for (int i=startPos; i<endPos; ++i) {
-        w[i] = state == EDIT_BUILDING;
+        w[i] = (state == EDIT_BUILDING) * wallValue;
     }
 }
 
 void toolWall::handleEvent(SDL_Event &e) {
     switch (e.type) {
     case SDL_MOUSEBUTTONDOWN:
-        if (inMazeRect(e.button.x, e.button.y)) {
+        if (e.button.button == SDL_BUTTON_MIDDLE) {
+            wallValue = wallValue % 3 + 1;
+        } else if (inMazeRect(e.button.x, e.button.y)) {
             startX = endX = (e.button.x - m->clip_rect.x + m->tileSize/2) / m->tileSize;
             startY = endY = (e.button.y - m->clip_rect.y + m->tileSize/2) / m->tileSize;
             switch (e.button.button) {

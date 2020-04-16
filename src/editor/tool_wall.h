@@ -10,6 +10,8 @@ private:
     int endX;
     int endY;
 
+    int wallValue = 1;
+
 public:
     toolWall(Uint8 sn) : mazeEditorTool(sn) {}
 
