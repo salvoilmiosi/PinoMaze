@@ -30,6 +30,7 @@ void main() {
     vec3 toCamera = normalize(cameraPos - pos).xyz;
     vec3 up = vec3(0.0, 1.0, 0.0);
     vec3 right = cross(toCamera, up) * size0[0];
+    up = up * size0[0];
 
     vec2 uvOffset = vec2(0.0);
     if (type0[0] == TYPE_PARTICLE1) {
@@ -43,30 +44,28 @@ void main() {
     }
 
     // bottom left
-    pos -= right * 0.5;
-    pos.y -= size0[0] * 0.5;
+    pos -= (right + up) * 0.5;
     gl_Position = viewProj * vec4(pos, 1.0);
     texCoords = vec2(0.0, 0.5) + uvOffset;
     color = color0[0];
     EmitVertex();
 
     // top left
-    pos.y += size0[0];
+    pos += up;
     gl_Position = viewProj * vec4(pos, 1.0);
     texCoords = vec2(0.0, 0.0) + uvOffset;
     color = color0[0];
     EmitVertex();
 
     // bottom right
-    pos += right;
-    pos.y -= size0[0];
+    pos += right - up;
     gl_Position = viewProj * vec4(pos, 1.0);
     texCoords = vec2(0.5, 0.5) + uvOffset;
     color = color0[0];
     EmitVertex();
 
     // top right
-    pos.y += size0[0];
+    pos += up;
     gl_Position = viewProj * vec4(pos, 1.0);
     texCoords = vec2(0.5, 0.0) + uvOffset;
     color = color0[0];

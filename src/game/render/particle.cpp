@@ -10,7 +10,8 @@
 
 #include <iostream>
 
-#define MAX_PARTICLES 50000
+#define MAX_PARTICLES 2000
+#define NUM_SOURCES 5
 
 #define TYPE_NONE      0.f
 #define TYPE_SOURCE    1.f
@@ -80,38 +81,37 @@ void particle_system::tick() {
     velocity *= 0.96f;
     velocity += position - lastPosition;
     lastPosition = position;
+    
+    particle sources[NUM_SOURCES];
+    size_t i = 0;
 
-    float count = 0.f;
-    float force = 0.f;
-
-    if (m_game->teleportTimer > 65) {
+    if (m_game->teleportTimer >= teleportTicks - 10) {
         velocity = glm::vec3(0.f);
-        count += 100.f;
-        force = 0.8f;
+        for (float count = 100.f; count > 0.f && i < NUM_SOURCES; count -= 50.f, ++i) {
+            sources[i].type = TYPE_SOURCE;
+            sources[i].age = MIN(count, 50.f);
+            sources[i].position = position;
+            sources[i].velocity = glm::vec3(0.f, 0.6f, 0.f);
+            sources[i].color.x = 0.8f;
+            sources[i].color.y = rand() / (float) RAND_MAX;
+            sources[i].color.z = rand() / (float) RAND_MAX;
+            sources[i].size = marbleRadius;
+        }
 	}
 	if (m_game->won) {
-        count += rand() % 15 + 15;
-        force = 0.3;
+        for (float count = rand() % 15 + 15; count > 0.f && i < NUM_SOURCES; count -= 50.f, ++i) {
+            sources[i].type = TYPE_SOURCE;
+            sources[i].age = MIN(count, 50.f);
+            sources[i].position = position;
+            sources[i].velocity = velocity + glm::vec3(0.f, 0.6f, 0.f);
+            sources[i].color.x = 0.3f;
+            sources[i].color.y = rand() / (float) RAND_MAX;
+            sources[i].color.z = rand() / (float) RAND_MAX;
+            sources[i].size = marbleRadius;
+        }
     }
-    
-    particle sources[5];
 
-    size_t i = 0;
-    while (count > 0.f && i < sizeof(sources) / sizeof(particle)) {
-        sources[i].type = TYPE_SOURCE;
-        sources[i].age = MIN(count, 50.f);
-        sources[i].position = position;
-        sources[i].velocity = velocity + glm::vec3(0.f, 0.6f, 0.f);
-        sources[i].color.x = force;
-        sources[i].color.y = rand() / (float) RAND_MAX;
-        sources[i].color.z = rand() / (float) RAND_MAX;
-        sources[i].size = marbleRadius;
-
-        count -= 50.f;
-        ++i;
-    }
-    
-    init_vao.update_vertices(0, sources, sizeof(particle) * i, particle_attr_list, true);
+    source_vao.update_vertices(0, sources, sizeof(particle) * i, particle_attr_list, true);
 }
 
 void particle_system::render() {
@@ -130,8 +130,8 @@ void particle_system::render() {
 
     tfbs[currentTFB].start();
 
-    init_vao.draw();
-    init_vao.update_vertices(0, nullptr, 0, particle_attr_list, true);
+    source_vao.draw();
+    source_vao.update_vertices(0, nullptr, 0, particle_attr_list, true);
     
     tfbs[currentVBO].draw_feedback();
     

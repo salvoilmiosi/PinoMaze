@@ -70,7 +70,7 @@ void game::teleportTo(int _x, int _y) {
 
 	endMove();
 
-	teleportTimer = 72;
+	teleportTimer = teleportTicks;
 	lockToMarble = false;
 }
 

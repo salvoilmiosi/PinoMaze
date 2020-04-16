@@ -100,7 +100,7 @@ static void readBlocks(maze *m, std::ifstream &ifs) {
     {
         bitArray bits(readInt(ifs));
         bits.read(ifs);
-        for (int i=0; i<bits.length(); ++i) {
+        for (int i=0; i < m->width() * m->height(); ++i) {
             if (bits[i]) {
                 tile *t = m->getTile(i);
                 t->state = STATE_BLOCK;

@@ -30,7 +30,7 @@ public:
 		return true;
 	}
 
-	bool play(int loops = 0, int chan = -1, float volume = 0.1f) {
+	bool play(int loops = 0, int chan = -1, float volume = 0.05f) {
 		channel = Mix_PlayChannel(chan, chunk, loops);
 		if (channel >= 0) {
 			Mix_Volume(channel, int(volume * MIX_MAX_VOLUME));

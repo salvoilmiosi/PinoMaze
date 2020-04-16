@@ -21,7 +21,7 @@ private:
 private:
     class game *m_game;
     
-    vertex_array init_vao{DRAW_POINTS};
+    vertex_array source_vao{DRAW_POINTS};
     transform_feedback_shader m_particle;
     geom_shader m_billboard;
 

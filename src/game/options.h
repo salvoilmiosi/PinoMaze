@@ -2,7 +2,7 @@
 #define __OPTIONS_H__
 
 constexpr float tileSize = 1.f;
-constexpr float blockHeight = 0.15f;
+constexpr float blockHeight = 0.07f;
 
 constexpr float startBoxSize = 0.8f;
 constexpr float startBoxHeight = 0.01f;
@@ -32,6 +32,7 @@ constexpr float skyboxSize = 20.f;
 
 constexpr int ticksPerMove = 25;
 constexpr int fallingDelay = 40;
+constexpr int teleportTicks = 72;
 
 constexpr float gravityAccel = 9.8f;
 
