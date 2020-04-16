@@ -6,7 +6,9 @@ constexpr int WALL_THICKNESS = 2;
 #include <vector>
 
 struct wall_section {
-    int value = 0;
+    int value;
+
+    wall_section(int value = 0) : value(value) {}
 
     template<typename T>
     wall_section &operator = (T new_value) {
@@ -21,7 +23,7 @@ struct wall_section {
 
 class wall : public std::vector<wall_section> {
 public:
-    wall(int length = 0) : std::vector<wall_section>(length) {};
+    wall(int length = 0, int value = 0) : std::vector<wall_section>(length, value) {};
 
     void move(int offset) {
         if (offset > 0) {

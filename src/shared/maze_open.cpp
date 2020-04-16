@@ -86,6 +86,21 @@ static void readWalls(maze *m, std::ifstream &ifs) {
             }
         }
         break;
+    case 0x02000001:
+        for (y = 0; y <= h; ++y) {
+            for (x = 0; x < w; ++x) {
+                m->hwalls[y][x] = ((int) bits[i] << 2) | ((int) bits[i+1] << 1) || ((int) bits[i+2] << 2);
+                i += 3;
+            }
+        }
+
+        for (x = 0; x <= w; ++x) {
+            for (y = 0; y < h; ++y) {
+                m->vwalls[x][y] = ((int) bits[i] << 2) | ((int) bits[i+1] << 1) || ((int) bits[i+2] << 2);
+                i += 3;
+            }
+        }
+        break;
     }
 }
 
@@ -97,6 +112,7 @@ static void readBlocks(maze *m, std::ifstream &ifs) {
         }
         break;
     case 0x02000000:
+    case 0x02000001:
     {
         bitArray bits(readInt(ifs));
         bits.read(ifs);
@@ -203,6 +219,7 @@ std::unique_ptr<maze> openMaze(const char *filename) {
     switch (version) {
     case 0x01000000:
     case 0x02000000:
+    case 0x02000001:
         break;
     default:
         return nullptr;

@@ -109,7 +109,7 @@ static void handleEvent(SDL_Event &e) {
     case SDL_KEYDOWN:
         switch (e.key.keysym.scancode) {
         case SDL_SCANCODE_R:
-            setMaze(generateRandomMaze(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE));
+            setMaze(generateRandomMaze(mainMaze->width(), mainMaze->height()));
             setStatus("Random maze generated");
             break;
         case SDL_SCANCODE_O:

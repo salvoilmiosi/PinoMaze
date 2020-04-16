@@ -46,22 +46,24 @@ static void writeWalls(std::ofstream &ofs, maze *m) {
 	int w = m->width();
 	int h = m->height();
 
-	bitArray bits((w * (h + 1) + (w + 1) * h) * 2);
+	bitArray bits((w * (h + 1) + (w + 1) * h) * 3);
 	int i = 0;
 
 	for (y = 0; y <= h; ++y) {
 		for (x = 0; x < w; ++x) {
-			bits[i]   = (m->hwalls[y][x] & 0x2) >> 1;
-			bits[i+1] = (m->hwalls[y][x] & 0x1);
-			i += 2;
+			bits[i]   = (m->hwalls[y][x] & 0x4) >> 2;
+			bits[i+1] = (m->hwalls[y][x] & 0x2) >> 1;
+			bits[i+2] = (m->hwalls[y][x] & 0x1);
+			i += 3;
 		}
 	}
 
 	for (x = 0; x <= w; ++x) {
 		for (y = 0; y < h; ++y) {
-			bits[i]   = (m->vwalls[x][y] & 0x2) >> 1;
-			bits[i+1] = (m->vwalls[x][y] & 0x1);
-			i += 2;
+			bits[i]   = (m->vwalls[x][y] & 0x4) >> 2;
+			bits[i+1] = (m->vwalls[x][y] & 0x2) >> 1;
+			bits[i+2] = (m->vwalls[x][y] & 0x1);
+			i += 3;
 		}
 	}
 

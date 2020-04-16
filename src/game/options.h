@@ -44,6 +44,6 @@ constexpr float cameraTurnSpeed = 0.05f;
 
 constexpr float shadowArea = 4.f;
 
-constexpr float musicVolume = 0.6f;
+constexpr float musicVolume = 0.2f;
 
 #endif // __OPTIONS_H__

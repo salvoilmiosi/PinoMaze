@@ -30,7 +30,10 @@ SDL_Color getTileColor(const tile &t) {
 static void renderWall(maze *m, SDL_Renderer *renderer, const wall &w, bool horizontal, int pos) {
     if (w.empty()) return;
 
-    SDL_SetRenderDrawColor(renderer, COLOR_WALL);
+    SDL_Color wall_colors[7];
+    wall_colors[0] = COLOR_WALL;
+    wall_colors[1] = {0x00, 0xff, 0x00, 0xff};
+    wall_colors[2] = {0xff, 0x00, 0x00, 0xff};
 
     SDL_Rect rect;
     if (horizontal) {
@@ -50,6 +53,7 @@ static void renderWall(maze *m, SDL_Renderer *renderer, const wall &w, bool hori
             break;
 
         if (w[i] && rect.x + rect.w >= 0 && rect.y + rect.h >= 0) {
+            SDL_SetRenderDrawColor(renderer, wall_colors[w[i] - 1]);
             SDL_RenderFillRect(renderer, &rect);
         }
         if (horizontal) {
