@@ -127,7 +127,7 @@ void world::render(float deltaNano) {
         m_marble.draw_instances();
     }
 
-    m_particles.render();
+    m_particles.render(deltaNano);
 }
 
 void world::renderRefraction() {

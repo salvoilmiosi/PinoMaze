@@ -114,15 +114,12 @@ void particle_system::tick() {
     source_vao.update_vertices(0, sources, sizeof(particle) * i, particle_attr_list, true);
 }
 
-void particle_system::render() {
+void particle_system::render(float deltaNano) {
     static size_t currentVBO = 0;
 
     size_t currentTFB = (currentVBO + 1) & 1;
 
-    static float lastTime = SDL_GetTicks();
-    globalTime = SDL_GetTicks();
-    deltaMs = globalTime - lastTime;
-    lastTime = globalTime;
+    deltaMs = deltaNano / 1000000.f;
 
     randomSampler.bind(randomTexture);
 

@@ -13,7 +13,7 @@ public:
 
 public:
     void tick();
-    void render();
+    void render(float deltaNano);
 
 private:
     void createRandomTexture();
