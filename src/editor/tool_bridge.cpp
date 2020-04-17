@@ -22,7 +22,8 @@ void toolBridge::handleEvent(SDL_Event &e) {
                 mazeItem b = makeItem(ITEM_BRIDGE);
                 b.bridge.x = gridX;
                 b.bridge.y = gridY;
-                b.bridge.wallValue = wallValue;
+                b.bridge.wallUpper = wallValue;
+                b.bridge.wallLower = wallValue;
                 m->addItem(b);
             }
 

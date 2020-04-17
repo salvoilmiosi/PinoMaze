@@ -32,7 +32,6 @@ struct light {
 };
 
 const vec4[] wallColors = vec4[](
-    vec4(0.0),
     vec4(1.0),
     vec4(0.0, 1.0, 0.0, 1.0),
     vec4(1.0, 0.0, 1.0, 1.0)

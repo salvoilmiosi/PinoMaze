@@ -88,6 +88,7 @@ static void readWalls(maze *m, std::ifstream &ifs) {
         break;
     case 0x02000001:
     case 0x02000002:
+    case 0x02000003:
         for (y = 0; y <= h; ++y) {
             for (x = 0; x < w; ++x) {
                 m->hwalls[y][x] = (bits[i] << 2) | (bits[i+1] << 1) | (bits[i+2] << 0);
@@ -115,6 +116,7 @@ static void readBlocks(maze *m, std::ifstream &ifs) {
     case 0x02000000:
     case 0x02000001:
     case 0x02000002:
+    case 0x02000003:
     {
         bitArray bits(readInt(ifs));
         bits.read(ifs);
@@ -171,10 +173,18 @@ static bool readFrame(maze *m, std::ifstream &ifs) {
         mazeItem b = makeItem(ITEM_BRIDGE);
         b.bridge.x = i%w;
         b.bridge.y = i/w;
-        if (m->version == 0x02000002) {
-            b.bridge.wallValue = readChar(ifs);
-        } else {
-            b.bridge.wallValue = 1;
+        switch (m->version) {
+        case 0x02000002:
+            b.bridge.wallLower = b.bridge.wallUpper = readChar(ifs) - 1;
+            break;
+        case 0x02000003:
+            b.bridge.wallLower = readChar(ifs) - 1;
+            b.bridge.wallUpper = readChar(ifs) - 1;
+            break;
+        default:
+            b.bridge.wallLower = 0;
+            b.bridge.wallUpper = 0;
+            break;
         }
         m->addItem(b);
         break;
@@ -228,6 +238,7 @@ std::unique_ptr<maze> openMaze(const char *filename) {
     case 0x02000000:
     case 0x02000001:
     case 0x02000002:
+    case 0x02000003:
         break;
     default:
         return nullptr;

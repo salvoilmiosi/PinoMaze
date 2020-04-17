@@ -80,13 +80,14 @@ void bridge::init(maze *m) {
 			arcMatrices.push_back(matrix);
 
             wall_instance instance;
-            instance.wallValue = it.second.bridge.wallValue;
 			if (wallUp) {
                 instance.matrix = glm::translate(matrix, glm::vec3(0.f, 0.f, -tileSize * 0.5f));
+                instance.wallValue = it.second.bridge.wallUpper;
                 wallInstances.push_back(instance);
             }
 			if (wallDown) {
                 instance.matrix = glm::translate(matrix, glm::vec3(0.f, 0.f, tileSize * 0.5f));
+                instance.wallValue = it.second.bridge.wallLower;
                 wallInstances.push_back(instance);
             }
 		}

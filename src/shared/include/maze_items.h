@@ -42,7 +42,8 @@ struct _bridge {
     short y;
 
     tile upperTile;
-    int wallValue;
+    short wallUpper;
+    short wallLower;
 };
 
 struct _arrow {

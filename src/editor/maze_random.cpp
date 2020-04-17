@@ -1,18 +1,16 @@
 #include "maze_random.h"
 
 #include "maze_items.h"
+#include "grid3d.h"
 
 #include <cstdlib>
 #include <stack>
 #include <vector>
 
 struct cell {
-    int x, y;
-    int z = 0;
     bool visited = false;
-
     cell *neighbours[4];
-    size_t numNeighbours = 0;
+    size_t num_neighbours = 0;
 };
 
 std::unique_ptr<maze> generateRandomMaze(int w, int h) {
@@ -23,12 +21,10 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
     m->vwalls.clear();
     m->vwalls.resize(w + 1, wall(h, 1));
 
-    cell cells[w * h * 2];
+    grid3d<cell> cells(w, h, 2);
 
     auto getCell = [&](int x, int y, int z = 0) {
-        if (x < 0 || x >= w) return (cell *) nullptr;
-        if (y < 0 || y >= h) return (cell *) nullptr;
-        return cells + z * w * h + y * w + x;
+        return cells.getItem(x, y, z);
     };
 
     auto isBridge = [&](int x, int y) {
@@ -40,50 +36,52 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
         return false;
     };
 
-    auto addNeighbour = [&](cell *c, cell *target) {
-        if (target && c->numNeighbours < 4) {
-            tile *t = m->getTile(target->x, target->y);
-            if (t->state != STATE_BLOCK) {
-                c->neighbours[c->numNeighbours] = target;
-                ++c->numNeighbours;
+    auto addNeighbour = [&](cell *c, int x, int y, int z) {
+        cell *target = getCell(x, y, z);
+        if (target) {
+            tile *t = m->getTile(x, y);
+            if (t->state != STATE_BLOCK && c->num_neighbours < 4) {
+                c->neighbours[c->num_neighbours++] = target;
             }
         }
     };
 
-    auto addNeighbours = [&](cell *c) {
-        if (c->z == 1) {
-            if (isBridge(c->x, c->y)) {
-                addNeighbour(c, getCell(c->x - 1, c->y, isBridge(c->x - 1, c->y))); // left
-                addNeighbour(c, getCell(c->x + 1, c->y, isBridge(c->x + 1, c->y))); // right
+    auto addNeighbours = [&](int x, int y, int z) {
+        cell *c = getCell(x, y, z);
+        if (z == 1) {
+            if (isBridge(x, y)) {
+                addNeighbour(c, x - 1, y, isBridge(x - 1, y)); // left
+                addNeighbour(c, x + 1, y, isBridge(x + 1, y)); // right
             }
         } else {
-            addNeighbour(c, getCell(c->x, c->y-1, 0)); // top
-            addNeighbour(c, getCell(c->x, c->y+1, 0)); // bottom
-            if (!isBridge(c->x, c->y)) {
-                addNeighbour(c, getCell(c->x - 1, c->y, isBridge(c->x - 1, c->y))); // left
-                addNeighbour(c, getCell(c->x + 1, c->y, isBridge(c->x + 1, c->y))); // right
+            addNeighbour(c, x, y - 1, 0); // top
+            addNeighbour(c, x, y + 1, 0); // bottom
+            if (!isBridge(x, y)) {
+                addNeighbour(c, x - 1, y, isBridge(x - 1, y)); // left
+                addNeighbour(c, x + 1, y, isBridge(x + 1, y)); // right
             }
         }
-        return c->numNeighbours;
     };
 
-    auto checkNeighbours = [&](cell *c) {
-        std::vector<cell *> neighbours;
+    auto checkUnvisited = [&](cell *c) {
+        std::vector<cell *> unvisited;
 
-        for (size_t i=0; i < c->numNeighbours; ++i) {
+        for (size_t i=0; i<c->num_neighbours; ++i) {
             if (!c->neighbours[i]->visited) {
-                neighbours.push_back(c->neighbours[i]);
+                unvisited.push_back(c->neighbours[i]);
             }
         }
 
-        return neighbours;
+        return unvisited;
     };
 
-    auto removeWall = [&](cell *a, cell *b) {
-        if (a->x != b->x) {
-            m->vwalls[std::max(a->x, b->x)][a->y] = 0;
-        } else if (a->y != b->y) {
-            m->hwalls[std::max(a->y, b->y)][a->x] = 0;
+    auto removeWall = [&](cell *ca, cell *cb) {
+        auto a = cells.getCoords(ca);
+        auto b = cells.getCoords(cb);
+        if (a.x != b.x) {
+            m->vwalls[std::max(a.x, b.x)][a.y] = 0;
+        } else if (a.y != b.y) {
+            m->hwalls[std::max(a.y, b.y)][a.x] = 0;
         }
     };
 
@@ -94,13 +92,13 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
         m->vwalls[x + 1][y] = 0;
     };
 
-    m->getTile(0, 0)->state = STATE_START;
-    m->getTile(w - 1, h - 1)->state = STATE_END;
+    cell *start = getCell(rand() % w, rand() % h);
+    auto start_pos = cells.getCoords(start);
+    m->getTile(start_pos.x, start_pos.y)->state = STATE_START;
 
     size_t num_bridges = w * h / 10;
     for (size_t i=0; i < num_bridges; ++i) {
         mazeItem b = makeItem(ITEM_BRIDGE);
-        b.bridge.wallValue = 1;
         do {
             b.bridge.x = rand() % w;
             b.bridge.y = rand() % h;
@@ -121,35 +119,42 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
     for (int z = 0; z < 2; ++z) {
         for (int y = 0; y < h; ++y) {
             for (int x = 0; x < w; ++x) {
-                cell *c = getCell(x, y, z);
-                c->x = x;
-                c->y = y;
-                c->z = z;
+                addNeighbours(x, y, z);
             }
         }
     }
 
-    for (size_t i=0; i < w * h * 2; ++i) {
-        addNeighbours(cells + i);
-    }
-
     std::stack<cell *> cellStack;
-    cell *start = getCell(0, 0);
+
+    cell *furthest = start;
+    size_t max_size = 0;
+    
     start->visited = true;
     cellStack.push(start);
     while (!cellStack.empty()) {
         cell *current = cellStack.top();
         cellStack.pop();
 
-        auto unvisited = checkNeighbours(current);
+        auto unvisited = checkUnvisited(current);
         if (!unvisited.empty()) {
             cellStack.push(current);
             cell *target = unvisited[rand() % unvisited.size()];
             removeWall(current, target);
             target->visited = true;
             cellStack.push(target);
+            if (cellStack.size() > max_size) {
+                max_size = cellStack.size();
+                furthest = target;
+            }
         }
     }
+
+    auto exit_pos = cells.getCoords(furthest);
+    tile *exit_tile = m->getTile(exit_pos.x, exit_pos.y);
+    if (exit_tile->state == STATE_ITEM) {
+        m->removeItem(*(m->findItem(exit_tile)));
+    }
+    exit_tile->state = STATE_END;
 
     return m;
 }

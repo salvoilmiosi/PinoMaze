@@ -217,7 +217,7 @@ void world::initWalls() {
             if (w[x]) {
                 wall_instance data;
                 data.matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize));
-                data.wallValue = w[x];
+                data.wallValue = w[x] - 1;
                 instances.push_back(data);
             }
         }
@@ -231,7 +231,7 @@ void world::initWalls() {
                 wall_instance data;
                 data.matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
                 data.matrix = glm::rotate(data.matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
-                data.wallValue = w[y];
+                data.wallValue = w[y] - 1;
                 instances.push_back(data);
             }
         }
