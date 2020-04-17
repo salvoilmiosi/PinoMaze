@@ -25,7 +25,7 @@ public:
 
 public:
     void tick();
-    void render();
+    void render(float deltaMs);
 	void renderRefraction();
 
 private:

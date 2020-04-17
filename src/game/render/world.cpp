@@ -68,7 +68,7 @@ void world::tick() {
     m_particles.tick();
 }
 
-void world::render() {
+void world::render(float deltaMs) {
     glClear(GL_DEPTH_BUFFER_BIT);
     m_skybox.render();
 

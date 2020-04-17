@@ -18,7 +18,7 @@ public:
     void mainLoop();
 
     virtual void tick() = 0;
-    virtual void render() = 0;
+    virtual void render(float deltaMs) = 0;
     virtual void handleEvent(SDL_Event &event) = 0;
 
 private:

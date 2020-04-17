@@ -13,11 +13,9 @@ public:
     hud(context *m_context);
 
 public:
-    void render();
+    void render(float deltaMs);
 
 private:
-    float calculate_fps();
-
     context *m_context;
 
 	static const int STATUS_LENGTH = 128;

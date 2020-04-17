@@ -100,6 +100,7 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
     size_t num_bridges = w * h / 10;
     for (size_t i=0; i < num_bridges; ++i) {
         mazeItem b = makeItem(ITEM_BRIDGE);
+        b.bridge.wallValue = 1;
         do {
             b.bridge.x = rand() % w;
             b.bridge.y = rand() % h;

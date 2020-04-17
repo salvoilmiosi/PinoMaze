@@ -472,12 +472,8 @@ void game::tick() {
 	}
 }
 
-void game::updateMatrices() {
-	static float lastTime = SDL_GetTicks();
+void game::updateMatrices(float deltaMs) {
 	static glm::vec3 lastPos = marblePos;
-
-	float now = SDL_GetTicks();
-	float deltaMs = now - lastTime;
 
 	if (moving > 0) {
 		float moveAmt = deltaMs * (float) m_context->tickrate / (float) ticksPerMove / 1000.f;
@@ -496,7 +492,6 @@ void game::updateMatrices() {
 	setupCamera(deltaMs);
 
 	lastPos = marblePos;
-	lastTime = now;
 }
 
 void game::handleEvent(SDL_Event &e) {

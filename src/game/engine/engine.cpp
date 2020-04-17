@@ -1,6 +1,7 @@
 #include "engine.h"
 
 #include <iostream>
+#include <chrono>
 
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -46,25 +47,27 @@ void engine::mainLoop() {
 
 	static const float msPerTick = 1000.f / con->tickrate;
 	static const float msPerFrame = 1000.f / con->fps_limit;
-	float lastTime = SDL_GetTicks();
-	float lastFrame = SDL_GetTicks();
+	float lastTick = SDL_GetTicks();
+	float lastFrame = lastTick;
 	float delta = 0;
 	
 	bool quit = false;
 	while (!quit) {
-		int startTicks = SDL_GetTicks();
-		delta += (startTicks - lastTime) / msPerTick;
-		lastTime = startTicks;
+		float now = SDL_GetTicks();
+
+		delta += (now - lastTick) / msPerTick;
 		while (delta >= 1) {
 			tick();
 			--delta;
 		}
 
-		float frameTicks = SDL_GetTicks();
-		if (frameTicks - lastFrame > msPerFrame) {
-			render();
+		lastTick = now;
+
+		float deltaMs = now - lastFrame;
+		if (deltaMs > msPerFrame) {
+			render(deltaMs);
 			SDL_GL_SwapWindow(con->window);
-			lastFrame += msPerFrame;
+			lastFrame = now;
 		}
 
 		while (SDL_PollEvent(&event)) {

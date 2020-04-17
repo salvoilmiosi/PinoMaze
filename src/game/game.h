@@ -25,7 +25,7 @@ public:
 
 public:
     void tick();
-	void updateMatrices();
+	void updateMatrices(float deltaMs);
 	void handleEvent(SDL_Event &event);
 
 public:
