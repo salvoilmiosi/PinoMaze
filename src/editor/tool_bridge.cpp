@@ -7,33 +7,33 @@ void toolBridge::handleEvent(SDL_Event &e) {
     short gridY;
 
     tile *newTile = nullptr;
-    mazeItem *item;
 
     switch (e.type) {
     case SDL_MOUSEBUTTONDOWN:
+        gridX = (e.button.x - m->clip_rect.x) / m->tileSize;
+        gridY = (e.button.y - m->clip_rect.y) / m->tileSize;
+        currentTile = m->getTile(gridX, gridY);
+
+        if (currentTile == nullptr) break;
+
         if (e.button.button == SDL_BUTTON_LEFT) {
-            gridX = (e.button.x - m->clip_rect.x) / m->tileSize;
-            gridY = (e.button.y - m->clip_rect.y) / m->tileSize;
-            currentTile = m->getTile(gridX, gridY);
-
-            if (currentTile == nullptr) break;
-
             if (currentTile->state == STATE_FLOOR) {
                 mazeItem b = makeItem(ITEM_BRIDGE);
                 b.bridge.x = gridX;
                 b.bridge.y = gridY;
-                b.bridge.wallUpper = wallValue;
-                b.bridge.wallLower = wallValue;
                 m->addItem(b);
             }
 
-            item = m->findItem(currentTile);
-            if (item != nullptr && item->type == ITEM_BRIDGE) {
+            if (currentTile->state == STATE_ITEM) {
                 state = EDIT_BUILDING;
                 selectedTile = currentTile;
             }
         } else if (e.button.button == SDL_BUTTON_MIDDLE) {
-            wallValue = wallValue % 3 + 1;
+            mazeItem *item = m->findItem(currentTile);
+            if (item && item->type == ITEM_BRIDGE) {
+                item->bridge.wallLower = (item->bridge.wallLower + 1) % 3;
+                item->bridge.wallUpper = (item->bridge.wallUpper + 1) % 3;
+            }
         }
         break;
     case SDL_MOUSEBUTTONUP:
@@ -66,8 +66,7 @@ void toolBridge::handleEvent(SDL_Event &e) {
         case SDL_SCANCODE_BACKSPACE:
             if (selectedTile == nullptr) break;
 
-            item = m->findItem(selectedTile);
-            if (item != nullptr) {
+            if (mazeItem *item = m->findItem(selectedTile)) {
                 m->removeItem(*item);
             }
 

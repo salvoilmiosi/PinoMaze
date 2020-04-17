@@ -87,7 +87,9 @@ static bool loadMazeTiles(SDL_Renderer *renderer) {
         {0x66, 0x66, 0x66, 0xff}, COLOR_PATH,
         {0x33, 0x33, 0x33, 0xff}, COLOR_PATH_OLD,
         {0x00, 0x00, 0xff, 0xff}, COLOR_ARROW,
-        {0x00, 0x00, 0x00, 0xff}, COLOR_WALL,
+        {0x00, 0x00, 0x00, 0xff}, COLOR_WALL1,
+        {0x00, 0xff, 0x00, 0xff}, COLOR_WALL2,
+        {0x00, 0x80, 0xff, 0xff}, COLOR_WALL3,
         {0xff, 0xff, 0x00, 0xff}, COLOR_SELECTION,
         {0xff, 0x00, 0x00, 0xff}, COLOR_TPDEST,
     };
@@ -96,7 +98,7 @@ static bool loadMazeTiles(SDL_Renderer *renderer) {
 	if (surface == nullptr)
 		return false;
 
-    convertPalette(surface, convertMap, 9);
+    convertPalette(surface, convertMap, sizeof(convertMap) / sizeof(SDL_Color));
     SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0xff, 0x0, 0xff));
 
     RES_TILES_SIZE = surface->w / RES_TILES_NUM;
@@ -116,7 +118,7 @@ static bool loadTeleportTiles(SDL_Renderer *renderer) {
 	if (surface == nullptr)
 		return false;
 
-    convertPalette(surface, convertMap, 2);
+    convertPalette(surface, convertMap, sizeof(convertMap) / sizeof(SDL_Color));
 
     RES_TP_FONT_SIZE = surface->w / RES_TP_FONT_NUM;
     RES_TP_FONT = SDL_CreateTextureFromSurface(renderer, surface);
@@ -147,7 +149,7 @@ static bool loadTextTiles(SDL_Renderer *renderer) {
 	if (surface == nullptr)
 		return false;
 
-    convertPalette(surface, convertMap, 2);
+    convertPalette(surface, convertMap, sizeof(convertMap) / sizeof(SDL_Color));
 
     RES_TEXT_W = surface->w / RES_TEXT_NUM;
     RES_TEXT_H = surface->h / RES_TEXT_NUM;

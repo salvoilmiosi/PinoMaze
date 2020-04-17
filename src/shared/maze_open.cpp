@@ -178,8 +178,8 @@ static bool readFrame(maze *m, std::ifstream &ifs) {
             b.bridge.wallLower = b.bridge.wallUpper = readChar(ifs) - 1;
             break;
         case 0x02000003:
-            b.bridge.wallLower = readChar(ifs) - 1;
-            b.bridge.wallUpper = readChar(ifs) - 1;
+            b.bridge.wallLower = readChar(ifs);
+            b.bridge.wallUpper = readChar(ifs);
             break;
         default:
             b.bridge.wallLower = 0;

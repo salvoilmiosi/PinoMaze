@@ -31,9 +31,9 @@ static void renderWall(maze *m, SDL_Renderer *renderer, const wall &w, bool hori
     if (w.empty()) return;
 
     SDL_Color wall_colors[7];
-    wall_colors[0] = COLOR_WALL;
-    wall_colors[1] = {0x00, 0xff, 0x00, 0xff};
-    wall_colors[2] = {0xff, 0x00, 0xff, 0xff};
+    wall_colors[0] = COLOR_WALL1;
+    wall_colors[1] = COLOR_WALL2;
+    wall_colors[2] = COLOR_WALL3;
 
     SDL_Rect rect;
     if (horizontal) {
@@ -110,6 +110,21 @@ static void renderItem(maze *m, SDL_Renderer *renderer, const mazeItem &item) {
         dstrect.h = m->tileSize * 2;
 
         SDL_RenderCopy(renderer, RES_TILES, &srcrect, &dstrect);
+
+        srcrect = {
+            (5 + item.bridge.wallUpper) * RES_TILES_SIZE,
+            0, RES_TILES_SIZE, RES_TILES_SIZE
+        };
+        dstrect.h = m->tileSize;
+        SDL_RenderCopy(renderer, RES_TILES, &srcrect, &dstrect);
+
+        srcrect = {
+            (5 + item.bridge.wallLower) * RES_TILES_SIZE,
+            0, RES_TILES_SIZE, RES_TILES_SIZE
+        };
+        dstrect.y += m->tileSize;
+        SDL_RenderCopy(renderer, RES_TILES, &srcrect, &dstrect);
+
         break;
     }
     case ITEM_ARROW:

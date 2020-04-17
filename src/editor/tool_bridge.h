@@ -8,8 +8,6 @@ private:
     tile *currentTile;
     tile *selectedTile;
 
-    int wallValue = 1;
-
 public:
     toolBridge(Uint8 sn) : mazeEditorTool(sn) {
         currentTile = nullptr;
