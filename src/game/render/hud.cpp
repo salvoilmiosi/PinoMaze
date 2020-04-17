@@ -26,12 +26,12 @@ glm::vec2 hud::toWorldVector(int x, int y) {
     return glm::vec2(x * 2.f / m_context->window_width, -y * 2.f / m_context->window_height);
 }
 
-float calculate_fps(float deltaMs) {
+float calculate_fps(float deltaNano) {
 	static const int NUM_SAMPLES = 10;
 	static float frameTimes[NUM_SAMPLES];
 	static int currentFrame = 0;
 
-	frameTimes[currentFrame % NUM_SAMPLES] = deltaMs;
+	frameTimes[currentFrame % NUM_SAMPLES] = deltaNano;
 
 	++currentFrame;
 	size_t count = (currentFrame < NUM_SAMPLES) ? currentFrame : NUM_SAMPLES;
@@ -40,11 +40,11 @@ float calculate_fps(float deltaMs) {
 		frameTimeAverage += frameTimes[i];
 	}
 	frameTimeAverage /= count;
-	return 1000.f / frameTimeAverage;
+	return 1000000000.f / frameTimeAverage;
 }
 
-void hud::render(float deltaMs) {
-	std::string text = std::to_string((int) calculate_fps(deltaMs));
+void hud::render(float deltaNano) {
+	std::string text = std::to_string((int) calculate_fps(deltaNano));
 	
 	struct hud_vertex {
 		float x, y;

@@ -45,17 +45,17 @@ void engine::mainLoop() {
 	
 	SDL_Event event;
 
-	static const float msPerTick = 1000.f / con->tickrate;
-	static const float msPerFrame = 1000.f / con->fps_limit;
-	float lastTick = SDL_GetTicks();
-	float lastFrame = lastTick;
+	static const float nsPerTick = 1000000000.f / con->tickrate;
+	static const float nsPerFrame = 1000000000.f / con->fps_limit;
+	auto lastTick = std::chrono::high_resolution_clock::now();
+	auto lastFrame = lastTick;
 	float delta = 0;
 	
 	bool quit = false;
 	while (!quit) {
-		float now = SDL_GetTicks();
+		auto now = std::chrono::high_resolution_clock::now();
 
-		delta += (now - lastTick) / msPerTick;
+		delta += (now - lastTick).count() / nsPerTick;
 		while (delta >= 1) {
 			tick();
 			--delta;
@@ -63,9 +63,9 @@ void engine::mainLoop() {
 
 		lastTick = now;
 
-		float deltaMs = now - lastFrame;
-		if (deltaMs > msPerFrame) {
-			render(deltaMs);
+		float deltaNano = (now - lastFrame).count();
+		if (deltaNano > nsPerFrame) {
+			render(deltaNano);
 			SDL_GL_SwapWindow(con->window);
 			lastFrame = now;
 		}

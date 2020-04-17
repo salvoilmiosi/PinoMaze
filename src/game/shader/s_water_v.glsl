@@ -9,10 +9,10 @@ out vec3 toCamera;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
+uniform vec4 cameraPosition;
 
 void main() {
     vec4 vectorPosition = modelMatrix * vec4(position, 1.0);
-    vec4 cameraPosition = inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0);
     vec4 cameraVec = vectorPosition - cameraPosition;
 
     clipSpace = projectionMatrix * viewMatrix * vectorPosition;

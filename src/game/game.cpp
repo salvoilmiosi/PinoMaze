@@ -169,7 +169,7 @@ bool game::offsetMove(int angleOffset) {
 	return false;
 }
 
-void game::setupCamera(float deltaMs) {
+void game::setupCamera(float deltaNano) {
 	m_camera.position.x = marblePos.x;
 	m_camera.position.z = marblePos.z;
 
@@ -275,15 +275,15 @@ float itemHeight(maze *m_maze, tile *t, float dist, int angle) {
 	return marbleRadius;
 }
 
-void game::setupMarble(float deltaMs) {
+void game::setupMarble(float deltaNano) {
 	tile *tile_from = m_maze->getTile(tx_prev, ty_prev);
 	tile *tile_to = m_maze->getTile(tx, ty);
 	
 	float dist = (lastMoveAngle % 2) ? abs(marblePos.x - startX) : abs(marblePos.z - startZ);
 	
 	if (tile_to->state == STATE_BLOCK && moving <= ticksPerMove / 2) {
-		marblePos.y -= fallSpeed * deltaMs / 1000.f;
-		fallSpeed += gravityAccel * deltaMs / 1000.f;
+		marblePos.y -= fallSpeed * deltaNano / 1000000000.f;
+		fallSpeed += gravityAccel * deltaNano / 1000000000.f;
 		lockToMarble = true;
 	} else {
 		fallSpeed = 0.f;
@@ -472,11 +472,11 @@ void game::tick() {
 	}
 }
 
-void game::updateMatrices(float deltaMs) {
+void game::updateMatrices(float deltaNano) {
 	static glm::vec3 lastPos = marblePos;
 
 	if (moving > 0) {
-		float moveAmt = deltaMs * (float) m_context->tickrate / (float) ticksPerMove / 1000.f;
+		float moveAmt = deltaNano * (float) m_context->tickrate / (float) ticksPerMove / 1000000000.f;
 		if (moveAmt >= 1.f) {
 			startX = marblePos.x = (tx + 0.5f) * tileSize;
 			startZ = marblePos.z = (ty + 0.5f) * tileSize;
@@ -488,8 +488,8 @@ void game::updateMatrices(float deltaMs) {
 
 	rollMarble(marblePos - lastPos);
 
-    setupMarble(deltaMs);
-	setupCamera(deltaMs);
+    setupMarble(deltaNano);
+	setupCamera(deltaNano);
 
 	lastPos = marblePos;
 }

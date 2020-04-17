@@ -25,7 +25,7 @@ public:
 
 public:
     void tick();
-	void updateMatrices(float deltaMs);
+	void updateMatrices(float deltaNano);
 	void handleEvent(SDL_Event &event);
 
 public:
@@ -92,8 +92,8 @@ private:
 	void endMove();
 	void teleportToStart(bool resetWon);
 
-	void setupCamera(float deltaMs);
-	void setupMarble(float deltaMs);
+	void setupCamera(float deltaNano);
+	void setupMarble(float deltaNano);
 
 	void loadMusic();
 };

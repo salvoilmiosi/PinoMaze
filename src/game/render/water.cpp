@@ -13,6 +13,7 @@ water::water(context *con, game *m_game) :
 {
 	m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
 	m_shader.add_uniform("viewMatrix", &m_game->m_view);
+	m_shader.add_uniform("cameraPosition", &m_game->m_camera.position);
 	m_shader.add_uniform("lightDirection", &m_game->sun.direction);
 	m_shader.add_uniform("refractionTexture", &refractionSampler.gl_samplerid);
 	m_shader.add_uniform("dudvTexture", &dudvSampler.gl_samplerid);

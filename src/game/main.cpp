@@ -34,10 +34,10 @@ public:
 		m_world.tick();
 	}
 
-	void render(float deltaMs) {
-		m_game.updateMatrices(deltaMs);
-		m_world.render(deltaMs);
-		m_hud.render(deltaMs);
+	void render(float deltaNano) {
+		m_game.updateMatrices(deltaNano);
+		m_world.render(deltaNano);
+		m_hud.render(deltaNano);
 	}
 
 	void handleEvent(SDL_Event &event) {

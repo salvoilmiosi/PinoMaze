@@ -13,7 +13,7 @@ public:
     hud(context *m_context);
 
 public:
-    void render(float deltaMs);
+    void render(float deltaNano);
 
 private:
     context *m_context;
