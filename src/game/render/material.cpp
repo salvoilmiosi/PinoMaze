@@ -84,6 +84,14 @@ bool material::loadMaterials(const std::string &source) {
 						return false;
 					}
 					m.normals = tex_name;
+				} else if (token == "specmap") {
+					std::string tex_name;
+					line_iss >> tex_name;
+					if (line_iss.fail()) {
+						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
+						return false;
+					}
+					m.specmap = tex_name;
 				} else if (token == "ambient") {
 					int col;
 					line_iss >> std::hex >> col;

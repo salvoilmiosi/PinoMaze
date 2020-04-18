@@ -120,6 +120,7 @@ void particle_system::render(float deltaNano) {
     size_t currentTFB = (currentVBO + 1) & 1;
 
     deltaMs = deltaNano / 1000000.f;
+    globalTime += deltaMs;
 
     randomSampler.bind(randomTexture);
 

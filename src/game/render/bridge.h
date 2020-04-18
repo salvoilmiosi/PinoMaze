@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../engine/base_model.h"
+#include "../options.h"
 
 class bridge {
 public:
@@ -20,7 +21,8 @@ protected:
 	size_t underArc_offset = 0;
 	
 	base_model m_arc;
-	base_model m_wall;
+
+	base_model m_wall[numWallMaterials];
 };
 
 #endif // __MODEL_BRIDGE_H__

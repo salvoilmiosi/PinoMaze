@@ -5,7 +5,6 @@ in vec2 tpTileCoords;
 in vec3 worldNormal;
 in vec3 toCamera;
 in vec4 shadowCoords;
-in vec4 wallColor;
 
 in vec3 tangentLight;
 in vec3 tangentCamera;
@@ -16,15 +15,15 @@ uniform mat4 lightMatrix;
 
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
+uniform sampler2D specularTexture;
 uniform sampler2D shadowMap;
 uniform sampler2D tpTileTexture;
 
 #define ENABLE_TEXTURE      (1 << 0)
 #define ENABLE_NORMALS      (1 << 1)
-#define ENABLE_SHADOWS      (1 << 2)
-#define ENABLE_SPECULAR     (1 << 3)
-#define DRAWING_TELEPORT    (1 << 4)
-#define DRAWING_WALLS       (1 << 5)
+#define ENABLE_SPECULAR     (1 << 2)
+#define ENABLE_SHADOWS      (1 << 3)
+#define ENABLE_TELEPORT     (1 << 4)
 
 uniform int renderFlags;
 
@@ -80,14 +79,10 @@ bool checkFlag(int flag) {
 
 void main() {
     vec4 baseColor = checkFlag(ENABLE_TEXTURE) ? texture(diffuseTexture, texCoords) : vec4(1.0);
-    if (checkFlag(DRAWING_TELEPORT) && texCoords.x > 0.25 && texCoords.x < 0.75 && texCoords.y > 0.25 && texCoords.y < 0.75) {
+    if (checkFlag(ENABLE_TELEPORT) && texCoords.x > 0.25 && texCoords.x < 0.75 && texCoords.y > 0.25 && texCoords.y < 0.75) {
         vec2 transformedUv = texCoords * 2.0 - vec2(0.5);
         vec4 tpTileColor = texture(tpTileTexture, tpTileCoords + transformedUv / 16.0) * tileDiffuse;
         baseColor = mix(baseColor, tpTileColor, tpTileColor.w);
-    }
-
-    if (checkFlag(DRAWING_WALLS)) {
-        baseColor *= wallColor;
     }
 
     vec3 normal, lightVec, cameraVec;
@@ -120,10 +115,14 @@ void main() {
     // Ambient and diffuse lighting
     color = baseColor * diffuse * (ambient + (1.0 - ambient) * diffuseAmt);
 
-    if (checkFlag(ENABLE_SPECULAR) && cosTheta > 0.0) {
+    if (cosTheta > 0.0) {
         vec3 reflectedLight = reflect(lightVec, normal);
         float shineAmt = max(dot(cameraVec, reflectedLight), 0.0);
         shineAmt = pow(shineAmt, mat.shininess);
+
+        if (checkFlag(ENABLE_SPECULAR)) {
+            specular *= texture(specularTexture, texCoords);
+        }
 
         // Specular lighting
         color += specular * shineAmt * shadowAmt;

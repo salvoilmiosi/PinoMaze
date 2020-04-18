@@ -4,8 +4,6 @@
 #include "grid3d.h"
 
 #include <cstdlib>
-#include <stack>
-#include <vector>
 
 struct cell {
     bool visited = false;
@@ -63,16 +61,17 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
         }
     };
 
-    auto checkUnvisited = [&](cell *c) {
-        std::vector<cell *> unvisited;
+    auto checkUnvisited = [&](cell **unvisited, cell *c) {
+        size_t num = 0;
 
         for (size_t i=0; i<c->num_neighbours; ++i) {
             if (!c->neighbours[i]->visited) {
-                unvisited.push_back(c->neighbours[i]);
+                unvisited[num] = c->neighbours[i];
+                ++num;
             }
         }
 
-        return unvisited;
+        return num;
     };
 
     auto removeWall = [&](cell *ca, cell *cb) {
@@ -124,26 +123,29 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
         }
     }
 
-    std::stack<cell *> cellStack;
+    static constexpr size_t MAX_STACK_SIZE = 2000;
+
+    cell *cellStack[MAX_STACK_SIZE];
+    size_t stack_size = 0;
 
     cell *furthest = start;
-    size_t max_size = 0;
+    size_t top_size = 0;
     
     start->visited = true;
-    cellStack.push(start);
-    while (!cellStack.empty()) {
-        cell *current = cellStack.top();
-        cellStack.pop();
+    cellStack[stack_size++] = start;
+    while (stack_size > 0) {
+        cell *current = cellStack[--stack_size];
 
-        auto unvisited = checkUnvisited(current);
-        if (!unvisited.empty()) {
-            cellStack.push(current);
-            cell *target = unvisited[rand() % unvisited.size()];
+        cell *unvisited[4];
+        size_t num_unvisited = checkUnvisited(unvisited, current);
+        if (num_unvisited > 0) {
+            cellStack[stack_size++] = current;
+            cell *target = unvisited[rand() % num_unvisited];
             removeWall(current, target);
             target->visited = true;
-            cellStack.push(target);
-            if (cellStack.size() > max_size) {
-                max_size = cellStack.size();
+            cellStack[stack_size++] = target;
+            if (stack_size > top_size) {
+                top_size = stack_size;
                 furthest = target;
             }
         }

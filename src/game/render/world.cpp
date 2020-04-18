@@ -47,7 +47,9 @@ void world::renderShadowmap() {
     glClear(GL_DEPTH_BUFFER_BIT);
 
     m_shadow.use();
-    m_wall.draw_instances();
+    m_wall1.draw_instances();
+    m_wall2.draw_instances();
+    m_wall3.draw_instances();
     m_pillar.draw_instances();
     m_teleport.draw_instances();
     m_start.draw_instances();
@@ -82,6 +84,11 @@ void world::render(float deltaNano) {
 
     renderShadowmap();
     m_shader.use();
+
+    if (m_game->teleportTimer % 18 < 9) {
+        m_shader.apply_material("MAT_MARBLE");
+        m_marble.draw_instances();
+    }
     
     m_shader.m_sun = m_game->sun;
     m_shader.m_sun.direction = glm::vec3(m_game->m_view * glm::vec4(m_game->sun.direction, 0.0));
@@ -93,10 +100,14 @@ void world::render(float deltaNano) {
     m_shader.apply_material("MAT_PILLAR");
     m_pillar.draw_instances();
 
-    m_shader.addFlags(DRAWING_WALLS);
-    m_shader.apply_material("MAT_BRICKS");
-    m_wall.draw_instances();
-    m_shader.removeFlags(DRAWING_WALLS);
+    m_shader.apply_material("MAT_WALL1");
+    m_wall1.draw_instances();
+
+    m_shader.apply_material("MAT_WALL2");
+    m_wall2.draw_instances();
+
+    m_shader.apply_material("MAT_WALL3");
+    m_wall3.draw_instances();
 
     m_shader.apply_material("MAT_START");
     m_start.draw_instances();
@@ -109,23 +120,16 @@ void world::render(float deltaNano) {
 
     m_bridge.render(m_shader);
 
-    m_shader.addFlags(DRAWING_TELEPORT);
+    m_shader.addFlags(ENABLE_TELEPORT);
     m_shader.tpTileSampler.bind(material::getTexture("TEX_TELEPORT_TILES"));
     m_shader.apply_material("MAT_TELEPORT");
     m_teleport.draw_instances();
-    m_shader.removeFlags(DRAWING_TELEPORT);
+    m_shader.removeFlags(ENABLE_TELEPORT);
 
     renderRefraction();
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
     m_water.render();
-
-    m_shader.use();
-
-    if (m_game->teleportTimer % 18 < 9) {
-        m_shader.apply_material("MAT_MARBLE");
-        m_marble.draw_instances();
-    }
 
     m_particles.render(deltaNano);
 }
@@ -143,6 +147,8 @@ void world::renderRefraction() {
     m_shader.refractionHeight = -blockHeight;
     m_shader.apply_material("MAT_FLOOR");
     m_ground.draw_instances();
+
+    m_shader.apply_material("MAT_ARROW");
     m_arrow.draw_instances();
 
     m_shader.apply_material("MAT_MARBLE");
@@ -182,6 +188,8 @@ void world::initPillars() {
     }
 
     m_pillar.update_matrices(2, matrices.data(), matrices.size(), 4);
+
+    checkGlError("Failed to init pillars");
 }
 
 void world::initGround() {
@@ -198,6 +206,8 @@ void world::initGround() {
     }
 
     m_ground.update_matrices(2, matrices.data(), matrices.size(), 4);
+
+    checkGlError("Failed to init ground");
 }
 
 void world::initWalls() {
@@ -206,19 +216,13 @@ void world::initWalls() {
 
     maze *m = m_game->m_maze;
 
-    struct wall_instance {
-        glm::mat4 matrix;
-        float wallValue;
-    };
-    std::vector<wall_instance> instances;
+    std::vector<glm::mat4> wallMatrices[numWallMaterials];
 
     for (wall &w : m->hwalls) {
         for (x = 0; x<w.size(); ++x) {
             if (w[x]) {
-                wall_instance data;
-                data.matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize));
-                data.wallValue = w[x] - 1;
-                instances.push_back(data);
+                glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize));
+                wallMatrices[w[x] - 1].push_back(matrix);
             }
         }
         ++y;
@@ -228,17 +232,19 @@ void world::initWalls() {
     for (wall &w : m->vwalls) {
         for (y = 0; y < w.size(); ++y) {
             if (w[y]) {
-                wall_instance data;
-                data.matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
-                data.matrix = glm::rotate(data.matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
-                data.wallValue = w[y] - 1;
-                instances.push_back(data);
+                glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
+                matrix = glm::rotate(matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
+                wallMatrices[w[y] - 1].push_back(matrix);
             }
         }
         ++x;
     }
 
-    m_wall.update_instances(2, instances.data(), instances.size() * sizeof(wall_instance), {{4, ATTR_MAT4}, {9, ATTR_FLOAT}});
+    m_wall1.update_matrices(2, wallMatrices[0].data(), wallMatrices[0].size(), 4);
+    m_wall2.update_matrices(2, wallMatrices[1].data(), wallMatrices[1].size(), 4);
+    m_wall3.update_matrices(2, wallMatrices[2].data(), wallMatrices[2].size(), 4);
+
+    checkGlError("Failed to init walls");
 }
 
 void world::initItems() {
@@ -304,4 +310,6 @@ void world::initItems() {
 
     m_arrow.update_matrices(2, arrowMatrices.data(), arrowMatrices.size(), 4);
     m_teleport.update_instances(2, tp_instances.data(), tp_instances.size() * sizeof(tp_instance), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
+
+    checkGlError("Failed to init items");
 }

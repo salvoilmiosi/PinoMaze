@@ -18,6 +18,7 @@ constexpr float pillarSize = 0.13f;
 
 constexpr float wallHeight = 0.5f;
 constexpr float wallThickness = 0.1f;
+constexpr size_t numWallMaterials = 3;
 
 constexpr float bridgeArcHeight = 0.4f;
 constexpr float bridgeArcThickness = 0.027f;

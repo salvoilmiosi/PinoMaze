@@ -50,7 +50,9 @@ private:
 
     box m_pillar {pillarSize, pillarHeight, pillarSize, pillarHeight};
     box m_ground {tileSize, blockHeight * 2.f, tileSize, tileSize};
-    box m_wall {tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f};
+    box m_wall1 {tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f};
+    box m_wall2 {tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f};
+    box m_wall3 {tileSize - wallThickness, wallHeight, wallThickness, tileSize * 0.5f};
     box m_start {startBoxSize, startBoxHeight, startBoxSize, startBoxSize};
     box m_end {startBoxSize, startBoxHeight, startBoxSize, startBoxSize};
     box m_arrow {tileSize, blockHeight * 2.f, tileSize, tileSize};

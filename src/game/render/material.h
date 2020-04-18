@@ -41,14 +41,7 @@ public:
 
 	std::string tex;
 	std::string normals;
-
-	material() {}
-
-	material(color ambient, color diffuse, color specular, color emissive,
-		std::string tex, std::string normals)
-		: ambient(ambient), diffuse(diffuse), specular(specular), emissive(emissive), tex(tex), normals(normals) {}
-
-	material(std::string tex, std::string normals) : tex(tex), normals(normals) {}
+	std::string specmap;
 
 public:
 	static bool loadMaterials(const std::string &source);

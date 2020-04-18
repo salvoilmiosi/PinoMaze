@@ -12,6 +12,7 @@ world_shader::world_shader(game *m_game) :
     add_uniform("lightMatrix", &m_light_biased);
     add_uniform("diffuseTexture", &diffuseSampler.gl_samplerid);
     add_uniform("normalTexture", &normalSampler.gl_samplerid);
+    add_uniform("specularTexture", &specularSampler.gl_samplerid);
     add_uniform("tpTileTexture", &tpTileSampler.gl_samplerid);
     add_uniform("shadowMap", &shadowSampler.gl_samplerid);
 
@@ -39,7 +40,7 @@ world_shader::world_shader(game *m_game) :
     shadowBias = 0.003f;
     shadowTexelSize = glm::vec2(1.f / shadowMap.width());
 
-    addFlags(ENABLE_SHADOWS | ENABLE_SPECULAR);
+    addFlags(ENABLE_SHADOWS);
 }
 
 void world_shader::apply_material(const char *mat_name) {
@@ -57,6 +58,13 @@ void world_shader::apply_material(const char *mat_name) {
         addFlags(ENABLE_NORMALS);
     } else {
         removeFlags(ENABLE_NORMALS);
+    }
+    const texture &specular = material::getTexture(m_material.specmap);
+    if (specular.width() > 0) {
+        specularSampler.bind(specular);
+        addFlags(ENABLE_SPECULAR);
+    } else {
+        removeFlags(ENABLE_SPECULAR);
     }
     update_uniforms();
 }

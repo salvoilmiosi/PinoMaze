@@ -8,10 +8,9 @@
 
 #define ENABLE_TEXTURE      (1 << 0)
 #define ENABLE_NORMALS      (1 << 1)
-#define ENABLE_SHADOWS      (1 << 2)
-#define ENABLE_SPECULAR     (1 << 3)
-#define DRAWING_TELEPORT    (1 << 4)
-#define DRAWING_WALLS       (1 << 5)
+#define ENABLE_SPECULAR     (1 << 2)
+#define ENABLE_SHADOWS      (1 << 3)
+#define ENABLE_TELEPORT     (1 << 4)
 
 class world_shader : public vf_shader {
 public:
@@ -35,8 +34,9 @@ private:
 
     sampler diffuseSampler{0};
     sampler normalSampler{1};
-    sampler shadowSampler{2};
-    sampler tpTileSampler{3};
+    sampler specularSampler{2};
+    sampler shadowSampler{3};
+    sampler tpTileSampler{4};
     
     framebuffer shadowBuffer;
 	texture shadowMap;
