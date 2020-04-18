@@ -25,7 +25,9 @@ texture    TEX_FONT_TEXTURE      IDT_FONT_TEXTURE       nearest
 texture    TEX_PARTICLE_TEXTURE  IDT_PARTICLE_TEXTURE
 
 material   MAT_FLOOR    texture TEX_FLOOR_TEXTURE    normals TEX_FLOOR_NORMALS
-material   MAT_BRICKS   texture TEX_BRICKS_TEXTURE   normals TEX_BRICKS_NORMALS
+material   MAT_WALL1    texture TEX_BRICKS_TEXTURE   normals TEX_BRICKS_NORMALS
+material   MAT_WALL2    texture TEX_BRICKS_TEXTURE   normals TEX_BRICKS_NORMALS   diffuse 00ff00
+material   MAT_WALL3    texture TEX_BRICKS_TEXTURE   normals TEX_BRICKS_NORMALS   diffuse ff00ff
 material   MAT_PILLAR   texture TEX_PILLAR_TEXTURE   normals TEX_PILLAR_NORMALS   diffuse a0a0a0
 material   MAT_TILES    texture TEX_TILES_TEXTURE    normals TEX_TILES_NORMALS    diffuse ffffbf specular 666666
 material   MAT_CEILING  texture TEX_CEILING_TEXTURE  normals TEX_CEILING_NORMALS
