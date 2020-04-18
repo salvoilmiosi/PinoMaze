@@ -8,15 +8,29 @@ void toolBridge::handleEvent(SDL_Event &e) {
 
     tile *newTile = nullptr;
 
+    static auto updateWallData = [&](short x, short y, bool upper) {
+        tile *t = m->getTile(x, y);
+        if (t && t->state == STATE_ITEM) {
+            mazeItem *item = m->findItem(t);
+            if (item && item->type == ITEM_BRIDGE) {
+                if (upper) {
+                    item->bridge.wallUpper = (item->bridge.wallUpper + 1) % 3;
+                } else {
+                    item->bridge.wallLower = (item->bridge.wallLower + 1) % 3;
+                }
+            }
+        }
+    };
+
     switch (e.type) {
     case SDL_MOUSEBUTTONDOWN:
         gridX = (e.button.x - m->clip_rect.x) / m->tileSize;
         gridY = (e.button.y - m->clip_rect.y) / m->tileSize;
-        currentTile = m->getTile(gridX, gridY);
-
-        if (currentTile == nullptr) break;
-
         if (e.button.button == SDL_BUTTON_LEFT) {
+            currentTile = m->getTile(gridX, gridY);
+
+            if (currentTile == nullptr) break;
+
             if (currentTile->state == STATE_FLOOR) {
                 mazeItem b = makeItem(ITEM_BRIDGE);
                 b.bridge.x = gridX;
@@ -29,10 +43,13 @@ void toolBridge::handleEvent(SDL_Event &e) {
                 selectedTile = currentTile;
             }
         } else if (e.button.button == SDL_BUTTON_MIDDLE) {
-            mazeItem *item = m->findItem(currentTile);
-            if (item && item->type == ITEM_BRIDGE) {
-                item->bridge.wallLower = (item->bridge.wallLower + 1) % 3;
-                item->bridge.wallUpper = (item->bridge.wallUpper + 1) % 3;
+            short distY = (e.button.y - m->clip_rect.y) % m->tileSize;
+            if (distY < m->tileSize / 2) {
+                updateWallData(gridX, gridY, true);
+                updateWallData(gridX, gridY - 1, false);
+            } else {
+                updateWallData(gridX, gridY, false);
+                updateWallData(gridX, gridY + 1, true);
             }
         }
         break;
