@@ -47,12 +47,14 @@ public:
 
 class sampler {
 public:
-    int gl_samplerid;
+    sampler(int tex_unit) : tex_unit(tex_unit) {}
+    
+    void bind(const texture *t);
 
-public:
-    sampler(int gl_samplerid) : gl_samplerid(gl_samplerid) {}
+private:
+    int tex_unit;
 
-    void bind(const texture &t);
+    friend class shader_program;
 };
 
 #endif // __TEXTURE_H__

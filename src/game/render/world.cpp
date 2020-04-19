@@ -63,7 +63,7 @@ void world::renderShadowmap() {
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
 
-    m_shader.shadowSampler.bind(m_shader.shadowMap);
+    m_shader.shadowSampler.bind(&m_shader.shadowMap);
 }
 
 void world::tick() {
@@ -121,7 +121,7 @@ void world::render(float deltaNano) {
     m_bridge.render(m_shader);
 
     m_shader.addFlags(ENABLE_TELEPORT);
-    m_shader.tpTileSampler.bind(material::getTexture("TEX_TELEPORT_TILES"));
+    m_shader.tpTileSampler.bind(getTexture("TEX_TELEPORT_TILES").get());
     m_shader.apply_material("MAT_TELEPORT");
     m_teleport.draw_instances();
     m_shader.removeFlags(ENABLE_TELEPORT);

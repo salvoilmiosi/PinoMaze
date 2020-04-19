@@ -39,14 +39,14 @@ particle_system::particle_system(game *m_game) :
     m_billboard("billboard", SHADER_RESOURCE(s_billboard_v), SHADER_RESOURCE(s_billboard_g), SHADER_RESOURCE(s_billboard_f)),
     randomTexture(1024, 1)
 {
-    m_particle.add_uniform("randomTexture", &randomSampler.gl_samplerid);
+    m_particle.add_uniform("randomTexture", &randomSampler);
     m_particle.add_uniform("deltaMs", &deltaMs);
     m_particle.add_uniform("globalTime", &globalTime);
 
     m_billboard.add_uniform("viewMatrix", &m_game->m_view);
     m_billboard.add_uniform("projMatrix", &m_game->m_proj);
     m_billboard.add_uniform("cameraPos", &m_game->m_camera.position);
-    m_billboard.add_uniform("particleTexture", &particleSampler.gl_samplerid);
+    m_billboard.add_uniform("particleTexture", &particleSampler);
 
     for (size_t i=0; i<2; ++i) {
         tfbs[i].init_buffer(sizeof(particle) * MAX_PARTICLES, particle_attr_list);
@@ -122,7 +122,7 @@ void particle_system::render(float deltaNano) {
     deltaMs = deltaNano / 1000000.f;
     globalTime += deltaMs;
 
-    randomSampler.bind(randomTexture);
+    randomSampler.bind(&randomTexture);
 
     m_particle.use();
 
@@ -140,7 +140,7 @@ void particle_system::render(float deltaNano) {
     glBlendEquation(GL_FUNC_ADD);
     glDepthMask(GL_FALSE);
 
-    particleSampler.bind(material::getTexture("TEX_PARTICLE_TEXTURE"));
+    particleSampler.bind(getTexture("TEX_PARTICLE_TEXTURE").get());
     m_billboard.use();
 
     tfbs[currentTFB].draw_feedback();

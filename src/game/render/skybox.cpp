@@ -17,12 +17,12 @@ skybox::skybox(game *m_game) : m_game(m_game),
 {
     m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
     m_shader.add_uniform("viewMatrix", &m_view_zeroed);
-    m_shader.add_uniform("skyboxTexture[0]", &m_sampler[0].gl_samplerid);
-    m_shader.add_uniform("skyboxTexture[1]", &m_sampler[1].gl_samplerid);
-    m_shader.add_uniform("skyboxTexture[2]", &m_sampler[2].gl_samplerid);
-    m_shader.add_uniform("skyboxTexture[3]", &m_sampler[3].gl_samplerid);
-    m_shader.add_uniform("skyboxTexture[4]", &m_sampler[4].gl_samplerid);
-    m_shader.add_uniform("skyboxTexture[5]", &m_sampler[5].gl_samplerid);
+    m_shader.add_uniform("skyboxTexture[0]", &m_sampler[0]);
+    m_shader.add_uniform("skyboxTexture[1]", &m_sampler[1]);
+    m_shader.add_uniform("skyboxTexture[2]", &m_sampler[2]);
+    m_shader.add_uniform("skyboxTexture[3]", &m_sampler[3]);
+    m_shader.add_uniform("skyboxTexture[4]", &m_sampler[4]);
+    m_shader.add_uniform("skyboxTexture[5]", &m_sampler[5]);
 
     for (size_t i=0; i<6; ++i) {
 	    m_texture[i].setWrapParam(GL_CLAMP_TO_EDGE);
@@ -105,7 +105,7 @@ void skybox::render() {
     m_view_zeroed[3][2] = 0.f;
 
     for (size_t i=0; i<6; ++i) {
-        m_sampler[i].bind(m_texture[i]);
+        m_sampler[i].bind(m_texture + i);
     }
     m_shader.use();
 

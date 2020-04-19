@@ -10,11 +10,11 @@ world_shader::world_shader(game *m_game) :
     add_uniform("projectionMatrix", &m_game->m_proj);
     add_uniform("viewMatrix", &m_game->m_view);
     add_uniform("lightMatrix", &m_light_biased);
-    add_uniform("diffuseTexture", &diffuseSampler.gl_samplerid);
-    add_uniform("normalTexture", &normalSampler.gl_samplerid);
-    add_uniform("specularTexture", &specularSampler.gl_samplerid);
-    add_uniform("tpTileTexture", &tpTileSampler.gl_samplerid);
-    add_uniform("shadowMap", &shadowSampler.gl_samplerid);
+    add_uniform("diffuseTexture", &diffuseSampler);
+    add_uniform("normalTexture", &normalSampler);
+    add_uniform("specularTexture", &specularSampler);
+    add_uniform("tpTileTexture", &tpTileSampler);
+    add_uniform("shadowMap", &shadowSampler);
 
     add_uniform("renderFlags", &renderFlags);
     
@@ -44,24 +44,23 @@ world_shader::world_shader(game *m_game) :
 }
 
 void world_shader::apply_material(const char *mat_name) {
-    m_material = material::get(mat_name);
-    const texture &diffuse = material::getTexture(m_material.tex);
-    if (diffuse.width() > 0) {
-        diffuseSampler.bind(diffuse);
+    auto mat = getMaterial(mat_name);
+    if (mat) m_material = *mat;
+    else m_material = {};
+    if (m_material.tex) {
+        diffuseSampler.bind(m_material.tex.get());
         addFlags(ENABLE_TEXTURE);
     } else {
         removeFlags(ENABLE_TEXTURE);
     }
-    const texture &normals = material::getTexture(m_material.normals);
-    if (normals.width() > 0) {
-        normalSampler.bind(normals);
+    if (m_material.normals) {
+        normalSampler.bind(m_material.normals.get());
         addFlags(ENABLE_NORMALS);
     } else {
         removeFlags(ENABLE_NORMALS);
     }
-    const texture &specular = material::getTexture(m_material.specmap);
-    if (specular.width() > 0) {
-        specularSampler.bind(specular);
+    if (m_material.specmap) {
+        specularSampler.bind(m_material.specmap.get());
         addFlags(ENABLE_SPECULAR);
     } else {
         removeFlags(ENABLE_SPECULAR);

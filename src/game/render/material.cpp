@@ -4,16 +4,19 @@
 #include <iostream>
 #include <algorithm>
 #include <functional>
+#include <unordered_map>
 
-std::map<std::string, material> material::mat;
-std::map<std::string, texture> material::texs;
+#include "../resources.h"
+
+static std::unordered_map<std::string, std::shared_ptr<material>> mat;
+static std::unordered_map<std::string, std::shared_ptr<texture>> texs;
 
 inline void trim(std::string &s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(isspace))));
 	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(isspace))).base(), s.end());
 }
 
-bool material::loadMaterials(const std::string &source) {
+bool loadMaterials(const std::string &source) {
 	if (source.empty()) {
 		std::cerr << "Could not load materials\n";
 		return false;
@@ -43,27 +46,33 @@ bool material::loadMaterials(const std::string &source) {
 				std::cerr << "Syntax error at line #" << line_num << "\n" << line << "\n";
 				return false;
 			}
-			texture new_tex(loadImageFromResource(tex_id.c_str()));
+			auto new_tex = std::make_shared<texture>(loadImageFromResource(tex_id.c_str()));
+			texs[tex_name] = new_tex;
+
 			while (! line_iss.eof()) {
 				line_iss >> option;
 				if (option == "linear") {
-					new_tex.setFilter(GL_LINEAR);
+					new_tex->setFilter(GL_LINEAR);
 				} else if (option == "nearest") {
-					new_tex.setFilter(GL_NEAREST);
+					new_tex->setFilter(GL_NEAREST);
 				} else if (option == "clamp") {
-					new_tex.setWrapParam(GL_CLAMP_TO_EDGE);
+					new_tex->setWrapParam(GL_CLAMP_TO_EDGE);
 				} else if (option == "repeat") {
-					new_tex.setWrapParam(GL_REPEAT);
+					new_tex->setWrapParam(GL_REPEAT);
 				} else {
 					std::cerr << "Sintax error at line #" << line_num << ": unexpected option " << option << std::endl;
 					return false;
 				}
 			}
-			texs.emplace(tex_name, std::move(new_tex));
 		} else if (token == "material") {
 			std::string mat_name;
 			line_iss >> mat_name;
-			material &m = mat[mat_name];
+			if (line_iss.fail()) {
+				std::cerr << "Syntax error at line #" << line_num << "\n" << line << "\n";
+				return false;
+			}
+			auto m = std::make_shared<material>();
+			mat[mat_name] = m;
 
 			std::string token;
 			while (!line_iss.eof()) {
@@ -75,7 +84,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
 						return false;
 					}
-					m.tex = tex_name;
+					m->tex = getTexture(tex_name);
 				} else if (token == "normals") {
 					std::string tex_name;
 					line_iss >> tex_name;
@@ -83,7 +92,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
 						return false;
 					}
-					m.normals = tex_name;
+					m->normals = getTexture(tex_name);
 				} else if (token == "specmap") {
 					std::string tex_name;
 					line_iss >> tex_name;
@@ -91,7 +100,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected texture name\n";
 						return false;
 					}
-					m.specmap = tex_name;
+					m->specmap = getTexture(tex_name);
 				} else if (token == "ambient") {
 					int col;
 					line_iss >> std::hex >> col;
@@ -99,7 +108,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
 						return false;
 					}
-					m.ambient = col;
+					m->ambient = col;
 				} else if (token == "diffuse") {
 					int col;
 					line_iss >> std::hex >> col;
@@ -107,7 +116,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
 						return false;
 					}
-					m.diffuse = col;
+					m->diffuse = col;
 				} else if (token == "specular") {
 					int col;
 					line_iss >> std::hex >> col;
@@ -115,7 +124,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
 						return false;
 					}
-					m.specular = col;
+					m->specular = col;
 				} else if (token == "emissive") {
 					int col;
 					line_iss >> std::hex >> col;
@@ -123,7 +132,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected hex color\n";
 						return false;
 					}
-					m.emissive = col;
+					m->emissive = col;
 				} else if (token == "shininess") {
 					float s;
 					line_iss >> std::dec >> s;
@@ -131,7 +140,7 @@ bool material::loadMaterials(const std::string &source) {
 						std::cerr << "Syntax error at line #" << line_num << "\n" << line << "Expected float\n";
 						return false;
 					}
-					m.shininess = s;
+					m->shininess = s;
 				} else {
 					std::cerr << "Sintax error at line #" << line_num << ": unexpected token \"" << token << "\"\n";
 					return false;
@@ -146,22 +155,22 @@ bool material::loadMaterials(const std::string &source) {
 	return true;
 }
 
-const texture &material::getTexture(const std::string &name) {
-	static const texture TEX_DEFAULT;
+const std::shared_ptr<texture> getTexture(const std::string &name) {
 	auto it = texs.find(name);
 	if (it != texs.end()) {
 		return it->second;
 	} else {
-		return TEX_DEFAULT;
+		std::cout << "Could not find texture id " << name << std::endl;
+		return nullptr;
 	}
 }
 
-const material &material::get(const std::string &name) {
-	static const material MAT_DEFAULT;
+const std::shared_ptr<material> getMaterial(const std::string &name) {
 	auto it = mat.find(name);
 	if (it != mat.end()) {
 		return it->second;
 	} else {
-		return MAT_DEFAULT;
+		std::cout << "Could not find material id " << name << std::endl;
+		return nullptr;
 	}
 }

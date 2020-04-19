@@ -5,8 +5,8 @@
 #include "a_star.h"
 
 #include "engine/context.h"
-
 #include "render/material.h"
+#include "resources.h"
 
 #include <glm/glm.hpp>
 #include <memory>

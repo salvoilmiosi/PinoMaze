@@ -15,9 +15,9 @@ water::water(context *con, game *m_game) :
 	m_shader.add_uniform("viewMatrix", &m_game->m_view);
 	m_shader.add_uniform("cameraPosition", &m_game->m_camera.position);
 	m_shader.add_uniform("lightDirection", &m_game->sun.direction);
-	m_shader.add_uniform("refractionTexture", &refractionSampler.gl_samplerid);
-	m_shader.add_uniform("dudvTexture", &dudvSampler.gl_samplerid);
-	m_shader.add_uniform("normalTexture", &normalSampler.gl_samplerid);
+	m_shader.add_uniform("refractionTexture", &refractionSampler);
+	m_shader.add_uniform("dudvTexture", &dudvSampler);
+	m_shader.add_uniform("normalTexture", &normalSampler);
 	m_shader.add_uniform("globalTime", &globalTime);
 	m_shader.add_uniform("shininess", &shininess);
 	
@@ -58,9 +58,9 @@ void water::init(maze *m) {
 }
 
 void water::render() {
-	refractionSampler.bind(refraction);
-	dudvSampler.bind(material::getTexture("TEX_WATER_DUDV"));
-	normalSampler.bind(material::getTexture("TEX_WATER_NORMALS"));
+	refractionSampler.bind(&refraction);
+	dudvSampler.bind(getTexture("TEX_WATER_DUDV").get());
+	normalSampler.bind(getTexture("TEX_WATER_NORMALS").get());
 
 	globalTime = SDL_GetTicks();
 	m_shader.use();

@@ -12,7 +12,7 @@ hud::hud(context *m_context) : m_context(m_context),
 	m_shader("hud", SHADER_RESOURCE(s_hud_v), SHADER_RESOURCE(s_hud_f))
 {
 	m_shader.add_uniform("offset", &m_offset);
-	m_shader.add_uniform("diffuseTexture", &m_sampler.gl_samplerid);
+	m_shader.add_uniform("diffuseTexture", &m_sampler);
 	m_shader.add_uniform("diffuseColor", &m_color);
 
 	checkGlError("Failed to init HUD");
@@ -107,7 +107,7 @@ void hud::render(float deltaNano) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	m_sampler.bind(material::getTexture("TEX_FONT_TEXTURE"));
+	m_sampler.bind(getTexture("TEX_FONT_TEXTURE").get());
 
 	m_color = glm::vec3(0.f, 0.f, 0.f);
 	m_offset = toWorldVector(1, 1);

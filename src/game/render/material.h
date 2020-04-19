@@ -3,10 +3,7 @@
 
 #include "../engine/texture.h"
 
-#include "../resources.h"
-
-#include <string>
-#include <map>
+#include <memory>
 
 #include <glm/glm.hpp>
 
@@ -30,8 +27,7 @@ struct light {
 	glm::vec3 direction{ 0.f, 0.f, 1.f };
 };
 
-class material {
-public:
+struct material {
 	color ambient = 0xffffff;
 	color diffuse = 0xffffff;
 	color specular = 0x4c4c4c;
@@ -39,19 +35,14 @@ public:
 
 	float shininess = 25.f;
 
-	std::string tex;
-	std::string normals;
-	std::string specmap;
-
-public:
-	static bool loadMaterials(const std::string &source);
-
-	static const texture &getTexture(const std::string &name);
-	static const material &get(const std::string &name);
-
-private:
-	static std::map<std::string, material> mat;
-	static std::map<std::string, texture> texs;
+	std::shared_ptr<texture> tex = nullptr;
+	std::shared_ptr<texture> normals = nullptr;
+	std::shared_ptr<texture> specmap = nullptr;
 };
+
+bool loadMaterials(const std::string &source);
+
+const std::shared_ptr<texture> getTexture(const std::string &name);
+const std::shared_ptr<material> getMaterial(const std::string &name);
 
 #endif  // __MATERIAL_H__
