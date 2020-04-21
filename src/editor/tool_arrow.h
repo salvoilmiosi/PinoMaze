@@ -15,8 +15,6 @@ public:
         item = nullptr;
     }
 
-    virtual ~toolArrow() {}
-
 public:
     void handleEvent(SDL_Event &e);
 };

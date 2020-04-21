@@ -36,8 +36,6 @@ public:
     node(int x = 0, int y = 0);
     node(const node&b);
 
-    virtual ~node() {}
-
 public:
     void reset();
 

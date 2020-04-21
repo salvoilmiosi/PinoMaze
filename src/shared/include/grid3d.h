@@ -27,7 +27,7 @@ public:
         }
     }
 
-	virtual ~grid3d() {
+	~grid3d() {
 	    delete[]data;
 	}
 

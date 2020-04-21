@@ -14,7 +14,7 @@ public:
     bitArray();
     bitArray(int length);
 
-    virtual ~bitArray();
+    ~bitArray();
 
 public:
     int length() {

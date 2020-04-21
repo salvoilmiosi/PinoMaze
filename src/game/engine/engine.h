@@ -12,7 +12,7 @@
 class engine {
 public:
     engine(context *con);
-    ~engine();
+    virtual ~engine();
 
 public:
     void run();

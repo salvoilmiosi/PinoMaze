@@ -13,14 +13,12 @@ public:
         currentTile = nullptr;
     };
 
-    virtual ~toolSelect() {}
-
 public:
-    void handleEvent(SDL_Event &e);
+    void handleEvent(SDL_Event &e) override;
 
-    void resetState();
+    void resetState() override;
 
-    void render(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer) override;
 };
 
 #endif // __TOOL_SELECT_H__

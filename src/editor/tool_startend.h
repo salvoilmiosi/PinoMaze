@@ -6,9 +6,8 @@
 class toolStartend: public mazeEditorTool {
 public:
     toolStartend(Uint8 sn) : mazeEditorTool(sn) {}
-    virtual ~toolStartend() {}
 
 public:
-    void handleEvent(SDL_Event &e);
+    void handleEvent(SDL_Event &e) override;
 };
 #endif // __TOOL_STARTEND_H__

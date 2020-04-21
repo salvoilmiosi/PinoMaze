@@ -21,16 +21,14 @@ public:
         timer = 0;
     }
 
-    virtual ~toolTeleport() {}
-
 public:
-    void handleEvent(SDL_Event &e);
+    void handleEvent(SDL_Event &e) override;
 
-    void resetState();
+    void resetState() override;
 
-    void render(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer) override;
 
-    void tick();
+    void tick() override;
 };
 
 #endif // __TOOL_TELEPORT_H__

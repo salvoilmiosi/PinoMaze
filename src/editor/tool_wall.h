@@ -15,12 +15,10 @@ private:
 public:
     toolWall(Uint8 sn) : mazeEditorTool(sn) {}
 
-    virtual ~toolWall() {}
-
 public:
-    void handleEvent(SDL_Event &e);
+    void handleEvent(SDL_Event &e) override;
 
-    void render(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer) override;
 
 private:
     void makeWall(bool horizontal, int startPos, int endPos, int wallPos);

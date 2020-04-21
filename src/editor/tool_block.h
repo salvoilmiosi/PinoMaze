@@ -10,10 +10,8 @@ private:
 public:
     toolBlock(Uint8 sn) : mazeEditorTool(sn) {}
 
-    virtual ~toolBlock() {}
-
 public:
-    void handleEvent(SDL_Event &e);
+    void handleEvent(SDL_Event &e) override;
 };
 
 #endif // __TOOL_BLOCK_H__

@@ -16,7 +16,7 @@ public:
 
 	grid (grid &&g);
 
-	virtual ~grid() {
+	~grid() {
 	    delete[] data;
 	}
 

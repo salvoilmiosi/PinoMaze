@@ -16,7 +16,7 @@ private:
 public:
 	heap(F comp = std::less<T>(), size_t maxSize = 500);
 
-	virtual ~heap();
+	~heap();
 
     T removeFirst();
 

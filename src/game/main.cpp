@@ -29,18 +29,18 @@ public:
 	{}
 
 public:
-	void tick() {
+	void tick() override {
 		m_game.tick();
 		m_world.tick();
 	}
 
-	void render(float deltaNano) {
+	void render(float deltaNano) override {
 		m_game.updateMatrices(deltaNano);
 		m_world.render(deltaNano);
 		m_hud.render(deltaNano);
 	}
 
-	void handleEvent(SDL_Event &event) {
+	void handleEvent(SDL_Event &event) override {
 		m_game.handleEvent(event);
 	}
 

@@ -16,14 +16,12 @@ private:
 public:
     toolCrop(Uint8 sn) : mazeEditorTool(sn) {}
 
-    virtual ~toolCrop() {}
-
 public:
-    void handleEvent(SDL_Event &e);
+    void handleEvent(SDL_Event &e) override;
 
-    void render(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer) override;
 
-    void tick();
+    void tick() override;
 };
 
 #endif // __TOOL_CROP_H__
