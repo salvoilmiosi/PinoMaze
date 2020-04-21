@@ -105,7 +105,7 @@ int main (int argc, char **argv) {
 	con.tickrate = 60;
 
     try {
-	    game_engine(&con, m_maze.get()).mainLoop();
+	    game_engine(&con, m_maze.get()).run();
     } catch (const std::string &error) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", error.c_str(), nullptr);
         std::cerr << error << std::endl;

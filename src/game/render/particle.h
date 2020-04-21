@@ -12,6 +12,7 @@ public:
     particle_system(class game *m_game);
 
 public:
+    void init();
     void tick();
     void render(float deltaNano);
 
@@ -21,8 +22,9 @@ private:
 private:
     class game *m_game;
     
-    vertex_array source_vao{DRAW_POINTS};
-    transform_feedback_shader m_particle;
+    vertex_array marble_sources{DRAW_POINTS};
+    vertex_array teleport_sources{DRAW_POINTS};
+    transform_feedback_shader m_shader;
     geom_shader m_billboard;
 
     texture randomTexture;

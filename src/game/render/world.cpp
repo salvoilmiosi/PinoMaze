@@ -26,6 +26,7 @@ world::world(context *m_context, game *m_game) :
 
     m_bridge.init(m_game->m_maze);
     m_water.init(m_game->m_maze);
+    m_particles.init();
 
     checkGlError("Failed to init world renderer");
 }
@@ -309,7 +310,7 @@ void world::initItems() {
     }
 
     m_arrow.update_matrices(2, arrowMatrices.data(), arrowMatrices.size(), 4);
-    m_teleport.update_instances(2, tp_instances.data(), tp_instances.size() * sizeof(tp_instance), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
+    m_teleport.update_instances(2, tp_instances.data(), tp_instances.size(), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
 
     checkGlError("Failed to init items");
 }

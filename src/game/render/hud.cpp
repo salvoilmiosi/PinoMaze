@@ -101,7 +101,7 @@ void hud::render(float deltaNano) {
 		}
 	}
 
-	vao.update_vertices(0, vertices.data(), vertices.size() * sizeof(hud_vertex), {{0, ATTR_VEC2}, {1, ATTR_VEC2}}, true);
+	vao.update_vertices(0, vertices.data(), vertices.size(), {{0, ATTR_VEC2}, {1, ATTR_VEC2}}, true);
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);

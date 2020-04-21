@@ -15,7 +15,7 @@ public:
     ~engine();
 
 public:
-    void mainLoop();
+    void run();
 
     virtual void tick() = 0;
     virtual void render(float deltaNano) = 0;

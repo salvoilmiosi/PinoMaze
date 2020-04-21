@@ -40,8 +40,7 @@ engine::~engine() {
 	SDL_DestroyWindow(con->window);
 }
 
-
-void engine::mainLoop() {
+void engine::run() {
 	SDL_RaiseWindow(con->window);
 	
 	SDL_Event event;

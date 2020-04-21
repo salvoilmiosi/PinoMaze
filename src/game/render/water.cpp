@@ -37,7 +37,7 @@ water::water(context *con, game *m_game) :
         glm::vec3(tileSize, 0.f, tileSize),
     };
 
-	vao.update_vertices(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}});
+	vao.update_vertices(0, vertices, sizeof(vertices) / sizeof(glm::vec3), {{0, ATTR_VEC3}});
 
 	checkGlError("Failed to init hole model");
 }

@@ -92,8 +92,8 @@ skybox::skybox(game *m_game) : m_game(m_game),
         22, 21, 23,
 	};
 
-    vao.update_vertices(0, vertices, sizeof(vertices), {{0, ATTR_VEC3}, {1, ATTR_VEC2}, {2, ATTR_FLOAT}});
-    vao.update_indices(indices, sizeof(indices)/sizeof(GLuint));
+    vao.update_vertices(0, vertices, sizeof(vertices) / sizeof(vertex), {{0, ATTR_VEC3}, {1, ATTR_VEC2}, {2, ATTR_FLOAT}});
+    vao.update_indices(indices, sizeof(indices) / sizeof(GLuint));
 
 	checkGlError("Failed to init skybox");
 }

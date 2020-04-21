@@ -26,7 +26,7 @@ void base_model::calculate_buffers(const base_vertex *vertices, const size_t ver
         data[indices[i+2]].tangent = tangent;
     }
 
-    update_vertices(0, vertices, sizeof(base_vertex) * vertex_count, {{0, ATTR_VEC3}, {1, ATTR_VEC2}});
-    update_vertices(1, data, sizeof(normal_and_tangent) * vertex_count, {{2, ATTR_VEC3}, {3, ATTR_VEC3}});
+    update_vertices(0, vertices, vertex_count, {{0, ATTR_VEC3}, {1, ATTR_VEC2}});
+    update_vertices(1, data, vertex_count, {{2, ATTR_VEC3}, {3, ATTR_VEC3}});
     update_indices(indices, index_count);
 }

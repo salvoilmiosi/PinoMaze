@@ -50,7 +50,7 @@ public:
     void update_indices(const unsigned int *data, const size_t size, bool dynamic = false);
     
     void update_matrices(size_t vbo_index, const glm::mat4 *matrices, const size_t size, int location, bool dynamic = false) {
-        update_instances(vbo_index, matrices, size * sizeof(glm::mat4), {{location, ATTR_MAT4}}, dynamic);
+        update_instances(vbo_index, matrices, size, {{location, ATTR_MAT4}}, dynamic);
     }
 
     void draw(size_t first = 0, size_t count = 0);
