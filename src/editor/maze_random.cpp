@@ -111,7 +111,6 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
             tile *t = m->getTile(x, y);
             if (rand() < RAND_MAX / 4 && t->state == STATE_FLOOR) {
                 t->state = STATE_BLOCK;
-                removeWallsAround(x, y);
             }
         }
     }
@@ -133,12 +132,10 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
     cellStack.push(start);
     while (!cellStack.empty()) {
         cell *current = cellStack.top();
-        cellStack.pop();
 
         cell *unvisited[4];
         size_t num_unvisited = checkUnvisited(unvisited, current);
         if (num_unvisited > 0) {
-            cellStack.push(current);
             cell *target = unvisited[rand() % num_unvisited];
             removeWall(current, target);
             target->visited = true;
@@ -151,6 +148,8 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
                     furthest = target;
                 }
             }
+        } else {
+            cellStack.pop();
         }
     }
 
