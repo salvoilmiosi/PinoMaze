@@ -10,6 +10,8 @@
 #include "../engine/shader.h"
 #include "../engine/context.h"
 
+#include "../game.h"
+
 #include "world_shader.h"
 #include "material.h"
 
@@ -18,7 +20,7 @@ static void addArcWallVerts(std::vector<base_vertex> &vertices, std::vector<GLui
 static void addTopWallVerts(std::vector<base_vertex> &vertices, std::vector<GLuint> &indices, float z1, float z2, float w, float texSize);
 static void addIndices(std::vector<base_vertex> &vertices, std::vector<GLuint> &indices, GLuint startIndex, bool ext);
 
-bridge::bridge() {
+bridge::bridge(game *m_game) : m_game(m_game) {
     float l = tileSize - wallThickness;
     float l2 = l + bridgeArcThickness;
     float h2 = l2 / l * bridgeArcHeight;
@@ -30,7 +32,7 @@ bridge::bridge() {
     addArcVerts(vertices, indices, -l/2.f, l/2.f, l2, h2, tileSize / 3.f, true);
 
     // Under arc
-    underArc_offset = indices.size();
+    under_arc_offset = indices.size();
     addArcVerts(vertices, indices, -l/2.f, l/2.f, l, bridgeArcHeight, l, false);
 
     m_arc.calculate_buffers(vertices.data(), vertices.size(), indices.data(), indices.size());
@@ -52,17 +54,20 @@ bridge::bridge() {
 	checkGlError("Failed to init bridge model");
 }
 
-void bridge::init(maze *m) {
+void bridge::load_models(int gridx, int gridy, int gridsize) {
+    maze *m = m_game->m_maze;
+
 	glm::mat4 matrix;
 	bool wallUp, wallDown;
 
     std::vector<glm::mat4> arcMatrices;
     std::vector<glm::mat4> wallMatrices[numWallMaterials];
 
-	for (std::pair<const int, mazeItem> &it : m->items) {
+	for (auto &it : m->items) {
 		if (it.second.type == ITEM_BRIDGE) {
 			int x = it.second.item.x;
 			int y = it.second.item.y;
+            if (x < gridx || x > gridx + gridsize || y < gridy || y > gridy + gridsize) continue;
 
 			matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
 			wallUp = !m->hwalls[y][x];
@@ -81,9 +86,9 @@ void bridge::init(maze *m) {
 		}
 	}
 
-    m_arc.update_matrices(2, arcMatrices.data(), arcMatrices.size(), 4);
+    m_arc.update_matrices(2, arcMatrices.data(), arcMatrices.size(), 4, true);
     for (size_t i=0; i<numWallMaterials; ++i) {
-        m_wall[i].update_matrices(2, wallMatrices[i].data(), wallMatrices[i].size(), 4);
+        m_wall[i].update_matrices(2, wallMatrices[i].data(), wallMatrices[i].size(), 4, true);
     }
 }
 
@@ -97,10 +102,10 @@ void bridge::render_flat() {
 
 void bridge::render(world_shader &m_shader) {
     m_shader.apply_material("MAT_TILES");
-    m_arc.draw_instances(0, underArc_offset);
+    m_arc.draw_instances(0, under_arc_offset);
 
     m_shader.apply_material("MAT_CEILING");
-    m_arc.draw_instances(underArc_offset);
+    m_arc.draw_instances(under_arc_offset);
     
     m_shader.apply_material("MAT_WALL1");
     m_wall[0].draw_instances();

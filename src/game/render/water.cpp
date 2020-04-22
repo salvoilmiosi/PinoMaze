@@ -6,7 +6,7 @@
 
 #include "maze.h"
 
-water::water(context *con, game *m_game) :
+water::water(context *con, game *m_game) : m_game(m_game),
 	m_shader("water", SHADER_RESOURCE(s_water_v), SHADER_RESOURCE(s_water_f)),
 	refraction(con->window_width, con->window_height),
 	refractionDepth(con->window_width, con->window_height, true)
@@ -42,27 +42,29 @@ water::water(context *con, game *m_game) :
 	checkGlError("Failed to init hole model");
 }
 
-void water::init(maze *m) {
+void water::load_models(int gridx, int gridy, int gridsize) {
     std::vector<glm::mat4> matrices;
 
-    for (int i=0; i<m->datasize(); ++i) {
-        tile *t = m->getTile(i);
-        int x = i % m->width();
-        int y = i / m->width();
-        if (t->state == STATE_BLOCK) {
-            matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, -blockHeight, y * tileSize)));
-        }
+	maze *m = m_game->m_maze;
+
+    for (int y = gridy; y < MIN(gridy + gridsize, m->height()); ++y) {
+        for (int x = gridx; x < MIN(gridx + gridsize, m->width()); ++x) {
+			tile *t = m->getTile(x, y);
+			if (t->state == STATE_BLOCK) {
+				matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, -blockHeight, y * tileSize)));
+			}
+		}
     }
 
-	vao.update_matrices(1, matrices.data(), matrices.size(), 1);
+	vao.update_matrices(1, matrices.data(), matrices.size(), 1, true);
 }
 
-void water::render() {
+void water::render(float deltaNano) {
 	refractionSampler.bind(&refraction);
 	dudvSampler.bind(getTexture("TEX_WATER_DUDV").get());
 	normalSampler.bind(getTexture("TEX_WATER_NORMALS").get());
 
-	globalTime = SDL_GetTicks();
+	globalTime += deltaNano / 1000000.f;
 	m_shader.use();
 
 	vao.draw_instances();

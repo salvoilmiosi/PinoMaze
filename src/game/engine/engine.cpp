@@ -49,7 +49,7 @@ void engine::run() {
 	using clock = std::chrono::system_clock;
 
 	static const auto nsPerTick = 1000000000ns / con->tickrate;
-	static const auto nsPerFrame = 1000000000ns / con->fps_limit;
+	static const auto nsPerFrame = con->fps_limit == 0 ? 0ns : (1000000000ns / con->fps_limit);
 	auto lastTick = clock::now();
 	auto deltaFrame = lastTick;
 	auto lastFrame = lastTick;

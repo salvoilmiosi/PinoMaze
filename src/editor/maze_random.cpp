@@ -4,6 +4,7 @@
 #include "grid3d.h"
 
 #include <cstdlib>
+#include <stack>
 
 struct cell {
     bool visited = false;
@@ -123,40 +124,51 @@ std::unique_ptr<maze> generateRandomMaze(int w, int h) {
         }
     }
 
-    static constexpr size_t MAX_STACK_SIZE = 2000;
-
-    cell *cellStack[MAX_STACK_SIZE];
-    size_t stack_size = 0;
+    std::stack<cell *> cellStack;
 
     cell *furthest = start;
     size_t top_size = 0;
     
     start->visited = true;
-    cellStack[stack_size++] = start;
-    while (stack_size > 0) {
-        cell *current = cellStack[--stack_size];
+    cellStack.push(start);
+    while (!cellStack.empty()) {
+        cell *current = cellStack.top();
+        cellStack.pop();
 
         cell *unvisited[4];
         size_t num_unvisited = checkUnvisited(unvisited, current);
         if (num_unvisited > 0) {
-            cellStack[stack_size++] = current;
+            cellStack.push(current);
             cell *target = unvisited[rand() % num_unvisited];
             removeWall(current, target);
             target->visited = true;
-            cellStack[stack_size++] = target;
-            if (stack_size > top_size) {
-                top_size = stack_size;
-                furthest = target;
+            cellStack.push(target);
+            if (cellStack.size() > top_size) {
+                auto pos = cells.getCoords(target);
+                tile *t = m->getTile(pos.x, pos.y);
+                if (t && t->state == STATE_FLOOR) {
+                    top_size = cellStack.size();
+                    furthest = target;
+                }
             }
         }
     }
 
     auto exit_pos = cells.getCoords(furthest);
-    tile *exit_tile = m->getTile(exit_pos.x, exit_pos.y);
-    if (exit_tile->state == STATE_ITEM) {
-        m->removeItem(*(m->findItem(exit_tile)));
+    m->getTile(exit_pos.x, exit_pos.y)->state = STATE_END;
+
+    for (int y=0; y<h; ++y) {
+        for (int x=0; x<w; ++x) {
+            cell *c = getCell(x, y);
+            if (! c->visited) {
+                tile *t = m->getTile(x, y);
+                if (t && t->state == STATE_ITEM) {
+                    m->removeItem(*m->findItem(t));
+                }
+                removeWallsAround(x, y);
+            }
+        }
     }
-    exit_tile->state = STATE_END;
 
     return m;
 }

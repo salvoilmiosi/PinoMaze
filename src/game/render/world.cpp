@@ -14,19 +14,15 @@ world::world(context *m_context, game *m_game) :
     m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f)),
 
     m_water(m_context, m_game),
+    m_bridge(m_game),
     m_skybox(m_game),
     m_particles(m_game)
 {
     m_shadow.add_uniform("lightMatrix", &m_shader.m_light);
 
-    initPillars();
-    initGround();
-    initWalls();
-    initItems();
-
-    m_bridge.init(m_game->m_maze);
-    m_water.init(m_game->m_maze);
     m_particles.init();
+
+    //load_models(0,0,5);
 
     checkGlError("Failed to init world renderer");
 }
@@ -48,9 +44,9 @@ void world::renderShadowmap() {
     glClear(GL_DEPTH_BUFFER_BIT);
 
     m_shadow.use();
-    m_wall1.draw_instances();
-    m_wall2.draw_instances();
-    m_wall3.draw_instances();
+    for (size_t i=0; i<numWallMaterials; ++i) {
+        m_wall[i].draw_instances();
+    }
     m_pillar.draw_instances();
     m_teleport.draw_instances();
     m_start.draw_instances();
@@ -68,6 +64,23 @@ void world::renderShadowmap() {
 }
 
 void world::tick() {
+    int marble_x = m_game->m_marble[3][0] / tileSize;
+    int marble_z = m_game->m_marble[3][2] / tileSize;
+
+    static int old_gridx = -1;
+    static int old_gridy = -1;
+
+    int gridsize = 10;
+    int gridx = MAX(0, (int)(marble_x / gridsize - 1) * gridsize);
+    int gridy = MAX(0, (int)(marble_z / gridsize - 1) * gridsize);
+
+    if (gridx != old_gridx || gridy != old_gridy) {
+        load_models(gridx, gridy, gridsize * 3);
+    }
+
+    old_gridx = gridx;
+    old_gridy = gridy;
+
     m_particles.tick();
 }
 
@@ -102,13 +115,13 @@ void world::render(float deltaNano) {
     m_pillar.draw_instances();
 
     m_shader.apply_material("MAT_WALL1");
-    m_wall1.draw_instances();
+    m_wall[0].draw_instances();
 
     m_shader.apply_material("MAT_WALL2");
-    m_wall2.draw_instances();
+    m_wall[1].draw_instances();
 
     m_shader.apply_material("MAT_WALL3");
-    m_wall3.draw_instances();
+    m_wall[2].draw_instances();
 
     m_shader.apply_material("MAT_START");
     m_start.draw_instances();
@@ -130,7 +143,7 @@ void world::render(float deltaNano) {
     renderRefraction();
     framebuffer::unbind();
     glViewport(0, 0, m_context->window_width, m_context->window_height);
-    m_water.render();
+    m_water.render(deltaNano);
 
     m_particles.render(deltaNano);
 }
@@ -160,16 +173,18 @@ void world::renderRefraction() {
     glDisable(GL_CLIP_DISTANCE0);
 }
 
-void world::initPillars() {
+void world::load_models(int gridx, int gridy, int gridsize) {
+    maze *m = m_game->m_maze;
     tile *t;
     mazeItem *item;
 
-    maze *m = m_game->m_maze;
-
     std::vector<glm::mat4> matrices;
 
-    for (int x = 0; x <= m->width(); ++x) {
-        for (int y = 0; y <= m->height(); ++y) {
+    int x = 0;
+    int y = 0;
+
+    for (x = gridx; x <= MIN(gridx + gridsize, m->width()); ++x) {
+        for (y = gridy; y <= MIN(gridy + gridsize, m->height()); ++y) {
             bool hasWalls = false;
             if (x > 0 && m->hwalls[y][x-1]) hasWalls = true;
             else if (x < m->width() && m->hwalls[y][x]) hasWalls = true;
@@ -188,117 +203,99 @@ void world::initPillars() {
         }
     }
 
-    m_pillar.update_matrices(2, matrices.data(), matrices.size(), 4);
+    m_pillar.update_matrices(2, matrices.data(), matrices.size(), 4, true);
 
-    checkGlError("Failed to init pillars");
-}
+    checkGlError("Failed to load pillars");
 
-void world::initGround() {
-    std::vector<glm::mat4> matrices;
+    matrices.clear();
 
-    for (int i=0; i<m_game->m_maze->datasize(); ++i) {
-        tile *m_tile = m_game->m_maze->getTile(i);
-        mazeItem *item = m_game->m_maze->findItem(m_tile);
-        if (m_tile->state != STATE_BLOCK && !(item && item->type == ITEM_ARROW)) {
-            int x = i % m_game->m_maze->width();
-            int y = i / m_game->m_maze->width();
-            matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize)));
+    for (y = gridy; y < MIN(gridy + gridsize, m->height()); ++y) {
+        for (x = gridx; x < MIN(gridx + gridsize, m->width()); ++x) {
+            tile *m_tile = m_game->m_maze->getTile(x, y);
+            mazeItem *item = m_game->m_maze->findItem(m_tile);
+            if (m_tile->state != STATE_BLOCK && !(item && item->type == ITEM_ARROW)) {
+                matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize)));
+            }
         }
     }
 
-    m_ground.update_matrices(2, matrices.data(), matrices.size(), 4);
+    m_ground.update_matrices(2, matrices.data(), matrices.size(), 4, true);
 
-    checkGlError("Failed to init ground");
-}
-
-void world::initWalls() {
-    int x = 0;
-    int y = 0;
-
-    maze *m = m_game->m_maze;
+    checkGlError("Failed to load ground");
 
     std::vector<glm::mat4> wallMatrices[numWallMaterials];
 
-    for (wall &w : m->hwalls) {
-        for (x = 0; x<w.size(); ++x) {
+    for (y = gridy; y < MIN(gridy + gridsize + 1, m->hwalls.size()); ++y) {
+        wall &w = m->hwalls[y];
+        for (x = gridx; x < MIN(gridx + gridsize, w.size()); ++x) {
             if (w[x]) {
                 glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize));
                 wallMatrices[w[x] - 1].push_back(matrix);
             }
         }
-        ++y;
     }
 
-    x = 0;
-    for (wall &w : m->vwalls) {
-        for (y = 0; y < w.size(); ++y) {
+    for (x = gridx; x < MIN(gridx + gridsize + 1, m->vwalls.size()); ++x) {
+        wall &w = m->vwalls[x];
+        for (y = gridy; y < MIN(gridy + gridsize, w.size()); ++y) {
             if (w[y]) {
                 glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
                 matrix = glm::rotate(matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
                 wallMatrices[w[y] - 1].push_back(matrix);
             }
         }
-        ++x;
     }
 
-    m_wall1.update_matrices(2, wallMatrices[0].data(), wallMatrices[0].size(), 4);
-    m_wall2.update_matrices(2, wallMatrices[1].data(), wallMatrices[1].size(), 4);
-    m_wall3.update_matrices(2, wallMatrices[2].data(), wallMatrices[2].size(), 4);
+    for (size_t i=0; i<numWallMaterials; ++i) {
+        m_wall[i].update_matrices(2, wallMatrices[i].data(), wallMatrices[i].size(), 4, true);
+    }
 
-    checkGlError("Failed to init walls");
-}
+    checkGlError("Failed to load walls");
 
-void world::initItems() {
-    glm::mat4 matrix;
-
-    maze *m = m_game->m_maze;
-
-    tile *t;
-    int index, x, y;
     if ((t = m->startTile()) != nullptr) {
-        index = m->getIndex(t);
+        size_t index = m->getIndex(t);
         x = index % m->width();
         y = index / m->width();
-        matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
-        m_start.update_matrices(2, &matrix, 1, 4);
+        glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
+        m_start.update_matrices(2, &matrix, 1, 4, true);
     }
 
     if ((t = m->endTile()) != nullptr) {
-        index = m->getIndex(t);
+        size_t index = m->getIndex(t);
         x = index % m->width();
         y = index / m->width();
-        matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
-        m_end.update_matrices(2, &matrix, 1, 4);
+        glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
+        m_end.update_matrices(2, &matrix, 1, 4, true);
     }
 
-    std::vector<glm::mat4> arrowMatrices;
-    
+    checkGlError("Failed to load start and end tiles");
+
     struct tp_instance {
         glm::mat4 matrix;
         glm::vec2 uv;
     };
-    
+    std::vector<glm::mat4> arrowMatrices;
     std::vector<tp_instance> tp_instances;
 
     for (std::pair<const int, mazeItem> &it : m->items) {
+        x = it.second.item.x;
+        y = it.second.item.y;
+        if (x < gridx || x > gridx + gridsize || y < gridy || y > gridy + gridsize) continue;
+
         switch(it.second.type) {
         case ITEM_ARROW:
-            x = it.second.item.x;
-            y = it.second.item.y;
-            matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize));
+        {
+            glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize));
             matrix = matrix * glm::rotate(glm::mat4(1.f), glm::radians(90.f) * (it.second.arrow.direction + 1), glm::vec3(0.f, 1.f, 0.f));
             arrowMatrices.push_back(matrix);
             break;
+        }
         case ITEM_TELEPORT:
         {
             tp_instance tpdata;
             unsigned char c = it.second.teleport.tpChar;
             tpdata.uv.x = (1.f / 16.f) * (c % 16);
             tpdata.uv.y = (1.f / 16.f) * (c / 16);
-
-            int x = it.second.item.x;
-            int y = it.second.item.y;
-
             tpdata.matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
 
             tp_instances.push_back(tpdata);
@@ -309,8 +306,11 @@ void world::initItems() {
         }
     }
 
-    m_arrow.update_matrices(2, arrowMatrices.data(), arrowMatrices.size(), 4);
-    m_teleport.update_instances(2, tp_instances.data(), tp_instances.size(), {{4, ATTR_MAT4}, {8, ATTR_VEC2}});
+    m_arrow.update_matrices(2, arrowMatrices.data(), arrowMatrices.size(), 4, true);
+    m_teleport.update_instances(2, tp_instances.data(), tp_instances.size(), {{4, ATTR_MAT4}, {8, ATTR_VEC2}}, true);
 
-    checkGlError("Failed to init items");
+    checkGlError("Failed to load items");
+
+    m_bridge.load_models(gridx, gridy, gridsize);
+    m_water.load_models(gridx, gridy, gridsize);
 }

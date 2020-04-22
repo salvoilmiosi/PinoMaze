@@ -8,17 +8,19 @@
 
 class bridge {
 public:
-	bridge();
+	bridge(class game *m_game);
 
 public:
-    void init(class maze *m_maze);
+    void load_models(int gridx, int gridy, int gridsize);
 
     void render_flat();
 
     void render(class world_shader &m_shader);
 
-protected:
-	size_t underArc_offset = 0;
+private:
+	class game *m_game;
+	
+	size_t under_arc_offset = 0;
 	
 	base_model m_arc;
 

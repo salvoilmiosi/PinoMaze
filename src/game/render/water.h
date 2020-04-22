@@ -17,11 +17,13 @@ public:
 		refractionFBO.bind();
 	}
 
-    void init(class maze *m_maze);
+    void load_models(int gridx, int gridy, int gridsize);
 
-    void render();
+    void render(float deltaNano);
     
 private:
+	class game *m_game;
+
     vf_shader m_shader;
 	vertex_array vao{DRAW_TRIANGLE_STRIP};
 
@@ -34,7 +36,7 @@ private:
     sampler normalSampler{2};
 
 	float shininess = 10.f;
-	float globalTime;
+	float globalTime = 0.f;
 };
 
 #endif // __WATER_H__
