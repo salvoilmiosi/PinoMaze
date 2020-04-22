@@ -21,6 +21,9 @@ public:
     virtual void render(float deltaNano) = 0;
     virtual void handleEvent(SDL_Event &event) = 0;
 
+protected:
+    bool quit = false;
+
 private:
     context *con;
 };

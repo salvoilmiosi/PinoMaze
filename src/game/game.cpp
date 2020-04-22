@@ -12,7 +12,7 @@ game::game(context *m_context, maze *m_maze) : m_maze(m_maze), m_context(m_conte
         throw std::string("Could not load materials");
     }
     
-    m_proj = glm::perspective(glm::radians(90.f), (float)m_context->window_width / (float)m_context->window_height, 0.1f, skyboxSize * 2.f);
+    m_proj = glm::perspective(glm::radians(m_context->fov), (float)m_context->window_width / (float)m_context->window_height, 0.1f, skyboxSize * 2.f);
 
 	sun.direction = glm::vec3(0.43555f, 0.5f, -0.25391f);
     

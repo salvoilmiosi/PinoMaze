@@ -26,13 +26,14 @@ static auto MIN = [](auto a, auto b) {
 };
 struct context {
     SDL_Window *window = nullptr;
-    
+    Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
     const char *window_title = "GL engine";
     int window_width = 800;
     int window_height = 600;
     int tickrate = 60;
     int fps_limit = 300;
     bool vsync = true;
+    float fov = 90.f;
 };
 
 #endif // __CONTEXT_H__

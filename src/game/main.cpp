@@ -41,6 +41,9 @@ public:
 	}
 
 	void handleEvent(SDL_Event &event) override {
+		if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+			quit = true;
+		}
 		m_game.handleEvent(event);
 	}
 
@@ -103,6 +106,11 @@ int main (int argc, char **argv) {
 	con.vsync = false;
 	con.fps_limit = 300;
 	con.tickrate = 60;
+	//con.window_width = 1920;
+	//con.window_height = 1080;
+	//con.winflags |= SDL_WINDOW_FULLSCREEN;
+
+	//SDL_ShowCursor(SDL_DISABLE);
 
     try {
 	    game_engine(&con, m_maze.get()).run();

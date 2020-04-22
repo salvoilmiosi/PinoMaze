@@ -7,8 +7,7 @@
 #include <GL/gl.h>
 
 engine::engine(context *con) : con(con) {
-    Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
-    con->window = SDL_CreateWindow(con->window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, con->window_width, con->window_height, winflags);
+    con->window = SDL_CreateWindow(con->window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, con->window_width, con->window_height, con->winflags);
 
     if (!con->window) {
         throw std::string("Could not create SDL Window: ") + SDL_GetError();
@@ -55,7 +54,6 @@ void engine::run() {
 	auto lastFrame = lastTick;
 	float delta = 0;
 	
-	bool quit = false;
 	while (!quit) {
 		auto now = clock::now();
 
