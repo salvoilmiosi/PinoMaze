@@ -208,13 +208,13 @@ void a_star::findNeighbours() {
 				}
 			}
 
-			if (!m->vwalls[n->x][n->y])
+			if (!m->vwalls[n->x][n->y].solid())
 				addNeighbour(n, -1, 0);
-			if (!m->hwalls[n->y][n->x])
+			if (!m->hwalls[n->y][n->x].solid())
 				addNeighbour(n, 0, -1);
-			if (!m->vwalls[n->x + 1][n->y])
+			if (!m->vwalls[n->x + 1][n->y].solid())
 				addNeighbour(n, 1, 0);
-			if (!m->hwalls[n->y + 1][n->x])
+			if (!m->hwalls[n->y + 1][n->x].solid())
 				addNeighbour(n, 0, 1);
 		}
     }

@@ -52,8 +52,8 @@ static void renderWall(maze *m, SDL_Renderer *renderer, const wall &w, bool hori
         if (rect.x > windowWidth || rect.y > windowHeight)
             break;
 
-        if (w[i] && rect.x + rect.w >= 0 && rect.y + rect.h >= 0) {
-            SDL_SetRenderDrawColor(renderer, wall_colors[w[i] - 1]);
+        if (w[i].value > 0 && rect.x + rect.w >= 0 && rect.y + rect.h >= 0) {
+            SDL_SetRenderDrawColor(renderer, wall_colors[w[i].value - 1]);
             SDL_RenderFillRect(renderer, &rect);
         }
         if (horizontal) {

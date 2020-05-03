@@ -101,10 +101,10 @@ bool game::canMove(int moveAngle, bool checkBlocks) {
 		return false;
 	}
 
-	if (ox > 0 && m_maze->vwalls[tx + 1][ty]) return false;
-	if (ox < 0 && m_maze->vwalls[tx][ty]) return false;
-	if (oy > 0 && m_maze->hwalls[ty + 1][tx]) return false;
-	if (oy < 0 && m_maze->hwalls[ty][tx]) return false;
+	if (ox > 0 && m_maze->vwalls[tx + 1][ty].solid()) return false;
+	if (ox < 0 && m_maze->vwalls[tx][ty].solid()) return false;
+	if (oy > 0 && m_maze->hwalls[ty + 1][tx].solid()) return false;
+	if (oy < 0 && m_maze->hwalls[ty][tx].solid()) return false;
 
 	if (curTile->state == STATE_ITEM) {
 		mazeItem *item = m_maze->findItem(curTile);

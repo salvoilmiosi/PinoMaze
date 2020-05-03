@@ -70,8 +70,8 @@ void bridge::load_models(int gridx, int gridy, int gridsize) {
             if (x < gridx || x > gridx + gridsize || y < gridy || y > gridy + gridsize) continue;
 
 			matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
-			wallUp = !m->hwalls[y][x];
-			wallDown = !m->hwalls[y + 1][x];
+			wallUp = m->hwalls[y][x].value == 0;
+			wallDown = m->hwalls[y + 1][x].value == 0;
 
 			tile *tileDown = m->getTile(x, y + 1);
 			mazeItem *item;
