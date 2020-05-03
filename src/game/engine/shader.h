@@ -11,7 +11,6 @@
 
 #include "mpl.h"
 #include "texture.h"
-#include "context.h"
 
 enum shader_type {
 	SHADER_VERTEX,

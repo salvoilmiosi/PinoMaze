@@ -3,8 +3,6 @@
 
 #include "texture.h"
 
-#include "context.h"
-
 class framebuffer {
 private:
     GLuint fboID = 0;

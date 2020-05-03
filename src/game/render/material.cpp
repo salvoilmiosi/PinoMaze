@@ -8,8 +8,8 @@
 
 #include "../resources.h"
 
-static std::unordered_map<std::string, std::shared_ptr<material>> mat;
-static std::unordered_map<std::string, std::shared_ptr<texture>> texs;
+static std::unordered_map<std::string, std::shared_ptr<material>> m_materials;
+static std::unordered_map<std::string, std::shared_ptr<texture>> m_textures;
 
 inline void trim(std::string &s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(isspace))));
@@ -47,7 +47,7 @@ bool loadMaterials(const std::string &source) {
 				return false;
 			}
 			auto new_tex = std::make_shared<texture>(loadImageFromResource(tex_id.c_str()));
-			texs[tex_name] = new_tex;
+			m_textures[tex_name] = new_tex;
 
 			while (! line_iss.eof()) {
 				line_iss >> option;
@@ -72,7 +72,7 @@ bool loadMaterials(const std::string &source) {
 				return false;
 			}
 			auto m = std::make_shared<material>();
-			mat[mat_name] = m;
+			m_materials[mat_name] = m;
 
 			std::string token;
 			while (!line_iss.eof()) {
@@ -155,9 +155,14 @@ bool loadMaterials(const std::string &source) {
 	return true;
 }
 
+void cleanupMaterials() {
+	m_materials.clear();
+	m_textures.clear();
+}
+
 const std::shared_ptr<texture> getTexture(const std::string &name) {
-	auto it = texs.find(name);
-	if (it != texs.end()) {
+	auto it = m_textures.find(name);
+	if (it != m_textures.end()) {
 		return it->second;
 	} else {
 		std::cout << "Could not find texture id " << name << std::endl;
@@ -166,8 +171,8 @@ const std::shared_ptr<texture> getTexture(const std::string &name) {
 }
 
 const std::shared_ptr<material> getMaterial(const std::string &name) {
-	auto it = mat.find(name);
-	if (it != mat.end()) {
+	auto it = m_materials.find(name);
+	if (it != m_materials.end()) {
 		return it->second;
 	} else {
 		std::cout << "Could not find material id " << name << std::endl;

@@ -1,7 +1,5 @@
 #include "framebuffer.h"
 
-#include "context.h"
-
 framebuffer::framebuffer() {
     glGenFramebuffers(1, &fboID);
 }

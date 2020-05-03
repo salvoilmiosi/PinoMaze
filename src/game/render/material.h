@@ -41,6 +41,7 @@ struct material {
 };
 
 bool loadMaterials(const std::string &source);
+void cleanupMaterials();
 
 const std::shared_ptr<texture> getTexture(const std::string &name);
 const std::shared_ptr<material> getMaterial(const std::string &name);

@@ -4,7 +4,7 @@
 #include "maze.h"
 #include "a_star.h"
 
-#include "engine/context.h"
+#include "engine/engine.h"
 #include "render/material.h"
 #include "resources.h"
 
@@ -20,7 +20,7 @@ struct camera {
 
 class game {
 public:
-    game(context *m_context, maze *m_maze);
+    game(engine_options *options, maze *m_maze);
     ~game();
 
 public:
@@ -43,7 +43,7 @@ public:
 	bool won = false;
 
 private:
-	context *m_context;
+	engine_options *options;
 
 	std::unique_ptr<a_star> pathfinder = nullptr;
     std::list<const node *> path;

@@ -4,19 +4,20 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
+#include "../engine/engine.h"
 #include "../engine/shader.h"
 #include "../engine/texture.h"
 #include "../engine/vertex_array.h"
 
 class hud {
 public:
-    hud(context *m_context);
+    hud(engine_options *options);
 
 public:
     void render(float deltaNano);
 
 private:
-    context *m_context;
+    engine_options *options;
 
 	static const int STATUS_LENGTH = 128;
 	static const int BUFFER_SIZE_DEFAULT = 128;

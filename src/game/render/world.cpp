@@ -7,13 +7,13 @@
 #include "../options.h"
 #include "../game.h"
 
-world::world(context *m_context, game *m_game) :
-    m_context(m_context), m_game(m_game),
+world::world(engine_options *options, game *m_game) :
+    options(options), m_game(m_game),
 
     m_shader(m_game),
     m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f)),
 
-    m_water(m_context, m_game),
+    m_water(options, m_game),
     m_bridge(m_game),
     m_skybox(m_game),
     m_particles(m_game)
@@ -58,7 +58,7 @@ void world::renderShadowmap() {
     }
 
     framebuffer::unbind();
-    glViewport(0, 0, m_context->window_width, m_context->window_height);
+    glViewport(0, 0, options->window_width, options->window_height);
 
     m_shader.shadowSampler.bind(&m_shader.shadowMap);
 }
@@ -142,7 +142,7 @@ void world::render(float deltaNano) {
 
     renderRefraction();
     framebuffer::unbind();
-    glViewport(0, 0, m_context->window_width, m_context->window_height);
+    glViewport(0, 0, options->window_width, options->window_height);
     m_water.render(deltaNano);
 
     m_particles.render(deltaNano);

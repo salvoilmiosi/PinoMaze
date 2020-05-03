@@ -7,8 +7,7 @@
 
 #include "maze.h"
 
-#include "../engine/shader.h"
-#include "../engine/context.h"
+#include "../engine/engine.h"
 
 #include "../game.h"
 

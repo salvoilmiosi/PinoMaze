@@ -6,14 +6,14 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
-engine::engine(context *con) : con(con) {
-    con->window = SDL_CreateWindow(con->window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, con->window_width, con->window_height, con->winflags);
+engine::engine(const engine_options &options) : options(options) {
+    window = SDL_CreateWindow(options.window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, options.window_width, options.window_height, options.winflags);
 
-    if (!con->window) {
+    if (!window) {
         throw std::string("Could not create SDL Window: ") + SDL_GetError();
     }
 
-    SDL_GLContext glcontext = SDL_GL_CreateContext(con->window);
+    glcontext = SDL_GL_CreateContext(window);
     if (!glcontext) {
         throw std::string("Could not create OpenGL Context: ") + SDL_GetError();
     }
@@ -22,7 +22,7 @@ engine::engine(context *con) : con(con) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-	SDL_GL_SetSwapInterval(con->vsync);
+	SDL_GL_SetSwapInterval(options.vsync);
 
 	glewExperimental = true;
 	GLenum error = glewInit();
@@ -36,25 +36,27 @@ engine::engine(context *con) : con(con) {
 }
 
 engine::~engine() {
-	SDL_DestroyWindow(con->window);
+	if (window) SDL_DestroyWindow(window);
 }
 
 void engine::run() {
-	SDL_RaiseWindow(con->window);
+	SDL_RaiseWindow(window);
 	
 	SDL_Event event;
 
 	using namespace std::chrono_literals;
 	using clock = std::chrono::system_clock;
 
-	static const auto nsPerTick = 1000000000ns / con->tickrate;
-	static const auto nsPerFrame = con->fps_limit == 0 ? 0ns : (1000000000ns / con->fps_limit);
+	static const auto nsPerTick = 1000000000ns / options.tickrate;
+	static const auto nsPerFrame = options.fps_limit == 0 ? 0ns : (1000000000ns / options.fps_limit);
 	auto lastTick = clock::now();
 	auto deltaFrame = lastTick;
 	auto lastFrame = lastTick;
 	float delta = 0;
+
+	running = true;
 	
-	while (!quit) {
+	while (running) {
 		auto now = clock::now();
 
 		delta += (float) std::chrono::duration_cast<std::chrono::nanoseconds>(now - lastTick).count() / nsPerTick.count();
@@ -67,7 +69,7 @@ void engine::run() {
 
 		if (now - deltaFrame > nsPerFrame) {
 			render(std::chrono::duration_cast<std::chrono::nanoseconds>(now - lastFrame).count());
-			SDL_GL_SwapWindow(con->window);
+			SDL_GL_SwapWindow(window);
 			deltaFrame += nsPerFrame;
 			lastFrame = now;
 		}
@@ -75,7 +77,7 @@ void engine::run() {
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 			case SDL_QUIT:
-				quit = true;
+				running = false;
 				break;
 			default:
 				handleEvent(event);

@@ -6,10 +6,10 @@
 
 #include "maze.h"
 
-water::water(context *con, game *m_game) : m_game(m_game),
+water::water(engine_options *options, game *m_game) : m_game(m_game),
 	m_shader("water", SHADER_RESOURCE(s_water_v), SHADER_RESOURCE(s_water_f)),
-	refraction(con->window_width, con->window_height),
-	refractionDepth(con->window_width, con->window_height, true)
+	refraction(options->window_width, options->window_height),
+	refractionDepth(options->window_width, options->window_height, true)
 {
 	m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
 	m_shader.add_uniform("viewMatrix", &m_game->m_view);
