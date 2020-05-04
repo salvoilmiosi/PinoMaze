@@ -1,6 +1,7 @@
 #ifndef __PARTICLE_H__
 #define __PARTICLE_H__
 
+#include "../engine/engine.h"
 #include "../engine/shader.h"
 #include "../engine/texture.h"
 #include "../engine/transform_feedback.h"

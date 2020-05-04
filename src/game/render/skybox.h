@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
+#include "../engine/engine.h"
 #include "../engine/vertex_array.h"
 #include "../engine/texture.h"
 #include "../engine/shader.h"

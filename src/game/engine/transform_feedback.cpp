@@ -1,7 +1,5 @@
 #include "transform_feedback.h"
 
-#include "context.h"
-
 transform_feedback::transform_feedback(draw_mode mode) : vertex_array(mode) {
     glGenTransformFeedbacks(1, &gl_tfb);
 }

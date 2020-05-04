@@ -5,19 +5,15 @@ constexpr int WALL_THICKNESS = 2;
 
 #include <vector>
 
+using uint8_t = unsigned char;
+
 struct wall_section {
-    int value;
+    uint8_t value;
 
-    wall_section(int value = 0) : value(value) {}
+    wall_section(uint8_t value = 0) : value(value) {}
 
-    template<typename T>
-    wall_section &operator = (T new_value) {
-        value = new_value;
-        return *this;
-    }
-
-    operator int() const {
-        return value;
+    bool solid() const {
+        return value > 0;
     }
 };
 

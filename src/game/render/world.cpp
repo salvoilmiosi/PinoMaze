@@ -7,14 +7,14 @@
 #include "../options.h"
 #include "../game.h"
 
-world::world(context *m_context, game *m_game) :
-    m_context(m_context), m_game(m_game),
+world::world(engine_options *options, game *m_game) :
+    options(options), m_game(m_game),
 
     m_shader(m_game),
     m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f),
         "lightMatrix", &m_shader.m_light),
 
-    m_water(m_context, m_game),
+    m_water(options, m_game),
     m_bridge(m_game),
     m_skybox(m_game),
     m_particles(m_game)
@@ -55,7 +55,7 @@ void world::renderShadowmap() {
     }
 
     framebuffer::unbind();
-    glViewport(0, 0, m_context->window_width, m_context->window_height);
+    glViewport(0, 0, options->window_width, options->window_height);
 
     m_shader.shadowSampler.bind(&m_shader.shadowMap);
 }
@@ -139,7 +139,7 @@ void world::render(float deltaNano) {
 
     renderRefraction();
     framebuffer::unbind();
-    glViewport(0, 0, m_context->window_width, m_context->window_height);
+    glViewport(0, 0, options->window_width, options->window_height);
     m_water.render(deltaNano);
 
     m_particles.render(deltaNano);
@@ -183,10 +183,10 @@ void world::load_models(int gridx, int gridy, int gridsize) {
     for (x = gridx; x <= MIN(gridx + gridsize, m->width()); ++x) {
         for (y = gridy; y <= MIN(gridy + gridsize, m->height()); ++y) {
             bool hasWalls = false;
-            if (x > 0 && m->hwalls[y][x-1]) hasWalls = true;
-            else if (x < m->width() && m->hwalls[y][x]) hasWalls = true;
-            else if (y > 0 && m->vwalls[x][y-1]) hasWalls = true;
-            else if (y < m->height() && m->vwalls[x][y]) hasWalls = true;
+            if (x > 0 && m->hwalls[y][x-1].value) hasWalls = true;
+            else if (x < m->width() && m->hwalls[y][x].value) hasWalls = true;
+            else if (y > 0 && m->vwalls[x][y-1].value) hasWalls = true;
+            else if (y < m->height() && m->vwalls[x][y].value) hasWalls = true;
             else {
                 if ((t = m->getTile(x-1, y-1)) && (item = m->findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
                 else if ((t = m->getTile(x, y-1)) && (item = m->findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
@@ -225,9 +225,9 @@ void world::load_models(int gridx, int gridy, int gridsize) {
     for (y = gridy; y < MIN(gridy + gridsize + 1, m->hwalls.size()); ++y) {
         wall &w = m->hwalls[y];
         for (x = gridx; x < MIN(gridx + gridsize, w.size()); ++x) {
-            if (w[x]) {
+            if (w[x].value) {
                 glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize));
-                wallMatrices[w[x] - 1].push_back(matrix);
+                wallMatrices[w[x].value - 1].push_back(matrix);
             }
         }
     }
@@ -235,10 +235,10 @@ void world::load_models(int gridx, int gridy, int gridsize) {
     for (x = gridx; x < MIN(gridx + gridsize + 1, m->vwalls.size()); ++x) {
         wall &w = m->vwalls[x];
         for (y = gridy; y < MIN(gridy + gridsize, w.size()); ++y) {
-            if (w[y]) {
+            if (w[y].value > 0) {
                 glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
                 matrix = glm::rotate(matrix, glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
-                wallMatrices[w[y] - 1].push_back(matrix);
+                wallMatrices[w[y].value - 1].push_back(matrix);
             }
         }
     }

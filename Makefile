@@ -1,5 +1,5 @@
 CXX = clang++
-CFLAGS = -g -Wall --std=c++17
+CFLAGS = -g -Wall --std=c++17 -D_USE_MATH_DEFINES
 
 LIBS_EDITOR = `pkg-config --static --libs SDL2 SDL2_image`
 #LIBS_GAME = `pkg-config --static --libs glew SDL2 SDL2_image SDL2_mixer`

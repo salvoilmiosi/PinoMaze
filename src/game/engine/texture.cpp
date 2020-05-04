@@ -1,8 +1,8 @@
 #include "texture.h"
 
-#include "context.h"
-
 #include <iostream>
+
+#include "../engine/engine.h"
 
 texture::texture(SDL_Surface *m_surface) : m_surface(m_surface) {
     if (m_surface == nullptr) return;

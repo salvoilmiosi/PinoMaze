@@ -4,15 +4,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
+#include "../engine/engine.h"
 #include "../engine/shader.h"
 #include "../engine/vertex_array.h"
 #include "../engine/framebuffer.h"
 
 class water {
 public:
-	water(context *con, class game *m_game);
+	water(engine_options *options, class game *m_game);
 
 public:
+
 	void bindRefraction() {
 		refractionFBO.bind();
 	}

@@ -1,6 +1,5 @@
 #include "sphere.h"
 #include "base_model.h"
-#include "context.h"
 
 #include <cmath>
 

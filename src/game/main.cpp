@@ -21,11 +21,11 @@
 
 class game_engine : public engine {
 public:
-	game_engine(context *con, maze *m_maze) :
-		engine(con),
-		m_game(con, m_maze),
-		m_world(con, &m_game),
-		m_hud(con)
+	game_engine(const engine_options &m_options, maze *m_maze) :
+		engine(m_options),
+		m_game(&options, m_maze),
+		m_world(&options, &m_game),
+		m_hud(&options)
 	{}
 
 public:
@@ -42,7 +42,7 @@ public:
 
 	void handleEvent(SDL_Event &event) override {
 		if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-			quit = true;
+			running = false;
 		}
 		m_game.handleEvent(event);
 	}
@@ -101,19 +101,18 @@ int main (int argc, char **argv) {
 		return 0;
 	}
 
-    context con;
-	con.window_title = "PinoMaze";
-	con.vsync = false;
-	con.fps_limit = 300;
-	con.tickrate = 60;
-	//con.window_width = 1920;
-	//con.window_height = 1080;
-	//con.winflags |= SDL_WINDOW_FULLSCREEN;
-
-	//SDL_ShowCursor(SDL_DISABLE);
-
     try {
-	    game_engine(&con, m_maze.get()).run();
+		engine_options options;
+		options.window_title = "PinoMaze";
+		options.vsync = false;
+		options.fps_limit = 300;
+		options.tickrate = 60;
+		//options.window_width = 1920;
+		//options.window_height = 1080;
+		//options.winflags |= SDL_WINDOW_FULLSCREEN;
+
+		game_engine m_engine(options, m_maze.get());
+	    m_engine.run();
     } catch (const std::string &error) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", error.c_str(), nullptr);
         std::cerr << error << std::endl;

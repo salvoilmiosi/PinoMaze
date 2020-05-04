@@ -1,18 +1,17 @@
 #include "game.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <SDL2/SDL.h>
 #include <iostream>
 
 #include "resources.h"
 #include "options.h"
 
-game::game(context *m_context, maze *m_maze) : m_maze(m_maze), m_context(m_context) {
+game::game(engine_options *options, maze *m_maze) : m_maze(m_maze), options(options) {
     if (!loadMaterials(BINARY_RESOURCE(resource_materials_txt))) {
         throw std::string("Could not load materials");
     }
     
-    m_proj = glm::perspective(glm::radians(m_context->fov), (float)m_context->window_width / (float)m_context->window_height, 0.1f, skyboxSize * 2.f);
+    m_proj = glm::perspective(glm::radians(options->fov), (float)options->window_width / (float)options->window_height, 0.1f, skyboxSize * 2.f);
 
 	sun.direction = glm::vec3(0.43555f, 0.5f, -0.25391f);
     
@@ -26,6 +25,7 @@ game::game(context *m_context, maze *m_maze) : m_maze(m_maze), m_context(m_conte
 }
 
 game::~game() {
+	cleanupMaterials();
 	currentMusic.stop();
 }
 
@@ -101,10 +101,10 @@ bool game::canMove(int moveAngle, bool checkBlocks) {
 		return false;
 	}
 
-	if (ox > 0 && m_maze->vwalls[tx + 1][ty]) return false;
-	if (ox < 0 && m_maze->vwalls[tx][ty]) return false;
-	if (oy > 0 && m_maze->hwalls[ty + 1][tx]) return false;
-	if (oy < 0 && m_maze->hwalls[ty][tx]) return false;
+	if (ox > 0 && m_maze->vwalls[tx + 1][ty].solid()) return false;
+	if (ox < 0 && m_maze->vwalls[tx][ty].solid()) return false;
+	if (oy > 0 && m_maze->hwalls[ty + 1][tx].solid()) return false;
+	if (oy < 0 && m_maze->hwalls[ty][tx].solid()) return false;
 
 	if (curTile->state == STATE_ITEM) {
 		mazeItem *item = m_maze->findItem(curTile);
@@ -471,7 +471,7 @@ void game::updateMatrices(float deltaNano) {
 	static glm::vec3 lastPos = marblePos;
 
 	if (moving > 0) {
-		float moveAmt = deltaNano * (float) m_context->tickrate / (float) ticksPerMove / 1000000000.f;
+		float moveAmt = deltaNano * (float) options->tickrate / (float) ticksPerMove / 1000000000.f;
 		if (moveAmt >= 1.f) {
 			startX = marblePos.x = (tx + 0.5f) * tileSize;
 			startZ = marblePos.z = (ty + 0.5f) * tileSize;

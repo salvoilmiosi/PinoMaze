@@ -3,8 +3,6 @@
 #include <vector>
 #include <cmath>
 
-#include "context.h"
-
 static void addCircle(std::vector<base_vertex> &vertices, float radius, float tex_radius, float h, int divs) {
     base_vertex vertex;
 

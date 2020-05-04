@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "../engine/engine.h"
 #include "../engine/shader.h"
 #include "../engine/box.h"
 #include "../engine/sphere.h"
@@ -21,7 +22,7 @@
 
 class world {
 public:
-    world(context *m_context, game *m_game);
+    world(engine_options *options, game *m_game);
 
 public:
     void tick();
@@ -34,7 +35,7 @@ private:
     void load_models(int gridx, int gridy, int gridsize);
 
 private:
-    context *m_context;
+    engine_options *options;
     game *m_game;
 
     world_shader m_shader;

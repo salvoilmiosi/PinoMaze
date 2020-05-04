@@ -1,7 +1,5 @@
 #include "particle.h"
 
-#include "../engine/context.h"
-
 #include "../resources.h"
 #include "../options.h"
 #include "../game.h"
