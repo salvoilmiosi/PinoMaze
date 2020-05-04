@@ -63,6 +63,12 @@ public:
 		std::get<std::vector<uniform<int>>>(p_uniforms).emplace_back(location, name, &data->tex_unit);
 	}
 
+	template<typename T, typename ... Ts>
+	void add_uniforms(const char *name, T *data, Ts ... others) {
+		add_uniform(name, data);
+		add_uniforms(others ...);
+	}
+
 	void use();
 	void update_uniforms();
 
@@ -70,15 +76,12 @@ private:
 	const char *name;
 	void link();
 
-	template<typename ... Ts>
-	void attach_transform_varyings(Ts ... strs) {
-		const GLchar* varyings[] = {strs ... };
-		glTransformFeedbackVaryings(gl_programid, sizeof...(strs), varyings, GL_INTERLEAVED_ATTRIBS);
-	}
+	void add_uniforms() {}
 	
-private:
+protected:
 	GLuint gl_programid;
 
+private:
 	template<typename T>
 	struct uniform {
 		GLint location;
@@ -99,12 +102,14 @@ private:
 
 class vf_shader : public shader_program {
 public:
-	vf_shader(const char *name, const std::string &vertex_source, const std::string &fragment_source) :
+	template<typename ... Uniforms>
+	vf_shader(const char *name, const std::string &vertex_source, const std::string &fragment_source, Uniforms ... uniforms) :
 		shader_program(name),
 		m_vertex(name, SHADER_VERTEX, vertex_source),
 		m_fragment(name, SHADER_FRAGMENT, fragment_source)
 	{
 		attach_and_link(m_vertex, m_fragment);
+		add_uniforms(uniforms ...);
 	}
 	~vf_shader() {
 		detach_shaders(m_vertex, m_fragment);
@@ -116,13 +121,17 @@ private:
 
 class geom_shader : public shader_program {
 public:
-	geom_shader(const char *name, const std::string &vertex_source, const std::string &geometry_source, const std::string &fragment_source) :
+	template<typename ... Uniforms>
+	geom_shader(const char *name, const std::string &vertex_source, const std::string &geometry_source, const std::string &fragment_source,
+		Uniforms ... uniforms) :
+
 		shader_program(name),
 		m_vertex(name, SHADER_VERTEX, vertex_source),
 		m_geometry(name, SHADER_GEOMETRY, geometry_source),
 		m_fragment(name, SHADER_FRAGMENT, fragment_source)
 	{
 		attach_and_link(m_vertex, m_geometry, m_fragment);
+		add_uniforms(uniforms ...);
 	}
 	~geom_shader() {
 		detach_shaders(m_vertex, m_geometry, m_fragment);
@@ -134,14 +143,17 @@ private:
 
 class transform_feedback_shader : public shader_program {
 public:
-	template<typename ... Ts>
-	transform_feedback_shader(const char *name, const std::string &vertex_source, const std::string &geometry_source, Ts ... varyings) :
+	template<typename ... Uniforms>
+	transform_feedback_shader(const char *name, const std::string &vertex_source, const std::string &geometry_source,
+		std::initializer_list<const char *> varyings, Uniforms ... uniforms) :
+
 		shader_program(name),
 		m_vertex(name, SHADER_VERTEX, vertex_source),
 		m_geometry(name, SHADER_GEOMETRY, geometry_source)
 	{
-		attach_transform_varyings(varyings ...);
+		attach_transform_varyings(varyings);
 		attach_and_link(m_vertex, m_geometry);
+		add_uniforms(uniforms ...);
 	}
 	~transform_feedback_shader() {
 		detach_shaders(m_vertex, m_geometry);
@@ -149,6 +161,13 @@ public:
 
 private:
 	shader m_vertex, m_geometry;
+
+	void attach_transform_varyings(std::initializer_list<const char *> varyings) {
+		const char **varyings_arr = new const char *[varyings.size()];
+		std::copy(varyings.begin(), varyings.end(), varyings_arr);
+		glTransformFeedbackVaryings(gl_programid, varyings.size(), varyings_arr, GL_INTERLEAVED_ATTRIBS);
+		delete[] varyings_arr;
+	}
 };
 
 #endif

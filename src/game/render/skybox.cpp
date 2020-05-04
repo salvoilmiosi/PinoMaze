@@ -5,7 +5,16 @@
 #include "../options.h"
 
 skybox::skybox(game *m_game) : m_game(m_game),
-    m_shader("skybox", SHADER_RESOURCE(s_skybox_v), SHADER_RESOURCE(s_skybox_f)),
+    m_shader("skybox", SHADER_RESOURCE(s_skybox_v), SHADER_RESOURCE(s_skybox_f),
+        "projectionMatrix", &m_game->m_proj,
+        "viewMatrix", &m_view_zeroed,
+        "skyboxTexture[0]", &m_sampler[0],
+        "skyboxTexture[1]", &m_sampler[1],
+        "skyboxTexture[2]", &m_sampler[2],
+        "skyboxTexture[3]", &m_sampler[3],
+        "skyboxTexture[4]", &m_sampler[4],
+        "skyboxTexture[5]", &m_sampler[5]),
+        
     m_texture {
         loadImageFromResource("IDC_SKYBOX_FRONT"),
         loadImageFromResource("IDC_SKYBOX_BACK"),
@@ -15,15 +24,6 @@ skybox::skybox(game *m_game) : m_game(m_game),
         loadImageFromResource("IDC_SKYBOX_BOTTOM"),
     }
 {
-    m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
-    m_shader.add_uniform("viewMatrix", &m_view_zeroed);
-    m_shader.add_uniform("skyboxTexture[0]", &m_sampler[0]);
-    m_shader.add_uniform("skyboxTexture[1]", &m_sampler[1]);
-    m_shader.add_uniform("skyboxTexture[2]", &m_sampler[2]);
-    m_shader.add_uniform("skyboxTexture[3]", &m_sampler[3]);
-    m_shader.add_uniform("skyboxTexture[4]", &m_sampler[4]);
-    m_shader.add_uniform("skyboxTexture[5]", &m_sampler[5]);
-
     for (size_t i=0; i<6; ++i) {
 	    m_texture[i].setWrapParam(GL_CLAMP_TO_EDGE);
     }

@@ -9,12 +9,11 @@
 #include "material.h"
 
 hud::hud(context *m_context) : m_context(m_context),
-	m_shader("hud", SHADER_RESOURCE(s_hud_v), SHADER_RESOURCE(s_hud_f))
+	m_shader("hud", SHADER_RESOURCE(s_hud_v), SHADER_RESOURCE(s_hud_f),
+		"offset", &m_offset,
+		"diffuseTexture", &m_sampler,
+		"diffuseColor", &m_color)
 {
-	m_shader.add_uniform("offset", &m_offset);
-	m_shader.add_uniform("diffuseTexture", &m_sampler);
-	m_shader.add_uniform("diffuseColor", &m_color);
-
 	checkGlError("Failed to init HUD");
 }
 

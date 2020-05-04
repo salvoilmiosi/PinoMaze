@@ -31,9 +31,9 @@ private:
 	texture refractionDepth;
 	framebuffer refractionFBO;
 
-    sampler refractionSampler{0};
-    sampler dudvSampler{1};
-    sampler normalSampler{2};
+    sampler refractionSampler = 0;
+    sampler dudvSampler = 1;
+    sampler normalSampler = 2;
 
 	float shininess = 10.f;
 	float globalTime = 0.f;

@@ -11,18 +11,15 @@ world::world(context *m_context, game *m_game) :
     m_context(m_context), m_game(m_game),
 
     m_shader(m_game),
-    m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f)),
+    m_shadow("shadow", SHADER_RESOURCE(s_shadow_v), SHADER_RESOURCE(s_shadow_f),
+        "lightMatrix", &m_shader.m_light),
 
     m_water(m_context, m_game),
     m_bridge(m_game),
     m_skybox(m_game),
     m_particles(m_game)
 {
-    m_shadow.add_uniform("lightMatrix", &m_shader.m_light);
-
     m_particles.init();
-
-    //load_models(0,0,5);
 
     checkGlError("Failed to init world renderer");
 }

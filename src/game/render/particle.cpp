@@ -38,19 +38,19 @@ static constexpr vertex_attrib_list particle_attr_list {
 particle_system::particle_system(game *m_game) :
     m_game(m_game),
     m_shader("particle", SHADER_RESOURCE(s_particle_v), SHADER_RESOURCE(s_particle_g),
-        "type1", "age1", "position1", "velocity1", "data1"),
-    m_billboard("billboard", SHADER_RESOURCE(s_billboard_v), SHADER_RESOURCE(s_billboard_g), SHADER_RESOURCE(s_billboard_f)),
+        {"type1", "age1", "position1", "velocity1", "data1"},
+        "randomTexture", &randomSampler,
+        "deltaMs", &deltaMs,
+        "globalTime", &globalTime),
+
+    m_billboard("billboard", SHADER_RESOURCE(s_billboard_v), SHADER_RESOURCE(s_billboard_g), SHADER_RESOURCE(s_billboard_f),
+        "viewMatrix", &m_game->m_view,
+        "projMatrix", &m_game->m_proj,
+        "cameraPos", &m_game->m_camera.position,
+        "particleTexture", &particleSampler),
+
     randomTexture(1024, 1)
 {
-    m_shader.add_uniform("randomTexture", &randomSampler);
-    m_shader.add_uniform("deltaMs", &deltaMs);
-    m_shader.add_uniform("globalTime", &globalTime);
-
-    m_billboard.add_uniform("viewMatrix", &m_game->m_view);
-    m_billboard.add_uniform("projMatrix", &m_game->m_proj);
-    m_billboard.add_uniform("cameraPos", &m_game->m_camera.position);
-    m_billboard.add_uniform("particleTexture", &particleSampler);
-
     for (size_t i=0; i<2; ++i) {
         tfbs[i].init_buffer(sizeof(particle) * MAX_PARTICLES, particle_attr_list);
     }

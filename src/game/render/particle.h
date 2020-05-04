@@ -29,8 +29,8 @@ private:
 
     texture randomTexture;
 
-    sampler randomSampler{0};
-    sampler particleSampler{0};
+    sampler randomSampler = 0;
+    sampler particleSampler = 0;
 
     transform_feedback tfbs[2];
 

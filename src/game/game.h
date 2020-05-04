@@ -70,7 +70,7 @@ private:
 	int moving = 0;
 	int restartDelay = 0;
 
-	bool lockToMarble = false;
+	bool falling = false;
 
 	glm::vec3 marblePos;
 	glm::mat4 marbleRotation{1.f};
@@ -92,7 +92,7 @@ private:
 	void endMove();
 	void teleportToStart(bool resetWon);
 
-	void setupCamera(float deltaNano);
+	void setupCamera();
 	void setupMarble(float deltaNano);
 
 	void loadMusic();

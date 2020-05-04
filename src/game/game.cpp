@@ -71,7 +71,7 @@ void game::teleportTo(int _x, int _y) {
 	endMove();
 
 	teleportTimer = teleportTicks;
-	lockToMarble = false;
+	falling = false;
 }
 
 bool game::canMove(int moveAngle, bool checkBlocks) {
@@ -169,10 +169,7 @@ bool game::offsetMove(int angleOffset) {
 	return false;
 }
 
-void game::setupCamera(float deltaNano) {
-	m_camera.position.x = marblePos.x;
-	m_camera.position.z = marblePos.z;
-
+void game::setupCamera() {
     float angleDiff = angleFacing * M_PI / 2.f - m_camera.yaw;
     if (angleDiff > M_PI) {
         angleDiff -= M_PI * 2.f;
@@ -180,7 +177,8 @@ void game::setupCamera(float deltaNano) {
     if (angleDiff < -M_PI) {
         angleDiff += M_PI * 2.f;
     }
-    m_camera.yaw += angleDiff * cameraTurnSpeed;
+	m_camera.yaw += angleDiff * 0.2;
+
     if (m_camera.yaw < 0.f) {
 		m_camera.yaw += M_PI * 2.f;
     }
@@ -190,41 +188,36 @@ void game::setupCamera(float deltaNano) {
 
 	tile *tile_from = m_maze->getTile(tx_prev, ty_prev);
 	tile *tile_to = m_maze->getTile(tx, ty);
-
-	float cameraToY = cameraHeight;
-
-	if (!lockToMarble) {
+	
+	if (falling) {
+		//m_camera.pitch += 1.2f * deltaNano / 1000000000.f;
+	} else {
+		float pitch = glm::radians(cameraPitch);
 		if (tile_from->state == STATE_ITEM || tile_to->state == STATE_ITEM) {
 			mazeItem *item_from = m_maze->findItem(tile_from);
 			mazeItem *item_to = m_maze->findItem(tile_to);
 
-			if (!(lastMoveAngle % 2)
-				&& ((item_to && item_to->type == ITEM_BRIDGE)
-					|| (item_from && item_from->type == ITEM_BRIDGE && moving >= ticksPerMove / 2))) {
-				cameraToY = bridgeArcHeight * 0.4f;
-			} else if ((item_to && item_to->type == ITEM_BRIDGE) || (item_from && item_from->type == ITEM_BRIDGE)) {
-				cameraToY += marblePos.y - marbleRadius;
+			if (!(lastMoveAngle % 2)){
+				if (((item_to && item_to->type == ITEM_BRIDGE)
+					|| (item_from && item_from->type == ITEM_BRIDGE && moving > 5))) {
+					pitch = glm::radians(5.f);
+				}
 			}
 		}
+		float deltaPitch = pitch - m_camera.pitch;
+		m_camera.pitch += deltaPitch * 0.5;
 	}
 
-	float pitch = glm::radians(cameraPitch);
-
-	float radius = cosf(pitch) * cameraDistance;
+	float radius = cosf(m_camera.pitch) * cameraDistance;
 	float distX = sinf(m_camera.yaw) * radius;
-	float distY = sinf(pitch) * cameraDistance;
+	float distY = sinf(m_camera.pitch) * cameraDistance;
 	float distZ = cosf(m_camera.yaw) * radius;
-	m_camera.position += glm::vec3(distX, 0.f, distZ);
 
-	float dy = cameraToY + distY - m_camera.position.y;
-	m_camera.position.y += dy * cameraSpeed;
-
-	if (lockToMarble) {
-		float cameraToPitch = atan2f(m_camera.position.y - marblePos.y, radius);
-		float delta = cameraToPitch - m_camera.pitch;
-		m_camera.pitch += delta * cameraSpeed;
-	} else {
-		m_camera.pitch = pitch;
+	m_camera.position.x = marblePos.x + distX;
+	m_camera.position.z = marblePos.z + distZ;
+	
+	if (!falling) {
+		m_camera.position.y = marblePos.y + distY + cameraHeight - marbleRadius;
 	}
 	
 	glm::mat4 m_position = glm::translate(glm::mat4(1.f), -m_camera.position);
@@ -284,7 +277,7 @@ void game::setupMarble(float deltaNano) {
 	if (tile_to->state == STATE_BLOCK && moving <= ticksPerMove / 2) {
 		marblePos.y -= fallSpeed * deltaNano / 1000000000.f;
 		fallSpeed += gravityAccel * deltaNano / 1000000000.f;
-		lockToMarble = true;
+		falling = true;
 	} else {
 		fallSpeed = 0.f;
 
@@ -470,6 +463,8 @@ void game::tick() {
 		offsetMove(3);
 		pathfinder = nullptr;
 	}
+
+	setupCamera();
 }
 
 void game::updateMatrices(float deltaNano) {
@@ -489,7 +484,6 @@ void game::updateMatrices(float deltaNano) {
 	rollMarble(marblePos - lastPos);
 
     setupMarble(deltaNano);
-	setupCamera(deltaNano);
 
 	lastPos = marblePos;
 }

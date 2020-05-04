@@ -7,20 +7,20 @@
 #include "maze.h"
 
 water::water(context *con, game *m_game) : m_game(m_game),
-	m_shader("water", SHADER_RESOURCE(s_water_v), SHADER_RESOURCE(s_water_f)),
+	m_shader("water", SHADER_RESOURCE(s_water_v), SHADER_RESOURCE(s_water_f),
+		"projectionMatrix", &m_game->m_proj,
+		"viewMatrix", &m_game->m_view,
+		"cameraPosition", &m_game->m_camera.position,
+		"lightDirection", &m_game->sun.direction,
+		"refractionTexture", &refractionSampler,
+		"dudvTexture", &dudvSampler,
+		"normalTexture", &normalSampler,
+		"globalTime", &globalTime,
+		"shininess", &shininess),
+
 	refraction(con->window_width, con->window_height),
 	refractionDepth(con->window_width, con->window_height, true)
 {
-	m_shader.add_uniform("projectionMatrix", &m_game->m_proj);
-	m_shader.add_uniform("viewMatrix", &m_game->m_view);
-	m_shader.add_uniform("cameraPosition", &m_game->m_camera.position);
-	m_shader.add_uniform("lightDirection", &m_game->sun.direction);
-	m_shader.add_uniform("refractionTexture", &refractionSampler);
-	m_shader.add_uniform("dudvTexture", &dudvSampler);
-	m_shader.add_uniform("normalTexture", &normalSampler);
-	m_shader.add_uniform("globalTime", &globalTime);
-	m_shader.add_uniform("shininess", &shininess);
-	
 	refraction.setFilter(GL_NEAREST);
 	refraction.setWrapParam(GL_CLAMP_TO_EDGE);
 

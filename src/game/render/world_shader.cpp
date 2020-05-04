@@ -7,31 +7,33 @@ world_shader::world_shader(game *m_game) :
     vf_shader("world", SHADER_RESOURCE(s_world_v), SHADER_RESOURCE(s_world_f)),
     shadowMap(2048, 2048, true)
 {
-    add_uniform("projectionMatrix", &m_game->m_proj);
-    add_uniform("viewMatrix", &m_game->m_view);
-    add_uniform("lightMatrix", &m_light_biased);
-    add_uniform("diffuseTexture", &diffuseSampler);
-    add_uniform("normalTexture", &normalSampler);
-    add_uniform("specularTexture", &specularSampler);
-    add_uniform("tpTileTexture", &tpTileSampler);
-    add_uniform("shadowMap", &shadowSampler);
+    add_uniforms(
+        "projectionMatrix", &m_game->m_proj,
+        "viewMatrix", &m_game->m_view,
+        "lightMatrix", &m_light_biased,
+        "diffuseTexture", &diffuseSampler,
+        "normalTexture", &normalSampler,
+        "specularTexture", &specularSampler,
+        "tpTileTexture", &tpTileSampler,
+        "shadowMap", &shadowSampler,
 
-    add_uniform("renderFlags", &renderFlags);
-    
-    add_uniform("sun.ambient", (glm::vec3 *) &m_sun.ambient);
-    add_uniform("sun.diffuse", (glm::vec3 *) &m_sun.diffuse);
-    add_uniform("sun.specular", (glm::vec3 *) &m_sun.specular);
-    add_uniform("sun.direction", &m_sun.direction);
+        "renderFlags", &renderFlags,
 
-    add_uniform("mat.ambient", (glm::vec3 *) &m_material.ambient);
-    add_uniform("mat.diffuse", (glm::vec3 *) &m_material.diffuse);
-    add_uniform("mat.specular", (glm::vec3 *) &m_material.specular);
-    add_uniform("mat.emissive", (glm::vec3 *) &m_material.emissive);
-    add_uniform("mat.shininess", &m_material.shininess);
+        "shadowBias", &shadowBias,
+        "shadowTexelSize", &shadowTexelSize,
+        "refractionHeight", &refractionHeight,
+        
+        "sun.ambient", (glm::vec3 *) &m_sun.ambient,
+        "sun.diffuse", (glm::vec3 *) &m_sun.diffuse,
+        "sun.specular", (glm::vec3 *) &m_sun.specular,
+        "sun.direction", &m_sun.direction,
 
-    add_uniform("shadowBias", &shadowBias);
-    add_uniform("shadowTexelSize", &shadowTexelSize);
-    add_uniform("refractionHeight", &refractionHeight);
+        "mat.ambient", (glm::vec3 *) &m_material.ambient,
+        "mat.diffuse", (glm::vec3 *) &m_material.diffuse,
+        "mat.specular", (glm::vec3 *) &m_material.specular,
+        "mat.emissive", (glm::vec3 *) &m_material.emissive,
+        "mat.shininess", &m_material.shininess
+    );
 
     shadowMap.setFilter(GL_NEAREST);
     shadowMap.setWrapParam(GL_CLAMP_TO_EDGE);
