@@ -23,7 +23,7 @@ private:
     vertex_array vao;
 
 	texture m_texture[6];
-    sampler m_sampler[6] = {0, 1, 2, 3, 4, 5};
+    int m_sampler[6] = {0, 1, 2, 3, 4, 5};
 
     glm::mat4 m_view_zeroed;
 };

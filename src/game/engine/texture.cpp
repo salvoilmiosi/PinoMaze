@@ -84,11 +84,7 @@ void texture::bind() const {
 	glBindTexture(GL_TEXTURE_2D, texID);
 }
 
-void sampler::bind(const texture *t) {
+void texture::bindTo(int tex_unit) const {
     glActiveTexture(GL_TEXTURE0 + tex_unit);
-    if (t) {
-        t->bind();
-    } else {
-		glBindTexture(GL_TEXTURE_2D, 0);
-    }
+	glBindTexture(GL_TEXTURE_2D, texID);
 }

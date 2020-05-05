@@ -25,7 +25,7 @@ private:
     vf_shader m_shader;
     vertex_array vao;
 
-    sampler m_sampler = 0;
+    int diffuseSampler = 0;
     glm::vec2 m_offset;
     glm::vec3 m_color;
     

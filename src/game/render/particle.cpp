@@ -145,7 +145,7 @@ void particle_system::render(float deltaNano) {
     deltaMs = deltaNano / 1000000.f;
     globalTime += deltaMs;
 
-    randomSampler.bind(&randomTexture);
+    randomTexture.bindTo(randomSampler);
 
     m_shader.use();
 
@@ -166,7 +166,7 @@ void particle_system::render(float deltaNano) {
     glBlendEquation(GL_FUNC_ADD);
     glDepthMask(GL_FALSE);
 
-    particleSampler.bind(getTexture("TEX_PARTICLE_TEXTURE").get());
+    materials::bindTexture(particleSampler, "TEX_PARTICLE_TEXTURE");
     m_billboard.use();
 
     tfbs[currentTFB].draw_feedback();

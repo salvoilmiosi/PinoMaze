@@ -60,9 +60,9 @@ void water::load_models(int gridx, int gridy, int gridsize) {
 }
 
 void water::render(float deltaNano) {
-	refractionSampler.bind(&refraction);
-	dudvSampler.bind(getTexture("TEX_WATER_DUDV").get());
-	normalSampler.bind(getTexture("TEX_WATER_NORMALS").get());
+	refraction.bindTo(refractionSampler);
+	materials::bindTexture(dudvSampler, "TEX_WATER_DUDV");
+	materials::bindTexture(normalSampler, "TEX_WATER_NORMALS");
 
 	globalTime += deltaNano / 1000000.f;
 	m_shader.use();

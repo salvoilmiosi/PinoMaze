@@ -105,7 +105,7 @@ void skybox::render() {
     m_view_zeroed[3][2] = 0.f;
 
     for (size_t i=0; i<6; ++i) {
-        m_sampler[i].bind(m_texture + i);
+        m_texture[i].bindTo(m_sampler[i]);
     }
     m_shader.use();
 

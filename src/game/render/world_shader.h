@@ -32,11 +32,11 @@ private:
     glm::mat4 m_light;
     glm::mat4 m_light_biased;
 
-    sampler diffuseSampler = 0;
-    sampler normalSampler = 1;
-    sampler specularSampler = 2;
-    sampler shadowSampler = 3;
-    sampler tpTileSampler = 4;
+    int diffuseSampler = 0;
+    int normalSampler = 1;
+    int specularSampler = 2;
+    int shadowSampler = 3;
+    int tpTileSampler = 4;
     
     framebuffer shadowBuffer;
 	texture shadowMap;

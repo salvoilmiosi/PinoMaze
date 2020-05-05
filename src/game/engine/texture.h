@@ -41,20 +41,9 @@ public:
     void setWrapParam(GLenum wrapParam);
 
 	void bind() const;
+    void bindTo(int tex_unit) const;
 
     friend class framebuffer;
-};
-
-class sampler {
-public:
-    sampler(int tex_unit) : tex_unit(tex_unit) {}
-    
-    void bind(const texture *t);
-
-private:
-    int tex_unit;
-
-    friend class shader_program;
 };
 
 #endif // __TEXTURE_H__

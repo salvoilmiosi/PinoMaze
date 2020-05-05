@@ -30,8 +30,8 @@ private:
 
     texture randomTexture;
 
-    sampler randomSampler = 0;
-    sampler particleSampler = 0;
+    int randomSampler = 0;
+    int particleSampler = 0;
 
     transform_feedback tfbs[2];
 

@@ -46,23 +46,23 @@ world_shader::world_shader(game *m_game) :
 }
 
 void world_shader::apply_material(const char *mat_name) {
-    auto mat = getMaterial(mat_name);
+    auto mat = materials::getMaterial(mat_name);
     if (mat) m_material = *mat;
     else m_material = {};
     if (m_material.tex) {
-        diffuseSampler.bind(m_material.tex.get());
+        m_material.tex->bindTo(diffuseSampler);
         addFlags(ENABLE_TEXTURE);
     } else {
         removeFlags(ENABLE_TEXTURE);
     }
     if (m_material.normals) {
-        normalSampler.bind(m_material.normals.get());
+        m_material.normals->bindTo(normalSampler);
         addFlags(ENABLE_NORMALS);
     } else {
         removeFlags(ENABLE_NORMALS);
     }
     if (m_material.specmap) {
-        specularSampler.bind(m_material.specmap.get());
+        m_material.specmap->bindTo(specularSampler);
         addFlags(ENABLE_SPECULAR);
     } else {
         removeFlags(ENABLE_SPECULAR);

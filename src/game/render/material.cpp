@@ -8,13 +8,15 @@
 
 #include "../resources.h"
 
-static std::unordered_map<std::string, std::shared_ptr<material>> m_materials;
-static std::unordered_map<std::string, std::shared_ptr<texture>> m_textures;
-
 inline void trim(std::string &s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(isspace))));
 	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(isspace))).base(), s.end());
 }
+
+namespace materials {
+
+static std::unordered_map<std::string, std::shared_ptr<material>> m_materials;
+static std::unordered_map<std::string, std::shared_ptr<texture>> m_textures;
 
 bool loadMaterials(const std::string &source) {
 	if (source.empty()) {
@@ -178,4 +180,12 @@ const std::shared_ptr<material> getMaterial(const std::string &name) {
 		std::cout << "Could not find material id " << name << std::endl;
 		return nullptr;
 	}
+}
+
+void bindTexture(int tex_unit, const std::string &name) {
+	if (auto t = getTexture(name)) {
+		t->bindTo(tex_unit);
+	}
+}
+
 }

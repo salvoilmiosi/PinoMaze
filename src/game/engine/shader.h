@@ -57,11 +57,6 @@ public:
 		std::get<std::vector<uniform<T>>>(p_uniforms).emplace_back(location, name, data);
 	}
 
-	void add_uniform(const char *name, sampler *data) {
-		int location = glGetUniformLocation(gl_programid, name);
-		std::get<std::vector<uniform<int>>>(p_uniforms).emplace_back(location, name, &data->tex_unit);
-	}
-
 	template<typename T, typename ... Ts>
 	void add_uniforms(const char *name, T *data, Ts ... others) {
 		add_uniform(name, data);

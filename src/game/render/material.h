@@ -40,10 +40,15 @@ struct material {
 	std::shared_ptr<texture> specmap = nullptr;
 };
 
-bool loadMaterials(const std::string &source);
-void cleanupMaterials();
+namespace materials {
+	bool loadMaterials(const std::string &source);
+	void cleanupMaterials();
 
-const std::shared_ptr<texture> getTexture(const std::string &name);
-const std::shared_ptr<material> getMaterial(const std::string &name);
+	const std::shared_ptr<texture> getTexture(const std::string &name);
+	const std::shared_ptr<material> getMaterial(const std::string &name);
+
+	void bindTexture(int tex_unit, const std::string &name);
+}
+
 
 #endif  // __MATERIAL_H__
