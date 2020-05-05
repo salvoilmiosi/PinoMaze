@@ -76,7 +76,7 @@ void particle_system::createRandomTexture() {
 void particle_system::init() {
     std::vector<particle> sources;
     
-    for (std::pair<const int, mazeItem> &it : m_game->m_maze->items) {
+    for (std::pair<const int, mazeItem> &it : m_game->m_maze.items) {
         if (it.second.type == ITEM_TELEPORT && it.second.teleport.warpX >= 0 && it.second.teleport.warpY >= 0) {
             particle source;
 

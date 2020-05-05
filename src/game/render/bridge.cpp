@@ -54,7 +54,7 @@ bridge::bridge(game *m_game) : m_game(m_game) {
 }
 
 void bridge::load_models(int gridx, int gridy, int gridsize) {
-    maze *m = m_game->m_maze;
+    maze &m_maze = m_game->m_maze;
 
 	glm::mat4 matrix;
 	bool wallUp, wallDown;
@@ -62,19 +62,19 @@ void bridge::load_models(int gridx, int gridy, int gridsize) {
     std::vector<glm::mat4> arcMatrices;
     std::vector<glm::mat4> wallMatrices[numWallMaterials];
 
-	for (auto &it : m->items) {
+	for (auto &it : m_maze.items) {
 		if (it.second.type == ITEM_BRIDGE) {
 			int x = it.second.item.x;
 			int y = it.second.item.y;
             if (x < gridx || x > gridx + gridsize || y < gridy || y > gridy + gridsize) continue;
 
 			matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, 0.f, (y + 0.5f) * tileSize));
-			wallUp = m->hwalls[y][x].value == 0;
-			wallDown = m->hwalls[y + 1][x].value == 0;
+			wallUp = m_maze.hwalls[y][x].value == 0;
+			wallDown = m_maze.hwalls[y + 1][x].value == 0;
 
-			tile *tileDown = m->getTile(x, y + 1);
+			tile *tileDown = m_maze.getTile(x, y + 1);
 			mazeItem *item;
-			if (tileDown && (item = m->findItem(tileDown)) && item->type == ITEM_BRIDGE) {
+			if (tileDown && (item = m_maze.findItem(tileDown)) && item->type == ITEM_BRIDGE) {
 				wallDown = false;
 			}
 

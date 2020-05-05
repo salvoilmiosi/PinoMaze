@@ -21,7 +21,7 @@
 
 class game_engine : public engine {
 public:
-	game_engine(const engine_options &options, maze *m_maze) :
+	game_engine(const engine_options &options, maze &m_maze) :
 		engine(options),
 		m_game(this, m_maze),
 		m_world(this, &m_game),
@@ -111,7 +111,7 @@ int main (int argc, char **argv) {
 		//options.window_height = 1080;
 		//options.winflags |= SDL_WINDOW_FULLSCREEN;
 
-		game_engine m_engine(options, m_maze.get());
+		game_engine m_engine(options, *m_maze);
 	    m_engine.run();
     } catch (const std::string &error) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", error.c_str(), nullptr);

@@ -171,7 +171,7 @@ void world::renderRefraction() {
 }
 
 void world::load_models(int gridx, int gridy, int gridsize) {
-    maze *m = m_game->m_maze;
+    maze &m_maze = m_game->m_maze;
     tile *t;
     mazeItem *item;
 
@@ -180,18 +180,18 @@ void world::load_models(int gridx, int gridy, int gridsize) {
     int x = 0;
     int y = 0;
 
-    for (x = gridx; x <= MIN(gridx + gridsize, m->width()); ++x) {
-        for (y = gridy; y <= MIN(gridy + gridsize, m->height()); ++y) {
+    for (x = gridx; x <= MIN(gridx + gridsize, m_maze.width()); ++x) {
+        for (y = gridy; y <= MIN(gridy + gridsize, m_maze.height()); ++y) {
             bool hasWalls = false;
-            if (x > 0 && m->hwalls[y][x-1].value) hasWalls = true;
-            else if (x < m->width() && m->hwalls[y][x].value) hasWalls = true;
-            else if (y > 0 && m->vwalls[x][y-1].value) hasWalls = true;
-            else if (y < m->height() && m->vwalls[x][y].value) hasWalls = true;
+            if (x > 0 && m_maze.hwalls[y][x-1].value) hasWalls = true;
+            else if (x < m_maze.width() && m_maze.hwalls[y][x].value) hasWalls = true;
+            else if (y > 0 && m_maze.vwalls[x][y-1].value) hasWalls = true;
+            else if (y < m_maze.height() && m_maze.vwalls[x][y].value) hasWalls = true;
             else {
-                if ((t = m->getTile(x-1, y-1)) && (item = m->findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
-                else if ((t = m->getTile(x, y-1)) && (item = m->findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
-                else if ((t = m->getTile(x-1, y)) && (item = m->findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
-                else if ((t = m->getTile(x, y)) && (item = m->findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
+                if ((t = m_maze.getTile(x-1, y-1)) && (item = m_maze.findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
+                else if ((t = m_maze.getTile(x, y-1)) && (item = m_maze.findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
+                else if ((t = m_maze.getTile(x-1, y)) && (item = m_maze.findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
+                else if ((t = m_maze.getTile(x, y)) && (item = m_maze.findItem(t)) && item->type == ITEM_BRIDGE) hasWalls = true;
             }
 
             if (hasWalls) {
@@ -206,10 +206,10 @@ void world::load_models(int gridx, int gridy, int gridsize) {
 
     matrices.clear();
 
-    for (y = gridy; y < MIN(gridy + gridsize, m->height()); ++y) {
-        for (x = gridx; x < MIN(gridx + gridsize, m->width()); ++x) {
-            tile *m_tile = m_game->m_maze->getTile(x, y);
-            mazeItem *item = m_game->m_maze->findItem(m_tile);
+    for (y = gridy; y < MIN(gridy + gridsize, m_maze.height()); ++y) {
+        for (x = gridx; x < MIN(gridx + gridsize, m_maze.width()); ++x) {
+            tile *m_tile = m_game->m_maze.getTile(x, y);
+            mazeItem *item = m_game->m_maze.findItem(m_tile);
             if (m_tile->state != STATE_BLOCK && !(item && item->type == ITEM_ARROW)) {
                 matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3((x + .5f) * tileSize, -blockHeight, (y + .5f) * tileSize)));
             }
@@ -222,8 +222,8 @@ void world::load_models(int gridx, int gridy, int gridsize) {
 
     std::vector<glm::mat4> wallMatrices[numWallMaterials];
 
-    for (y = gridy; y < MIN(gridy + gridsize + 1, m->hwalls.size()); ++y) {
-        wall &w = m->hwalls[y];
+    for (y = gridy; y < MIN(gridy + gridsize + 1, m_maze.hwalls.size()); ++y) {
+        wall &w = m_maze.hwalls[y];
         for (x = gridx; x < MIN(gridx + gridsize, w.size()); ++x) {
             if (w[x].value) {
                 glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, wallHeight / 2.f, y * tileSize));
@@ -232,8 +232,8 @@ void world::load_models(int gridx, int gridy, int gridsize) {
         }
     }
 
-    for (x = gridx; x < MIN(gridx + gridsize + 1, m->vwalls.size()); ++x) {
-        wall &w = m->vwalls[x];
+    for (x = gridx; x < MIN(gridx + gridsize + 1, m_maze.vwalls.size()); ++x) {
+        wall &w = m_maze.vwalls[x];
         for (y = gridy; y < MIN(gridy + gridsize, w.size()); ++y) {
             if (w[y].value > 0) {
                 glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, wallHeight / 2.f, (y + 0.5f) * tileSize));
@@ -249,18 +249,18 @@ void world::load_models(int gridx, int gridy, int gridsize) {
 
     checkGlError("Failed to load walls");
 
-    if ((t = m->startTile()) != nullptr) {
-        size_t index = m->getIndex(t);
-        x = index % m->width();
-        y = index / m->width();
+    if ((t = m_maze.startTile()) != nullptr) {
+        size_t index = m_maze.getIndex(t);
+        x = index % m_maze.width();
+        y = index / m_maze.width();
         glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
         m_start.update_matrices(2, &matrix, 1, 4, true);
     }
 
-    if ((t = m->endTile()) != nullptr) {
-        size_t index = m->getIndex(t);
-        x = index % m->width();
-        y = index / m->width();
+    if ((t = m_maze.endTile()) != nullptr) {
+        size_t index = m_maze.getIndex(t);
+        x = index % m_maze.width();
+        y = index / m_maze.width();
         glm::mat4 matrix = glm::translate(glm::mat4(1.f), glm::vec3((x + 0.5f) * tileSize, startBoxHeight / 2.f, (y + 0.5f) * tileSize));
         m_end.update_matrices(2, &matrix, 1, 4, true);
     }
@@ -274,7 +274,7 @@ void world::load_models(int gridx, int gridy, int gridsize) {
     std::vector<glm::mat4> arrowMatrices;
     std::vector<tp_instance> tp_instances;
 
-    for (std::pair<const int, mazeItem> &it : m->items) {
+    for (std::pair<const int, mazeItem> &it : m_maze.items) {
         x = it.second.item.x;
         y = it.second.item.y;
         if (x < gridx || x > gridx + gridsize || y < gridy || y > gridy + gridsize) continue;

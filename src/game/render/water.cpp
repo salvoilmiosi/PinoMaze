@@ -45,11 +45,11 @@ water::water(engine *m_engine, game *m_game) : m_game(m_game), options(m_engine-
 void water::load_models(int gridx, int gridy, int gridsize) {
     std::vector<glm::mat4> matrices;
 
-	maze *m = m_game->m_maze;
+	maze &m_maze = m_game->m_maze;
 
-    for (int y = gridy; y < MIN(gridy + gridsize, m->height()); ++y) {
-        for (int x = gridx; x < MIN(gridx + gridsize, m->width()); ++x) {
-			tile *t = m->getTile(x, y);
+    for (int y = gridy; y < MIN(gridy + gridsize, m_maze.height()); ++y) {
+        for (int x = gridx; x < MIN(gridx + gridsize, m_maze.width()); ++x) {
+			tile *t = m_maze.getTile(x, y);
 			if (t->state == STATE_BLOCK) {
 				matrices.push_back(glm::translate(glm::mat4(1.f), glm::vec3(x * tileSize, -blockHeight, y * tileSize)));
 			}

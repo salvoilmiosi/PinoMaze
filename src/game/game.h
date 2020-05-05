@@ -20,7 +20,7 @@ struct camera {
 
 class game {
 public:
-    game(engine *m_engine, maze *m_maze);
+    game(engine *m_engine, maze &m_maze);
     ~game();
 
 public:
@@ -29,7 +29,7 @@ public:
 	void handleEvent(SDL_Event &event);
 
 public:
-    maze *m_maze;
+    maze &m_maze;
 
 	glm::mat4 m_view;
 	glm::mat4 m_proj;

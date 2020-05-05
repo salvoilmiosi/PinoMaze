@@ -6,7 +6,7 @@
 #include "resources.h"
 #include "options.h"
 
-game::game(engine *m_engine, maze *m_maze) : m_maze(m_maze), options(m_engine->options) {
+game::game(engine *m_engine, maze &m_maze) : m_maze(m_maze), options(m_engine->options) {
     if (!loadMaterials(BINARY_RESOURCE(resource_materials_txt))) {
         throw std::string("Could not load materials");
     }
@@ -93,21 +93,21 @@ bool game::canMove(int moveAngle, bool checkBlocks) {
 		break;
 	}
 
-	tile *curTile = m_maze->getTile(tx, ty);
-	tile *nextTile = m_maze->getTile(tx + ox, ty + oy);
+	tile *curTile = m_maze.getTile(tx, ty);
+	tile *nextTile = m_maze.getTile(tx + ox, ty + oy);
 	if (!nextTile) return false;
 
 	if (checkBlocks && nextTile->state == STATE_BLOCK) {
 		return false;
 	}
 
-	if (ox > 0 && m_maze->vwalls[tx + 1][ty].solid()) return false;
-	if (ox < 0 && m_maze->vwalls[tx][ty].solid()) return false;
-	if (oy > 0 && m_maze->hwalls[ty + 1][tx].solid()) return false;
-	if (oy < 0 && m_maze->hwalls[ty][tx].solid()) return false;
+	if (ox > 0 && m_maze.vwalls[tx + 1][ty].solid()) return false;
+	if (ox < 0 && m_maze.vwalls[tx][ty].solid()) return false;
+	if (oy > 0 && m_maze.hwalls[ty + 1][tx].solid()) return false;
+	if (oy < 0 && m_maze.hwalls[ty][tx].solid()) return false;
 
 	if (curTile->state == STATE_ITEM) {
-		mazeItem *item = m_maze->findItem(curTile);
+		mazeItem *item = m_maze.findItem(curTile);
 		if (item) {
 			switch (item->type) {
 			case ITEM_BRIDGE:
@@ -186,16 +186,16 @@ void game::setupCamera() {
 		m_camera.yaw -= M_PI * 2.f;
     }
 
-	tile *tile_from = m_maze->getTile(tx_prev, ty_prev);
-	tile *tile_to = m_maze->getTile(tx, ty);
+	tile *tile_from = m_maze.getTile(tx_prev, ty_prev);
+	tile *tile_to = m_maze.getTile(tx, ty);
 	
 	if (falling) {
 		//m_camera.pitch += 1.2f * deltaNano / 1000000000.f;
 	} else {
 		float pitch = glm::radians(cameraPitch);
 		if (tile_from->state == STATE_ITEM || tile_to->state == STATE_ITEM) {
-			mazeItem *item_from = m_maze->findItem(tile_from);
-			mazeItem *item_to = m_maze->findItem(tile_to);
+			mazeItem *item_from = m_maze.findItem(tile_from);
+			mazeItem *item_to = m_maze.findItem(tile_to);
 
 			if (!(lastMoveAngle % 2)){
 				if (((item_to && item_to->type == ITEM_BRIDGE)
@@ -228,7 +228,7 @@ void game::setupCamera() {
 	m_view = m_roll * m_pitch * m_yaw * m_position;
 }
 
-float itemHeight(maze *m_maze, tile *t, float dist, int angle) {
+float itemHeight(maze &m_maze, tile *t, float dist, int angle) {
 	switch (t->state) {
 	case STATE_START:
 	case STATE_END:
@@ -237,7 +237,7 @@ float itemHeight(maze *m_maze, tile *t, float dist, int angle) {
 		}
 		break;
 	case STATE_ITEM:
-		if (mazeItem *item = m_maze->findItem(t)) {
+		if (mazeItem *item = m_maze.findItem(t)) {
 			switch(item->type) {
 			case ITEM_BRIDGE:
 				if (angle % 2) {
@@ -269,8 +269,8 @@ float itemHeight(maze *m_maze, tile *t, float dist, int angle) {
 }
 
 void game::setupMarble(float deltaNano) {
-	tile *tile_from = m_maze->getTile(tx_prev, ty_prev);
-	tile *tile_to = m_maze->getTile(tx, ty);
+	tile *tile_from = m_maze.getTile(tx_prev, ty_prev);
+	tile *tile_to = m_maze.getTile(tx, ty);
 	
 	float dist = (lastMoveAngle % 2) ? abs(marblePos.x - startX) : abs(marblePos.z - startZ);
 	
@@ -306,12 +306,12 @@ void game::rollMarble(glm::vec3 delta) {
 
 void game::startPathing() {
 	pathfinder.reset(new a_star);
-    pathfinder->setMaze(m_maze);
+    pathfinder->setMaze(&m_maze);
 
 	int tz = 0;
 	tile *t;
 	mazeItem *item;
-	if ((t = m_maze->getTile(tx, ty)) && (t->state == STATE_ITEM) && (item = m_maze->findItem(t)) && (item->type == ITEM_BRIDGE)) {
+	if ((t = m_maze.getTile(tx, ty)) && (t->state == STATE_ITEM) && (item = m_maze.findItem(t)) && (item->type == ITEM_BRIDGE)) {
 		if (lastMoveAngle % 2) {
 			tz = 1;
 		}
@@ -366,9 +366,9 @@ void game::nextStep() {
 }
 
 bool game::useItem() {
-	tile *t = (moving < ticksPerMove / 2) ? m_maze->getTile(tx, ty) : nullptr;
+	tile *t = (moving < ticksPerMove / 2) ? m_maze.getTile(tx, ty) : nullptr;
 	if (t) {
-		mazeItem *item = m_maze->findItem(t);
+		mazeItem *item = m_maze.findItem(t);
 		if (item) {
 			switch (item->type) {
 			case ITEM_TELEPORT:
@@ -388,7 +388,7 @@ bool game::useItem() {
 }
 
 void game::endMove() {
-	tile *t = m_maze->getTile(tx, ty);
+	tile *t = m_maze.getTile(tx, ty);
 	if (t) {
 		switch (t->state) {
 		case STATE_BLOCK:
@@ -411,13 +411,13 @@ void game::endMove() {
 }
 
 void game::teleportToStart(bool resetWon) {
-	tile *startTile = m_maze->startTile();
+	tile *startTile = m_maze.startTile();
 	int x = 0;
 	int y = 0;
 	if (startTile) {
-		int index = m_maze->getIndex(startTile);
-		x = index % m_maze->width();
-		y = index / m_maze->width();
+		int index = m_maze.getIndex(startTile);
+		x = index % m_maze.width();
+		y = index / m_maze.width();
 	}
 	teleportTo(x, y);
 

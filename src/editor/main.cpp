@@ -152,7 +152,7 @@ static void handleEvent(SDL_Event &e) {
             setStatus("Path finding stopped");
             break;
         case SDL_SCANCODE_N:
-            setMaze(std::unique_ptr<maze>(new maze(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE)));
+            setMaze(std::make_unique<maze>(windowWidth / RES_TILES_SIZE, windowHeight / RES_TILES_SIZE));
             setStatus("Created empty new maze");
             break;
         case SDL_SCANCODE_SPACE:

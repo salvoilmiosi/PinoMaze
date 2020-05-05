@@ -247,7 +247,7 @@ std::unique_ptr<maze> openMaze(const char *filename) {
     int w = readShort(ifs);
     int h = readShort(ifs);
 
-	std::unique_ptr<maze> m(new maze(w, h));
+	auto m = std::make_unique<maze>(w, h);
     m->version = version;
 
     while (ifs.tellg() < filesize) {
