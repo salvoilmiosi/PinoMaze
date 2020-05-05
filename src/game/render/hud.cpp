@@ -8,7 +8,7 @@
 
 #include "material.h"
 
-hud::hud(engine_options *options) : options(options),
+hud::hud(engine *m_engine) : options(m_engine->options),
 	m_shader("hud", SHADER_RESOURCE(s_hud_v), SHADER_RESOURCE(s_hud_f),
 		"offset", &m_offset,
 		"diffuseTexture", &m_sampler,
@@ -22,7 +22,7 @@ glm::vec2 hud::toWorldCoords(int x, int y) {
 }
 
 glm::vec2 hud::toWorldVector(int x, int y) {
-    return glm::vec2(x * 2.f / options->window_width, -y * 2.f / options->window_height);
+    return glm::vec2(x * 2.f / options.window_width, -y * 2.f / options.window_height);
 }
 
 float calculate_fps(float deltaNano) {

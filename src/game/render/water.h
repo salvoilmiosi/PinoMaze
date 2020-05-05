@@ -11,7 +11,7 @@
 
 class water {
 public:
-	water(engine_options *options, class game *m_game);
+	water(engine *m_engine, class game *m_game);
 
 public:
 
@@ -25,6 +25,8 @@ public:
     
 private:
 	class game *m_game;
+
+	const engine_options &options;
 
     vf_shader m_shader;
 	vertex_array vao{DRAW_TRIANGLE_STRIP};

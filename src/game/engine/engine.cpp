@@ -86,3 +86,7 @@ void engine::run() {
 		}
 	}
 }
+
+void engine::stop() {
+	running = false;
+}

@@ -11,13 +11,13 @@
 
 class hud {
 public:
-    hud(engine_options *options);
+    hud(engine *m_engine);
 
 public:
     void render(float deltaNano);
 
 private:
-    engine_options *options;
+    const engine_options &options;
 
 	static const int STATUS_LENGTH = 128;
 	static const int BUFFER_SIZE_DEFAULT = 128;

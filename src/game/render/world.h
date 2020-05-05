@@ -22,7 +22,7 @@
 
 class world {
 public:
-    world(engine_options *options, game *m_game);
+    world(engine *m_engine, game *m_game);
 
 public:
     void tick();
@@ -35,7 +35,7 @@ private:
     void load_models(int gridx, int gridy, int gridsize);
 
 private:
-    engine_options *options;
+    const engine_options &options;
     game *m_game;
 
     world_shader m_shader;

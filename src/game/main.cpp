@@ -21,11 +21,11 @@
 
 class game_engine : public engine {
 public:
-	game_engine(const engine_options &m_options, maze *m_maze) :
-		engine(m_options),
-		m_game(&options, m_maze),
-		m_world(&options, &m_game),
-		m_hud(&options)
+	game_engine(const engine_options &options, maze *m_maze) :
+		engine(options),
+		m_game(this, m_maze),
+		m_world(this, &m_game),
+		m_hud(this)
 	{}
 
 public:
@@ -42,7 +42,7 @@ public:
 
 	void handleEvent(SDL_Event &event) override {
 		if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-			running = false;
+			stop();
 		}
 		m_game.handleEvent(event);
 	}

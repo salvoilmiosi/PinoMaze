@@ -44,6 +44,7 @@ public:
 
 public:
     void run();
+    void stop();
 
     virtual void tick() = 0;
     virtual void render(float deltaNano) = 0;
@@ -52,12 +53,10 @@ public:
 private:
     SDL_Window *window = nullptr;
     SDL_GLContext glcontext;
-
-protected:
     bool running = false;
 
 public:
-    engine_options options;
+    const engine_options options;
 };
 
 #endif // __ENGINE_H__

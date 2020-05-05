@@ -20,7 +20,7 @@ struct camera {
 
 class game {
 public:
-    game(engine_options *options, maze *m_maze);
+    game(engine *m_engine, maze *m_maze);
     ~game();
 
 public:
@@ -43,7 +43,7 @@ public:
 	bool won = false;
 
 private:
-	engine_options *options;
+	const engine_options &options;
 
 	std::unique_ptr<a_star> pathfinder = nullptr;
     std::list<const node *> path;

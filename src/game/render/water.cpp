@@ -6,7 +6,7 @@
 
 #include "maze.h"
 
-water::water(engine_options *options, game *m_game) : m_game(m_game),
+water::water(engine *m_engine, game *m_game) : m_game(m_game), options(m_engine->options),
 	m_shader("water", SHADER_RESOURCE(s_water_v), SHADER_RESOURCE(s_water_f),
 		"projectionMatrix", &m_game->m_proj,
 		"viewMatrix", &m_game->m_view,
@@ -18,8 +18,8 @@ water::water(engine_options *options, game *m_game) : m_game(m_game),
 		"globalTime", &globalTime,
 		"shininess", &shininess),
 
-	refraction(options->window_width, options->window_height),
-	refractionDepth(options->window_width, options->window_height, true)
+	refraction(options.window_width, options.window_height),
+	refractionDepth(options.window_width, options.window_height, true)
 {
 	refraction.setFilter(GL_NEAREST);
 	refraction.setWrapParam(GL_CLAMP_TO_EDGE);
