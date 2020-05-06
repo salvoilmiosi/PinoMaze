@@ -73,6 +73,7 @@ private:
 	bool falling = false;
 
 	glm::vec3 marblePos;
+	glm::vec3 cameraTargetPos;
 	glm::mat4 marbleRotation{1.f};
 
 	float startX = 0.f;

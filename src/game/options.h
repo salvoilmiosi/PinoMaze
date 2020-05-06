@@ -40,6 +40,8 @@ constexpr float gravityAccel = 9.8f;
 constexpr float cameraHeight = 0.26f;
 constexpr float cameraDistance = 0.33f;
 constexpr float cameraPitch = 15.f;
+constexpr float cameraSpeed = 0.1f;
+constexpr float cameraTurnSpeed = 0.1f;
 
 constexpr float shadowArea = 4.f;
 
