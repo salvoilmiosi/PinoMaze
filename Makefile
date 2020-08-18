@@ -1,9 +1,9 @@
-CXX = clang++
+CXX = g++
 CFLAGS = -g -Wall --std=c++17 -D_USE_MATH_DEFINES
 
-LIBS_EDITOR = `pkg-config --static --libs SDL2 SDL2_image`
+LIBS_EDITOR = `pkg-config --static --libs SDL2 SDL2_image` -lbz2
 #LIBS_GAME = `pkg-config --static --libs glew SDL2 SDL2_image SDL2_mixer`
-LIBS_GAME = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lglew32 -lopengl32 -lole32 -loleaut32 -lcomdlg32
+LIBS_GAME = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lglew32 -lopengl32 -lole32 -loleaut32 -lcomdlg32 -lbz2
 
 SRC_DIR = src
 OBJ_DIR = obj

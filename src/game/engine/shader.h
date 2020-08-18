@@ -57,6 +57,8 @@ public:
 		std::get<std::vector<uniform<T>>>(p_uniforms).emplace_back(location, name, data);
 	}
 
+	void add_uniforms() {}
+
 	template<typename T, typename ... Ts>
 	void add_uniforms(const char *name, T *data, Ts ... others) {
 		add_uniform(name, data);
@@ -69,8 +71,6 @@ public:
 private:
 	const char *name;
 	void link();
-
-	void add_uniforms() {}
 	
 protected:
 	GLuint gl_programid;
