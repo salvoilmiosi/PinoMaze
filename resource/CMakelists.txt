@@ -1,0 +1,46 @@
+set(materials_txt materials.txt)
+set(materials_object_files "${CMAKE_CURRENT_BINARY_DIR}/${materials_txt}.o")
+add_custom_command(
+    OUTPUT "${materials_object_files}"
+    COMMAND ld -r -b binary -o "${materials_object_files}" "${materials_txt}"
+    VERBATIM
+    DEPENDS "${materials_txt}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+add_custom_target(PinoMaze_materials_objects DEPENDS "${materials_object_files}")
+
+add_library(PinoMaze_materials OBJECT IMPORTED)
+add_dependencies(PinoMaze_materials PinoMaze_materials_objects)
+set_target_properties(PinoMaze_materials PROPERTIES IMPORTED_OBJECTS "${materials_object_files}")
+
+target_link_libraries(PinoMaze_game PRIVATE PinoMaze_materials)
+
+function(pack_resources TARGET_NAME)
+    foreach(filename IN LISTS ARGN)
+        set(txt_file "${CMAKE_CURRENT_SOURCE_DIR}/${filename}")
+        set(dat_file "${CMAKE_BINARY_DIR}/${filename}")
+        string(REGEX REPLACE "[.]txt$" ".dat" dat_file "${dat_file}")
+        add_custom_command(
+            OUTPUT "${dat_file}"
+            COMMAND resource_pack "${txt_file}" "${dat_file}"
+            VERBATIM
+            DEPENDS "${txt_file}"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        )
+        list(APPEND dat_files "${dat_file}")
+    endforeach()
+    add_custom_target("${TARGET_NAME}" DEPENDS "${dat_files}")
+endfunction()
+
+pack_resources(editor_resources editor.txt)
+add_dependencies(PinoMaze_editor editor_resources)
+if(WIN32)
+    target_sources(PinoMaze_editor PRIVATE editor.rc)
+endif()
+
+pack_resources(game_resources resource.txt music.txt)
+add_dependencies(PinoMaze_game game_resources)
+if(WIN32)
+    target_sources(PinoMaze_game PRIVATE game.rc)
+endif()

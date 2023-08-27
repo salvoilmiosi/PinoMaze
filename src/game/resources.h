@@ -29,12 +29,11 @@ bool loadMusicFromResource(music &mus, const char *RES_ID);
 #define DECLARE_BINARY_EXTERN(name) extern resource BINARY_RESOURCE(name);
 #define GET_RESOURCE(name) BINARY_RESOURCE(name)
 
-#define SHADER_NAME(name) src_game_shader_##name##_glsl
+#define SHADER_NAME(name) name##_glsl
 #define DECLARE_SHADER(name) DECLARE_BINARY(SHADER_NAME(name))
 #define SHADER_RESOURCE(name) BINARY_RESOURCE(SHADER_NAME(name))
 
-DECLARE_BINARY(resource_materials_txt)
-DECLARE_BINARY(resource_options_txt)
+DECLARE_BINARY(materials_txt)
 
 DECLARE_SHADER(s_billboard_v)
 DECLARE_SHADER(s_billboard_g)

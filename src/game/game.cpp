@@ -7,7 +7,7 @@
 #include "options.h"
 
 game::game(engine *m_engine, maze &m_maze) : m_maze(m_maze), options(m_engine->options) {
-    if (!materials::loadMaterials(BINARY_RESOURCE(resource_materials_txt))) {
+    if (!materials::loadMaterials(BINARY_RESOURCE(materials_txt))) {
         throw std::string("Could not load materials");
     }
     

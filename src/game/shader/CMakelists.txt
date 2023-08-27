@@ -1,0 +1,37 @@
+set(SHADER_SOURCE_FILES
+    s_billboard_f.glsl
+    s_billboard_g.glsl
+    s_billboard_v.glsl
+    s_hud_f.glsl
+    s_hud_v.glsl
+    s_particle_g.glsl
+    s_particle_v.glsl
+    s_shadow_f.glsl
+    s_shadow_v.glsl
+    s_skybox_f.glsl
+    s_skybox_v.glsl
+    s_water_f.glsl
+    s_water_v.glsl
+    s_world_f.glsl
+    s_world_v.glsl
+)
+
+foreach(filename ${SHADER_SOURCE_FILES})
+    set(object_file "${CMAKE_CURRENT_BINARY_DIR}/${filename}.o")
+    add_custom_command(
+        OUTPUT "${object_file}"
+        COMMAND ld -r -b binary -o "${object_file}" "${filename}"
+        VERBATIM
+        DEPENDS "${filename}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+    list(APPEND object_files "${object_file}")
+endforeach()
+
+add_custom_target(PinoMaze_shader_objects DEPENDS "${object_files}")
+
+add_library(PinoMaze_shaders OBJECT IMPORTED)
+add_dependencies(PinoMaze_shaders PinoMaze_shader_objects)
+set_target_properties(PinoMaze_shaders PROPERTIES IMPORTED_OBJECTS "${object_files}")
+
+target_link_libraries(PinoMaze_game PRIVATE PinoMaze_shaders)

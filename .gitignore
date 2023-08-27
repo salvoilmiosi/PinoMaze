@@ -1,6 +1,7 @@
 .vscode/*
 bin/*
 resource/original/*
+build/
 *.exe
 *.Td
 *.a
