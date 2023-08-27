@@ -9,8 +9,9 @@
 #include "../resources.h"
 
 inline void trim(std::string &s) {
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(isspace))));
-	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(isspace))).base(), s.end());
+	auto is_not_space = [](char c) { return !isspace(c); };
+	s.erase(s.begin(), find_if(s.begin(), s.end(), is_not_space));
+	s.erase(find_if(s.rbegin(), s.rend(), is_not_space).base(), s.end());
 }
 
 namespace materials {
