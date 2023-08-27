@@ -31,9 +31,9 @@ public:
 public:
     maze &m_maze;
 
-	glm::mat4 m_view;
-	glm::mat4 m_proj;
-	glm::mat4 m_marble;
+	glm::mat4 m_view{};
+	glm::mat4 m_proj{};
+	glm::mat4 m_marble{};
 
 	camera m_camera;
 
@@ -72,8 +72,8 @@ private:
 
 	bool falling = false;
 
-	glm::vec3 marblePos;
-	glm::vec3 cameraTargetPos;
+	glm::vec3 marblePos{};
+	glm::vec3 cameraTargetPos{};
 	glm::mat4 marbleRotation{1.f};
 
 	float startX = 0.f;
