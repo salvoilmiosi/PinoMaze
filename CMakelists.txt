@@ -65,5 +65,5 @@ else()
 endif()
 target_link_libraries(PinoMaze_game PRIVATE PinoMaze_shared sdl2_game)
 
-add_subdirectory(src)
 add_subdirectory(resource)
+add_subdirectory(src)

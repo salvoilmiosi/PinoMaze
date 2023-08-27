@@ -1,19 +1,26 @@
-set(materials_txt materials.txt)
-set(materials_object_files "${CMAKE_CURRENT_BINARY_DIR}/${materials_txt}.o")
-add_custom_command(
-    OUTPUT "${materials_object_files}"
-    COMMAND ld -r -b binary -o "${materials_object_files}" "${materials_txt}"
-    VERBATIM
-    DEPENDS "${materials_txt}"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-)
+function(compile_resources target_name)
+    foreach(file IN LISTS ARGN)
+        get_filename_component(varname "${file}" NAME)
+        string(MAKE_C_IDENTIFIER "${varname}" varname)
 
-add_custom_target(PinoMaze_materials_objects DEPENDS "${materials_object_files}")
+        set(resource_c_file "${CMAKE_CURRENT_BINARY_DIR}/${file}.c")
+        list(APPEND out_list "${resource_c_file}")
 
-add_library(PinoMaze_materials OBJECT IMPORTED)
-add_dependencies(PinoMaze_materials PinoMaze_materials_objects)
-set_target_properties(PinoMaze_materials PROPERTIES IMPORTED_OBJECTS "${materials_object_files}")
+        add_custom_command(
+            OUTPUT "${resource_c_file}"
+            COMMAND ${CMAKE_COMMAND}
+                -D "resource_file_name=${CMAKE_CURRENT_SOURCE_DIR}/${file}"
+                -D "source_file_name=${resource_c_file}"
+                -D "variable_name=__resource__${varname}"
+                -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/EmbedResource.cmake"
+            DEPENDS "${file}"
+            VERBATIM
+        )
+    endforeach()
+    add_library(${target_name} OBJECT ${out_list})
+endfunction()
 
+compile_resources(PinoMaze_materials materials.txt)
 target_link_libraries(PinoMaze_game PRIVATE PinoMaze_materials)
 
 function(pack_resources TARGET_NAME)

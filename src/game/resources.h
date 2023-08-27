@@ -19,21 +19,17 @@ SDL_Surface *loadImageFromResource(const char *RES_ID);
 bool loadWaveFromResource(sound &snd, const char *RES_ID);
 bool loadMusicFromResource(music &mus, const char *RES_ID);
 
-#define BINARY_START(name) _binary_##name##_start
-#define BINARY_END(name) _binary_##name##_end
-#define BINARY_SIZE(name) (BINARY_END(name) - BINARY_START(name))
-#define BINARY_RESOURCE(name) std::string(BINARY_START(name), BINARY_SIZE(name))
+#define RESOURCE_DATA(name) __resource__##name
+#define RESOURCE_LENGTH(name) __resource__##name##_length
+#define BINARY_RESOURCE(name) std::string(RESOURCE_DATA(name), RESOURCE_DATA(name) + RESOURCE_LENGTH(name))
 
-#define DECLARE_BINARY(name) extern char BINARY_START(name)[]; extern char BINARY_END(name)[];
-
-#define DECLARE_BINARY_EXTERN(name) extern resource BINARY_RESOURCE(name);
-#define GET_RESOURCE(name) BINARY_RESOURCE(name)
+#define DECLARE_RESOURCE(name) extern char RESOURCE_DATA(name)[]; extern unsigned long long RESOURCE_LENGTH(name);
 
 #define SHADER_NAME(name) name##_glsl
-#define DECLARE_SHADER(name) DECLARE_BINARY(SHADER_NAME(name))
+#define DECLARE_SHADER(name) DECLARE_RESOURCE(SHADER_NAME(name))
 #define SHADER_RESOURCE(name) BINARY_RESOURCE(SHADER_NAME(name))
 
-DECLARE_BINARY(materials_txt)
+DECLARE_RESOURCE(materials_txt)
 
 DECLARE_SHADER(s_billboard_v)
 DECLARE_SHADER(s_billboard_g)
