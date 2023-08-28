@@ -24,10 +24,11 @@ else()
 endif()
 target_link_libraries(sdl2_game INTERFACE sdl2_base)
 
+find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(GLM REQUIRED)
+find_package(glm REQUIRED)
 
-target_link_libraries(sdl2_game INTERFACE GLEW::glew)
+target_link_libraries(sdl2_game INTERFACE OpenGL::GL GLEW::glew)
 target_include_directories(sdl2_game INTERFACE "${GLM_ICLUDE_DIRS}")
 
 add_subdirectory(tinyfiledialogs)
